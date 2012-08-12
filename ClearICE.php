@@ -53,7 +53,13 @@ class ClearICE
                     }
                 }
             }
+            else
+            {
+                $standAlones[] = $argument;
+            }
         }
+        
+        $options['cli-standalones'] = $standAlones;
         
         return $options;
     }
