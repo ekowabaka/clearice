@@ -5,6 +5,10 @@ class ClearICE
     private static $optionsMap = array();
     private static $options = array();
     private static $strict = false;
+    private static $hasHelp;
+    private static $usage;
+    private static $description;
+    private static $footnote;
 
     public static function addOptions()
     {
@@ -76,6 +80,63 @@ class ClearICE
         }
     }
     
+    public static function addHelp()
+    {
+        self::addOptions(
+            array(
+                'short' => 'h',
+                'long' => 'help',
+                'help' => 'shows this help message'
+            )
+        );
+        self::$hasHelp = true;
+    }
+    
+    public static function setUsage($usage)
+    {
+        self::$usage = $usage;
+    }
+
+    public static function setDescription($description)
+    {
+        self::$description = $description;
+    }
+    
+    public static function setFootnote($footnote)
+    {
+        self::$footnote = $footnote;
+    }
+    
+    public static function getHelpMessage() 
+    {
+        $helpMessage = wordwrap(self::$description);
+        foreach (self::$options as $option)
+        {
+            $help = @explode("\n", wordwrap($option['help'], 50));
+            $argumentPart = sprintf("  -%s,  --%-19s ", $option['short'], $option['long']);
+
+            $helpMessage .= $argumentPart;
+
+            if(strlen($argumentPart) == 29)
+            {
+                $helpMessage .= array_shift($help) . "\n";
+            }
+            else
+            {
+                $helpMessage .= "\n";
+            }
+
+            foreach($help as $helpLine)
+            {
+                $helpMessage .= sprintf("%36s", "$helpLine\n");
+            }
+        }
+        $helpMessage .= "\n";
+        
+        return $helpMessage;
+    }
+
+
     public static function parse($arguments = false)
     {
         global $argv;
@@ -130,6 +191,14 @@ class ClearICE
                 }
                 fputs(STDERR, "Try `{$arguments[0]} --help` for more information\n");
                 die();
+            }
+        }
+        
+        if(isset($options['help']))
+        {
+            if($options['help'])
+            {
+                echo self::getHelpMessage();
             }
         }
         
