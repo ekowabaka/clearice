@@ -125,10 +125,11 @@ class ClearICE
             {
                 $helpMessage .= "\n";
             }
-
+            
             foreach($help as $helpLine)
             {
-                $helpMessage .= sprintf("%36s", "$helpLine\n");
+               
+                $helpMessage .= str_repeat(' ', 29) . "$helpLine\n" ;
             }
         }
         $helpMessage .= "\n";
@@ -199,6 +200,7 @@ class ClearICE
             if($options['help'])
             {
                 echo self::getHelpMessage();
+                die();
             }
         }
         
