@@ -109,11 +109,20 @@ class ClearICE
     
     public static function getHelpMessage() 
     {
-        $helpMessage = wordwrap(self::$description);
+        $helpMessage = "Usage: " . self::$usage . "\n";
+        $helpMessage .= wordwrap(self::$description);
         foreach (self::$options as $option)
         {
             $help = @explode("\n", wordwrap($option['help'], 50));
-            $argumentPart = sprintf("  -%s,  --%-19s ", $option['short'], $option['long']);
+            if($option['has_value'])
+            {
+                $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
+            }
+            else 
+            {
+                $valueHelp = "";
+            }
+            $argumentPart = sprintf("  -%s,  --%-19s ", $option['short'], "{$option['long']}{$valueHelp}");
 
             $helpMessage .= $argumentPart;
 
@@ -144,12 +153,14 @@ class ClearICE
         
         if($arguments === false) $arguments = $argv;
         
+        $command = array_shift($arguments);
+        
         $standAlones = array();
-        $shorts = array();
-        $options = array(
+        $unknowns = array();
+        /*$options = array(
             'unknowns' => array(),
             'cli-standalones' => array()
-        );
+        );*/
         
         foreach($arguments as $argument)
         {
@@ -157,7 +168,7 @@ class ClearICE
             {
                 if(!isset(self::$optionsMap[$matches['option']]))
                 {
-                    $options['unknowns'][] = $matches['option'];
+                    $unknowns[] = $matches['option'];
                 }
                 $options[$matches['option']] = $matches['value'];
                     
@@ -166,7 +177,7 @@ class ClearICE
             {
                 if(!isset(self::$optionsMap[$matches['option']]))
                 {
-                    $options['unknowns'][] = $matches['option'];
+                    $unknowns[] = $matches['option'];
                 }
                 $options[$matches['option']] = true;
             }
@@ -180,17 +191,15 @@ class ClearICE
             }
         }
         
-        $options['cli-standalones'] = $standAlones;
-        
         if(self::$strict)
         {
-            if(count($options['unknowns']) > 0)
+            if(count($unknowns) > 0)
             {
-                foreach($options['unknowns'] as $unknown)
+                foreach($unknowns as $unknown)
                 {
-                    fputs(STDERR, "{$arguments[0]}: invalid option -- {$unknown}\n");
+                    fputs(STDERR, "$command: invalid option -- {$unknown}\n");
                 }
-                fputs(STDERR, "Try `{$arguments[0]} --help` for more information\n");
+                fputs(STDERR, "Try `$command --help` for more information\n");
                 die();
             }
         }
@@ -202,6 +211,16 @@ class ClearICE
                 echo self::getHelpMessage();
                 die();
             }
+        }
+        
+        if(count($standAlones) > 0)
+        {
+            $options['stand_alones'] = $standAlones;
+        }
+        
+        if(count($unknowns) > 0)
+        {
+            $options['unknowns'] = $unknowns;
         }
         
         return $options;
