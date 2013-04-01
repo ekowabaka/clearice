@@ -8,14 +8,17 @@ Long options are preceeded with a double dash `--` and short options are preceed
 single dash `-`. This means we can use `-s` for a short option and `--long-option` 
 for a longer option. Options can have values assigned to them. A long option may 
 take a value through an assignment like this `--long-option=value` and a short 
-option may take a value through an assignment like this `-svalue`. 
+option may take a value through an assignment like this `-svalue`. Long options 
+and a short options may be synonymous to each other so `-l` and `--long` may 
+point to the same option.
 
 It is worth noting that a group of short options may also be specified preceeded 
 by a single dash. For example if `a`, `b` and `c` are all valid options which
 do not take values, passing `-abc` would be equivalent to passing `-a -b -c`.
 
-Long options and a short options may be synonymous to each other so `-l` and 
-`--long` may point to the same option.
+Arguments that are not preceeded by either a single dash or a double dash would
+be returned as stand alone arguments and the application may be required to deal
+with them.
 
 Another feature this tool has is the ability to generate a help listing for your 
 application. This means its possible for your users can type `myapp --help` or 
