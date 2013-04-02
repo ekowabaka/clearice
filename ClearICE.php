@@ -2,8 +2,8 @@
 /**
  * A class for parsing command line arguments in PHP applications
  * 
- * Ntentan Framework
- * Copyright (c) 2008-2012 James Ekow Abaka Ainooson
+ * ClearICE CLI Argument Parser
+ * Copyright (c) 2012-2013 James Ekow Abaka Ainooson
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
