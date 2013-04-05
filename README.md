@@ -60,7 +60,7 @@ an option your application accepts.
             'short' => 'v',
             'long' => 'verbose',
             "help" => "displays detailed information about everything that happens"
-        ),    
+        )    
     );
 
 The structured array has the following keys:
@@ -85,8 +85,15 @@ The structured array has the following keys:
 ### Parsing options
 Option parsing can be performed by calling the `ClearICe::parse()` method. The
 parse method returns an array which contains the options that were successfully
-parsed. For example the following script is intended for an app which
-generates a wiki.
+parsed. The array has the options as the keys and the values which were entered on
+the command line interface as the array values. If an option has both short
+and long keys then irrespective of whether a short or long key was passed 
+on the CLI, the array key would be the long option. In cases where the options
+do not take values, the value associated to the key array is the boolean value true.
+
+
+For example the following script is intended for an app which
+generates a wiki. 
 
     // Require the clear ice sources
     require_once "ClearICE.php";
@@ -109,10 +116,51 @@ generates a wiki.
             'short' => 'v',
             'long' => 'verbose',
             "help" => "displays detailed information about everything that happens"
-        ),    
+        )
     );
 
     $options = ClearICE::parse();
     print_r($options);
 
-We can clearly see the options the app can take. This means we can
+Assuming you've save this in a script `wiki.php` then when you pass any of the
+following through the command line:
+
+    php wiki.php --input=/myfiles/wiki-sources --output=/myfiles/wiki
+
+or
+
+    php wiki.php -i/myfiles/wiki-sources -o/myfiles/wiki
+
+or
+
+    php wiki.php -i/myfiles/wiki-sources --output=/myfiles/wiki
+
+or
+
+    php wiki.php --input=/myfiles/wiki-sources -o/myfiles/wiki
+
+Your output would always be:
+
+    Array
+    (
+        [input] => /myfiles/wiki-sources
+        [output] => /myfiles/wiki
+    )
+
+For options which do not take values like the `--verbose` option in our example
+
+    php wiki.php --verbose
+
+or
+
+    php wiki.php -v
+
+Your output would always be like
+
+    Array
+    (
+        [verbose] => 1
+    )
+
+
+    

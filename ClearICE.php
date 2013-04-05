@@ -189,9 +189,10 @@ class ClearICE
         if($arguments === false) $arguments = $argv;
         
         $command = array_shift($arguments);
-        
         $standAlones = array();
         $unknowns = array();
+        $options = array();
+        
         /*$options = array(
             'unknowns' => array(),
             'cli-standalones' => array()
