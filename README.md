@@ -55,6 +55,11 @@ an option your application accepts.
             'long' => 'output',
             'has_value' => true,
             "help" => "specifies where the wiki should be written to"
+        ),
+        array(
+            'short' => 'v',
+            'long' => 'verbose',
+            "help" => "displays detailed information about everything that happens"
         ),    
     );
 
@@ -67,10 +72,47 @@ The structured array has the following keys:
   option cannot have spaces or wild card characters in them. The parser only 
   recognizes the characters 0-9, a-z and A-Z. It also recognizes the hyphen 
   character `-` and the period character `.`.
+
 * `has_value` : is either true or false to specify whether the option takes a 
   value or not. This option is very critical for short options which take values.
   Once a short option is specified as having a value, all other characters which
   follow the option character are parsed as the option's value even if they may
   represent valid options.
+
 * `help` : is a line of text that is rendered as part of the help text in the
   automatically generated help text.
+
+### Parsing options
+Option parsing can be performed by calling the `ClearICe::parse()` method. The
+parse method returns an array which contains the options that were successfully
+parsed. For example the following script is intended for an app which
+generates a wiki.
+
+    // Require the clear ice sources
+    require_once "ClearICE.php";
+
+    // Add options
+    ClearICE::addOptions(
+        array(
+            'short' => 'i',
+            'long' => 'input',
+            'has_value' => true,
+            'help' => "specifies where the input files for the wiki are found."
+        ),
+        array(
+            'short' => 'o',
+            'long' => 'output',
+            'has_value' => true,
+            "help" => "specifies where the wiki should be written to"
+        ),
+        array(
+            'short' => 'v',
+            'long' => 'verbose',
+            "help" => "displays detailed information about everything that happens"
+        ),    
+    );
+
+    $options = ClearICE::parse();
+    print_r($options);
+
+We can clearly see the options the app can take. This means we can
