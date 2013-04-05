@@ -162,5 +162,16 @@ Your output would always be like
         [verbose] => 1
     )
 
+If you decide to mix them up like this
 
+    php test.php -i/myfiles/wiki-sources --output=/myfiles/wiki -v
+
+You would get
+
+    Array
+    (
+        [input] => /myfiles/wiki-sources
+        [output] => /myfiles/wiki
+        [verbose] => 1
+    )
     
