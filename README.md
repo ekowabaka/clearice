@@ -1,6 +1,8 @@
 ClearICE PHP Command Line Argument Parser
 =========================================
 
+[![Build Status](https://travis-ci.org/ekowabaka/clearice.png)](https://travis-ci.org/ekowabaka/clearice)
+
 This tool helps PHP CLI applications to parse their command line arguments.It
 provides an argument style is similar to what you find with most GNU applications. 
 
