@@ -257,8 +257,7 @@ by ClearICE.
 Dealing with Unknown Options 
 ----------------------------
 Some options may be parsed but they may not be understood. In such instances the
-the class returns an `unknowns` key. Unknown options which have values are still
-added to the output. 
+the class returns an `unknowns` key. Unknown options are still added to the output. 
 
 This means if you should pass
 
@@ -276,7 +275,9 @@ you should get
                 [2] => g
             )
 
-        [unknown-option] => 1
+        [unknown-option] => 1,
+        [u] => 1,
+        [g] => 2,
         [stand_alones] => Array
             (
                 [0] => /myfiles/wiki-sources
@@ -321,12 +322,12 @@ you should get:
     -i,  --input=VALUE         specifies where the input files for the wiki are
                                found.
     -o,  --output=VALUE        specifies where the wiki should be written to
-    -v,  --verbose=VALUE       displays detailed information about everything
+    -v,  --verbose             displays detailed information about everything
                                that happens
-    -x,  --create-default-index=VALUE 
+    -x,  --create-default-index 
                                creates a default index page which lists all the
                                wiki pages in a sorted order
-    -h,  --help=VALUE          shows this help message
+    -h,  --help                shows this help message
 
 You can add a description, usage information and footnotes by calling; 
 `ClearICE::setDescription`, `ClearICE::setUsage` and `ClearICE::setFootnote`
@@ -348,12 +349,12 @@ Now your help command (`php wiki.php -h` or `php wiki.php --help`) would generat
       -i,  --input=VALUE         specifies where the input files for the wiki are
                                  found.
       -o,  --output=VALUE        specifies where the wiki should be written to
-      -v,  --verbose=VALUE       displays detailed information about everything
+      -v,  --verbose             displays detailed information about everything
                                  that happens
-      -x,  --create-default-index=VALUE 
+      -x,  --create-default-index
                                  creates a default index page which lists all the
                                  wiki pages in a sorted order
-      -h,  --help=VALUE          shows this help message
+      -h,  --help                shows this help message
 
     Hope you had a nice time learning about ClearICE. We're pretty sure your
     cli apps would no longer be boring to work with.

@@ -41,6 +41,12 @@ class ClearICE
     private static $usage;
     private static $description;
     private static $footnote;
+    
+    public static function clearOptions()
+    {
+        self::$options = array();
+        self::$optionsMap = array();
+    }
 
     /**
      * Add options to be recognized.
@@ -92,6 +98,8 @@ class ClearICE
                 else
                 {
                     $options[$key] = true;
+                    if(strlen($remainder) == 0) return;
+                    self::parseShortOptions($remainder, $options, $unknowns);
                 }
             }
             else
@@ -104,6 +112,7 @@ class ClearICE
         else
         {
             $unknowns[] = $shortOption;
+            $options[$shortOption] = true;
             if(strlen($remainder) == 0) 
             {
                 return;
@@ -117,6 +126,7 @@ class ClearICE
     
     public static function addHelp()
     {
+        if(self::$hasHelp) return;
         self::addOptions(
             array(
                 'short' => 'h',
@@ -174,11 +184,12 @@ class ClearICE
                 {
                     $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
                 }
-                else 
-                {
-                    $valueHelp = "";
-                }
             }
+            else 
+            {
+                $valueHelp = "";
+            }
+            
             $argumentPart = sprintf("  -%s,  --%-19s ", $option['short'], "{$option['long']}{$valueHelp}");
 
             $helpMessage .= $argumentPart;
