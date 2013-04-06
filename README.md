@@ -318,15 +318,15 @@ or
 
 you should get:
 
-  -i,  --input=VALUE         specifies where the input files for the wiki are
-                             found.
-  -o,  --output=VALUE        specifies where the wiki should be written to
-  -v,  --verbose=VALUE       displays detailed information about everything
-                             that happens
-  -x,  --create-default-index=VALUE 
-                             creates a default index page which lists all the
-                             wiki pages in a sorted order
-  -h,  --help=VALUE          shows this help message
+    -i,  --input=VALUE         specifies where the input files for the wiki are
+                               found.
+    -o,  --output=VALUE        specifies where the wiki should be written to
+    -v,  --verbose=VALUE       displays detailed information about everything
+                               that happens
+    -x,  --create-default-index=VALUE 
+                               creates a default index page which lists all the
+                               wiki pages in a sorted order
+    -h,  --help=VALUE          shows this help message
 
 You can add a description, usage information and footnotes by calling; 
 `ClearICE::setDescription`, `ClearICE::setUsage` and `ClearICE::setFootnote`
