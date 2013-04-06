@@ -116,6 +116,11 @@ generates a wiki.
             'short' => 'v',
             'long' => 'verbose',
             "help" => "displays detailed information about everything that happens"
+        ),
+        array(
+            'short' => 'x',
+            'long' => 'create-default-index',
+            "help" => "creates a default index page which lists all the wiki pages in a sorted order"
         )
     );
 
@@ -175,3 +180,33 @@ You would get
         [verbose] => 1
     )
     
+You can mix up the short options by using a single dash. So something like
+
+    php test.php -v -x
+
+or
+
+    php test.php -vx
+
+would all yield:
+
+    Array
+    (
+        [verbose] => 1
+        [create-default-index] => 1
+    )
+
+For short options which take options you can try
+
+    php test.php -vxi/myfiles/wiki-sources
+
+which would give you
+
+    Array
+    (
+        [verbose] => 1
+        [create-default-index] => 1
+        [input] => /myfiles/wiki-sources
+    )
+
+### Auto Generating Help
