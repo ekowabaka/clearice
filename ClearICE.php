@@ -74,7 +74,7 @@ class ClearICE
         self::$strict = $strict;
     }
     
-    private static function parseShortOptions($shortOptionsString, &$options)
+    private static function parseShortOptions($shortOptionsString, &$options, &$unknowns)
     {
         $shortOption = $shortOptionsString[0];
         $remainder = substr($shortOptionsString, 1);
@@ -98,19 +98,19 @@ class ClearICE
             {
                 $options[$key] = true;
                 if(strlen($remainder) == 0) return;
-                self::parseShortOptions($remainder, $options);
+                self::parseShortOptions($remainder, $options, $unknowns);
             }
         }
         else
         {
-            $options['unknowns'][] = $shortOption;
+            $unknowns[] = $shortOption;
             if(strlen($remainder) == 0) 
             {
                 return;
             }
             else
             {
-                self::parseShortOptions($remainder, $options);
+                self::parseShortOptions($remainder, $options, $unknowns);
             }
         }
     }
@@ -193,11 +193,6 @@ class ClearICE
         $unknowns = array();
         $options = array();
         
-        /*$options = array(
-            'unknowns' => array(),
-            'cli-standalones' => array()
-        );*/
-        
         foreach($arguments as $argument)
         {
             if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
@@ -219,7 +214,7 @@ class ClearICE
             }
             else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
             {
-                self::parseShortOptions($matches['option'], $options);
+                self::parseShortOptions($matches['option'], $options, $unknowns);
             }
             else
             {
@@ -235,7 +230,11 @@ class ClearICE
                 {
                     fputs(STDERR, "$command: invalid option -- {$unknown}\n");
                 }
-                fputs(STDERR, "Try `$command --help` for more information\n");
+                
+                if(self::$hasHelp)
+                {
+                    fputs(STDERR, "Try `$command --help` for more information\n");
+                }
                 die();
             }
         }

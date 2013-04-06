@@ -38,7 +38,8 @@ class's PHP file and you're good to go.
 
     require_once "ClearICE.php";
 
-### Adding Options
+Adding Options
+--------------
 To add options for the parser use the `ClearICE::addOptions` method. This method
 takes as many arguments as you want. Each argument is a structured array describing
 an option your application accepts.
@@ -82,7 +83,8 @@ The structured array has the following keys:
 * `help` : is a line of text that is rendered as part of the help text in the
   automatically generated help text.
 
-### Parsing options
+Parsing options
+---------------
 Option parsing can be performed by calling the `ClearICe::parse()` method. The
 parse method returns an array which contains the options that were successfully
 parsed. The array has the options as the keys and the values which were entered on
@@ -169,7 +171,7 @@ Your output would always be like
 
 If you decide to mix them up like this
 
-    php test.php -i/myfiles/wiki-sources --output=/myfiles/wiki -v
+    php wiki.php -i/myfiles/wiki-sources --output=/myfiles/wiki -v
 
 You would get
 
@@ -182,11 +184,11 @@ You would get
     
 You can mix up the short options by using a single dash. So something like
 
-    php test.php -v -x
+    php wiki.php -v -x
 
 or
 
-    php test.php -vx
+    php wiki.php -vx
 
 would all yield:
 
@@ -198,7 +200,7 @@ would all yield:
 
 For short options which take options you can try
 
-    php test.php -vxi/myfiles/wiki-sources
+    php wiki.php -vxi/myfiles/wiki-sources
 
 which would give you
 
@@ -209,4 +211,98 @@ which would give you
         [input] => /myfiles/wiki-sources
     )
 
-### Auto Generating Help
+Stand Alone Arguments
+---------------------
+Arguments that do not fit the format for options would be returned as stand alone
+arguments. Assuming we want our little wiki script to take its input files and
+directories through the command directly we can execute:
+
+    php wiki.php /myfiles/wiki-sources -o/myfiles/wiki
+
+This would then give us
+
+    Array
+    (
+        [output] => /myfiles/wiki
+        [stand_alones] => Array
+            (
+                [0] => /myfiles/wiki-sources
+            )
+
+    )
+
+and 
+
+    php wiki.php /myfiles/wiki-sources/Home.wiki /myfiles/wiki-sources/About.wiki -o/myfiles/wiki
+
+would give:
+
+    Array
+    (
+        [output] => /myfiles/wiki
+        [stand_alones] => Array
+            (
+                [0] => /myfiles/wiki-sources/Home.wiki
+                [1] => /myfiles/wiki-sources/About.wiki
+            )
+
+    )
+
+
+Realise that a new key `stand_alones` was added. This key points to an array
+of all the arguments which do not fit the format for arguments that are parsed
+by ClearICE. 
+
+
+Dealing with Unknown Options 
+----------------------------
+Some options may be parsed but they may not be understood. In such instances the
+the class returns an `unknowns` key. Unknown options which have values are still
+added to the output. 
+
+This means if you should pass
+
+    php wiki.php /myfiles/wiki-sources -o/myfiles/wiki -ug --unknown-option
+
+you should get
+
+    Array
+    (
+        [output] => /myfiles/wiki
+        [unknowns] => Array
+            (
+                [0] => unknown-option
+                [1] => u
+                [2] => g
+            )
+
+        [unknown-option] => 1
+        [stand_alones] => Array
+            (
+                [0] => /myfiles/wiki-sources
+            )
+
+    )
+
+You can use the parser in strict mode. This can be achieved by calling
+`ClearICE::setStrict(true)` anywhere before the `ClearICE::parse()` method. The
+parser would terminate the application with a friendly message if it should 
+encounter any unknown options. 
+
+In a strict mode the following:
+
+    php wiki.php /myfiles/wiki-sources -o/myfiles/wiki -ug --unknown-option
+
+would give the following friendly output:
+
+    wiki.php: invalid option -- u
+    wiki.php: invalid option -- g
+    wiki.php: invalid option -- unknown-option
+
+
+
+Auto Generating Help
+--------------------
+You can automatically generate a help option by calling the `ClearICE::addHelp()`
+method. Once you've  provided help lines for all your options you pretty much 
+have all you need.
