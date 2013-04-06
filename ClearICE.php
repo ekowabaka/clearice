@@ -144,18 +144,40 @@ class ClearICE
     
     public static function getHelpMessage() 
     {
-        $helpMessage = "Usage: " . self::$usage . "\n";
-        $helpMessage .= wordwrap(self::$description);
+        global $argv;
+        $helpMessage = wordwrap(self::$description);
+        
+        if(self::$usage != '' || is_array(self::$usage))
+        {
+            if($helpMessage != '') $helpMessage .= "\n\n";
+            if(is_string(self::$usage))
+            {
+                $helpMessage .= "Usage:\n  {$argv[0]} " . self::$usage . "\n";
+            }
+            elseif (is_array(self::$usage)) 
+            {
+                $helpMessage .= "Usage:\n";
+                foreach(self::$usage as $usage)
+                {
+                    $helpMessage .= "  {$argv[0]} $usage\n";
+                }
+            }
+            $helpMessage .= "\n";
+        }
+        
         foreach (self::$options as $option)
         {
             $help = @explode("\n", wordwrap($option['help'], 50));
-            if($option['has_value'])
+            if(isset($option['has_value']))
             {
-                $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
-            }
-            else 
-            {
-                $valueHelp = "";
+                if($option['has_value'])
+                {
+                    $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
+                }
+                else 
+                {
+                    $valueHelp = "";
+                }
             }
             $argumentPart = sprintf("  -%s,  --%-19s ", $option['short'], "{$option['long']}{$valueHelp}");
 
@@ -176,6 +198,12 @@ class ClearICE
                 $helpMessage .= str_repeat(' ', 29) . "$helpLine\n" ;
             }
         }
+        
+        if(self::$footnote != '')
+        {
+            $helpMessage .= "\n" . wordwrap(self::$footnote);
+        }
+        
         $helpMessage .= "\n";
         
         return $helpMessage;

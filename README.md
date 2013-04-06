@@ -306,3 +306,123 @@ Auto Generating Help
 You can automatically generate a help option by calling the `ClearICE::addHelp()`
 method. Once you've  provided help lines for all your options you pretty much 
 have all you need.
+
+With our example as shown above, if you should add `ClearICE::addHelp()` before
+the `ClearICE::parse()` and execute:
+
+    php wiki.php --help
+
+or 
+
+    php wiki.php -h
+
+you should get:
+
+  -i,  --input=VALUE         specifies where the input files for the wiki are
+                             found.
+  -o,  --output=VALUE        specifies where the wiki should be written to
+  -v,  --verbose=VALUE       displays detailed information about everything
+                             that happens
+  -x,  --create-default-index=VALUE 
+                             creates a default index page which lists all the
+                             wiki pages in a sorted order
+  -h,  --help=VALUE          shows this help message
+
+You can add a description, usage information and footnotes by calling; 
+`ClearICE::setDescription`, `ClearICE::setUsage` and `ClearICE::setFootnote`
+respectively.
+
+    ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
+    ClearICE::setUsage("[input] [options]..");
+    ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+
+Now your help command (`php wiki.php -h` or `php wiki.php --help`) would generate 
+
+    Simple Wiki version 1.0
+    A sample or should I say dummy wiki app to help explain ClearICE. This app
+    practically does nothing.
+
+    Usage:
+      test.php [input] [options]..
+
+      -i,  --input=VALUE         specifies where the input files for the wiki are
+                                 found.
+      -o,  --output=VALUE        specifies where the wiki should be written to
+      -v,  --verbose=VALUE       displays detailed information about everything
+                                 that happens
+      -x,  --create-default-index=VALUE 
+                                 creates a default index page which lists all the
+                                 wiki pages in a sorted order
+      -h,  --help=VALUE          shows this help message
+
+    Hope you had a nice time learning about ClearICE. We're pretty sure your
+    cli apps would no longer be boring to work with.
+
+    Report bugs to bugs@clearice.tld
+
+Full Example Listing
+--------------------
+
+    <?php
+
+    // Require the clear ice sources
+    require_once "ClearICE.php";
+
+    // Add options
+    ClearICE::addOptions(
+        array(
+            'short' => 'i',
+            'long' => 'input',
+            'has_value' => true,
+            'help' => "specifies where the input files for the wiki are found."
+        ),
+        array(
+            'short' => 'o',
+            'long' => 'output',
+            'has_value' => true,
+            "help" => "specifies where the wiki should be written to"
+        ),
+        array(
+            'short' => 'v',
+            'long' => 'verbose',
+            "help" => "displays detailed information about everything that happens"
+        ),
+        array(
+            'short' => 'x',
+            'long' => 'create-default-index',
+            "help" => "creates a default index page which lists all the wiki pages in a sorted order"
+        )    
+    );
+
+    ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
+    ClearICE::setUsage("[input] [options]..");
+    ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+
+    ClearICE::setStrict(true);
+    ClearICE::addHelp();
+    $options = ClearICE::parse();
+    print_r($options);
+
+License
+-------
+Copyright (c) 2012-2013 James Ekow Abaka Ainooson
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
