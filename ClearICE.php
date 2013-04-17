@@ -75,6 +75,13 @@ class ClearICE
         }
     }
     
+    /**
+     * Set or unset the strict mode. In strict mode the parser terminates the
+     * application with an error message in cases where a command line argument
+     * is not understood.
+     * 
+     * @param type true
+     */
     public static function setStrict($strict)
     {
         self::$strict = $strict;
@@ -124,6 +131,9 @@ class ClearICE
         }
     }
     
+    /**
+     * Adds the two automatic help options.
+     */
     public static function addHelp()
     {
         if(self::$hasHelp) return;
