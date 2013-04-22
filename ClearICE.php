@@ -34,10 +34,49 @@
  */
 class ClearICE
 {
+    /**
+     * A map of all the options the parser recognises. The map is actually an
+     * array which associates short or long options with their appropriate 
+     * parameters. Options which have both long and short versions would be
+     * repeated. This structure is used to quickly find the paramters of an option
+     * whether in the short form or long form.
+     * 
+     * @var array
+     */
     private static $optionsMap = array();
+    
+    /**
+     * An array of all the options that are available to the parser. Unlike the
+     * ClearICE::$optionsMap parameter, this paramter just lists all the options
+     * and their parameters.
+     * 
+     * @var array
+     */
     private static $options = array();
+    
+    /**
+     * Should the parser be strict or not. A strict parser would terminate the
+     * application if it doesn't understand any options. A not-strict parser
+     * would just return the unknown options it encountered and expect the
+     * application to deal with it appropriately.
+     * 
+     * @var boolean
+     */
     private static $strict = false;
+    
+    /**
+     * A flag raised when the parser already has the automatic help option 
+     * added.
+     * 
+     * @var boolean
+     */
     private static $hasHelp;
+    
+    /**
+     * The usage line for the application.
+     * 
+     * @var string
+     */
     private static $usage;
     private static $description;
     private static $footnote;
@@ -76,11 +115,12 @@ class ClearICE
     }
     
     /**
-     * Set or unset the strict mode. In strict mode the parser terminates the
-     * application with an error message in cases where a command line argument
-     * is not understood.
+     * Sets whether the parser should be strict or not. A strict parser would 
+     * terminate the application if it doesn't understand any options. A 
+     * not-strict parser would just return the unknown options it encountered 
+     * and expect the application to deal with it appropriately.     
      * 
-     * @param type true
+     * @param boolean $strict A boolean value for the strictness state
      */
     public static function setStrict($strict)
     {

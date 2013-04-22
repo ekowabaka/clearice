@@ -46,25 +46,27 @@ To add options for the parser use the `ClearICE::addOptions` method. This method
 takes as many arguments as you want. Each argument is a structured array describing
 an option your application accepts.
 
-    ClearICE::addOptions(
-        array(
-            'short' => 'i',
-            'long' => 'input',
-            'has_value' => true,
-            'help' => "specifies where the input files for the wiki are found."
-        ),
-        array(
-            'short' => 'o',
-            'long' => 'output',
-            'has_value' => true,
-            "help" => "specifies where the wiki should be written to"
-        ),
-        array(
-            'short' => 'v',
-            'long' => 'verbose',
-            "help" => "displays detailed information about everything that happens"
-        )    
-    );
+````php
+ClearICE::addOptions(
+    array(
+        'short' => 'i',
+        'long' => 'input',
+        'has_value' => true,
+        'help' => "specifies where the input files for the wiki are found."
+    ),
+    array(
+        'short' => 'o',
+        'long' => 'output',
+        'has_value' => true,
+        "help" => "specifies where the wiki should be written to"
+    ),
+    array(
+        'short' => 'v',
+        'long' => 'verbose',
+        "help" => "displays detailed information about everything that happens"
+    )    
+);
+````
 
 The structured array has the following keys:
 
