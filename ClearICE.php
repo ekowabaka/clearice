@@ -73,12 +73,26 @@ class ClearICE
     private static $hasHelp;
     
     /**
-     * The usage line for the application.
+     * The usage instructions for the application displayed as part of the
+     * automatically generated help message.
+     * 
+     * @var array or string
+     */
+    private static $usage;
+    
+    /**
+     * The description displayed on top of the help message just after the
+     * usage instructions.
      * 
      * @var string
      */
-    private static $usage;
     private static $description;
+    
+    /**
+     * A footnote displayed at the bottom of the help message.
+     * 
+     * @var string
+     */
     private static $footnote;
     
     public static function clearOptions()
