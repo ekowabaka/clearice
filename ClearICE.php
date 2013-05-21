@@ -156,10 +156,11 @@ class ClearICE
     {
         global $argv;
         $helpMessage = wordwrap(self::$description);
+        if($helpMessage != '') $helpMessage .= "\n";
         
         if(self::$usage != '' || is_array(self::$usage))
         {
-            if($helpMessage != '') $helpMessage .= "\n\n";
+            if($helpMessage != '') $helpMessage .= "\n";
             if(is_string(self::$usage))
             {
                 $helpMessage .= "Usage:\n  {$argv[0]} " . self::$usage . "\n";
@@ -240,7 +241,17 @@ class ClearICE
                 {
                     $unknowns[] = $matches['option'];
                 }
-                $options[$matches['option']] = $matches['value'];
+                else
+                {
+                    if(self::$optionsMap[$matches['option']]['multi'] === true)
+                    {
+                        $options[$matches['option']][] = $matches['value'];                                    
+                    }
+                    else
+                    {
+                        $options[$matches['option']] = $matches['value'];
+                    }
+                }
                     
             }
             else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
