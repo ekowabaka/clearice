@@ -46,25 +46,27 @@ To add options for the parser use the `ClearICE::addOptions` method. This method
 takes as many arguments as you want. Each argument is a structured array describing
 an option your application accepts.
 
-    ClearICE::addOptions(
-        array(
-            'short' => 'i',
-            'long' => 'input',
-            'has_value' => true,
-            'help' => "specifies where the input files for the wiki are found."
-        ),
-        array(
-            'short' => 'o',
-            'long' => 'output',
-            'has_value' => true,
-            "help" => "specifies where the wiki should be written to"
-        ),
-        array(
-            'short' => 'v',
-            'long' => 'verbose',
-            "help" => "displays detailed information about everything that happens"
-        )    
-    );
+````php
+ClearICE::addOptions(
+    array(
+        'short' => 'i',
+        'long' => 'input',
+        'has_value' => true,
+        'help' => "specifies where the input files for the wiki are found."
+    ),
+    array(
+        'short' => 'o',
+        'long' => 'output',
+        'has_value' => true,
+        "help" => "specifies where the wiki should be written to"
+    ),
+    array(
+        'short' => 'v',
+        'long' => 'verbose',
+        "help" => "displays detailed information about everything that happens"
+    )    
+);
+````
 
 The structured array has the following keys:
 
@@ -99,37 +101,39 @@ do not take values, the value associated to the key array is the boolean value t
 For example the following script is intended for an app which
 generates a wiki. 
 
-    // Require the clear ice sources
-    require_once "ClearICE.php";
+````php
+// Require the clear ice sources
+require_once "ClearICE.php";
 
-    // Add options
-    ClearICE::addOptions(
-        array(
-            'short' => 'i',
-            'long' => 'input',
-            'has_value' => true,
-            'help' => "specifies where the input files for the wiki are found."
-        ),
-        array(
-            'short' => 'o',
-            'long' => 'output',
-            'has_value' => true,
-            "help" => "specifies where the wiki should be written to"
-        ),
-        array(
-            'short' => 'v',
-            'long' => 'verbose',
-            "help" => "displays detailed information about everything that happens"
-        ),
-        array(
-            'short' => 'x',
-            'long' => 'create-default-index',
-            "help" => "creates a default index page which lists all the wiki pages in a sorted order"
-        )
-    );
+// Add options
+ClearICE::addOptions(
+    array(
+        'short' => 'i',
+        'long' => 'input',
+        'has_value' => true,
+        'help' => "specifies where the input files for the wiki are found."
+    ),
+    array(
+        'short' => 'o',
+        'long' => 'output',
+        'has_value' => true,
+        "help" => "specifies where the wiki should be written to"
+    ),
+    array(
+        'short' => 'v',
+        'long' => 'verbose',
+        "help" => "displays detailed information about everything that happens"
+    ),
+    array(
+        'short' => 'x',
+        'long' => 'create-default-index',
+        "help" => "creates a default index page which lists all the wiki pages in a sorted order"
+    )
+);
 
-    $options = ClearICE::parse();
-    print_r($options);
+$options = ClearICE::parse();
+print_r($options);
+````
 
 Assuming you've save this in a script `wiki.php` then when you pass any of the
 following through the command line:
@@ -335,9 +339,11 @@ You can add a description, usage information and footnotes by calling;
 `ClearICE::setDescription`, `ClearICE::setUsage` and `ClearICE::setFootnote`
 respectively.
 
-    ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
-    ClearICE::setUsage("[input] [options]..");
-    ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+````php
+ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
+ClearICE::setUsage("[input] [options]..");
+ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+````
 
 Now your help command (`php wiki.php -h` or `php wiki.php --help`) would generate 
 
@@ -366,45 +372,47 @@ Now your help command (`php wiki.php -h` or `php wiki.php --help`) would generat
 Full Example Listing
 --------------------
 
-    <?php
+````php
+<?php
 
-    // Require the clear ice sources
-    require_once "ClearICE.php";
+// Require the clear ice sources
+require_once "ClearICE.php";
 
-    // Add options
-    ClearICE::addOptions(
-        array(
-            'short' => 'i',
-            'long' => 'input',
-            'has_value' => true,
-            'help' => "specifies where the input files for the wiki are found."
-        ),
-        array(
-            'short' => 'o',
-            'long' => 'output',
-            'has_value' => true,
-            "help" => "specifies where the wiki should be written to"
-        ),
-        array(
-            'short' => 'v',
-            'long' => 'verbose',
-            "help" => "displays detailed information about everything that happens"
-        ),
-        array(
-            'short' => 'x',
-            'long' => 'create-default-index',
-            "help" => "creates a default index page which lists all the wiki pages in a sorted order"
-        )    
-    );
+// Add options
+ClearICE::addOptions(
+    array(
+        'short' => 'i',
+        'long' => 'input',
+        'has_value' => true,
+        'help' => "specifies where the input files for the wiki are found."
+    ),
+    array(
+        'short' => 'o',
+        'long' => 'output',
+        'has_value' => true,
+        "help" => "specifies where the wiki should be written to"
+    ),
+    array(
+        'short' => 'v',
+        'long' => 'verbose',
+        "help" => "displays detailed information about everything that happens"
+    ),
+    array(
+        'short' => 'x',
+        'long' => 'create-default-index',
+        "help" => "creates a default index page which lists all the wiki pages in a sorted order"
+    )    
+);
 
-    ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
-    ClearICE::setUsage("[input] [options]..");
-    ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
+ClearICE::setUsage("[input] [options]..");
+ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
 
-    ClearICE::setStrict(true);
-    ClearICE::addHelp();
-    $options = ClearICE::parse();
-    print_r($options);
+ClearICE::setStrict(true);
+ClearICE::addHelp();
+$options = ClearICE::parse();
+print_r($options);
+````
 
 License
 -------

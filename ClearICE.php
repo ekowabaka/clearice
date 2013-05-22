@@ -34,12 +34,65 @@
  */
 class ClearICE
 {
+    /**
+     * A map of all the options the parser recognises. The map is actually an
+     * array which associates short or long options with their appropriate 
+     * parameters. Options which have both long and short versions would be
+     * repeated. This structure is used to quickly find the paramters of an option
+     * whether in the short form or long form.
+     * 
+     * @var array
+     */
     private static $optionsMap = array();
+    
+    /**
+     * An array of all the options that are available to the parser. Unlike the
+     * ClearICE::$optionsMap parameter, this paramter just lists all the options
+     * and their parameters.
+     * 
+     * @var array
+     */
     private static $options = array();
+    
+    /**
+     * Should the parser be strict or not. A strict parser would terminate the
+     * application if it doesn't understand any options. A not-strict parser
+     * would just return the unknown options it encountered and expect the
+     * application to deal with it appropriately.
+     * 
+     * @var boolean
+     */
     private static $strict = false;
+    
+    /**
+     * A flag raised when the parser already has the automatic help option 
+     * added.
+     * 
+     * @var boolean
+     */
     private static $hasHelp;
+    
+    /**
+     * The usage instructions for the application displayed as part of the
+     * automatically generated help message.
+     * 
+     * @var array or string
+     */
     private static $usage;
+    
+    /**
+     * The description displayed on top of the help message just after the
+     * usage instructions.
+     * 
+     * @var string
+     */
     private static $description;
+    
+    /**
+     * A footnote displayed at the bottom of the help message.
+     * 
+     * @var string
+     */
     private static $footnote;
     
     public static function clearOptions()
@@ -75,6 +128,14 @@ class ClearICE
         }
     }
     
+    /**
+     * Sets whether the parser should be strict or not. A strict parser would 
+     * terminate the application if it doesn't understand any options. A 
+     * not-strict parser would just return the unknown options it encountered 
+     * and expect the application to deal with it appropriately.     
+     * 
+     * @param boolean $strict A boolean value for the strictness state
+     */
     public static function setStrict($strict)
     {
         self::$strict = $strict;
@@ -124,6 +185,9 @@ class ClearICE
         }
     }
     
+    /**
+     * Adds the two automatic help options.
+     */
     public static function addHelp()
     {
         if(self::$hasHelp) return;
