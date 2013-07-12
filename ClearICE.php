@@ -304,6 +304,7 @@ class ClearICE
                 if(!isset(self::$optionsMap[$matches['option']]))
                 {
                     $unknowns[] = $matches['option'];
+                    $options[$matches['option']] = $matches['value'];
                 }
                 else
                 {

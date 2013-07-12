@@ -1,6 +1,8 @@
 <?php
 require "ClearICE.php";
 
+error_reporting(E_ALL ^ E_NOTICE);
+
 class ClearICETest extends PHPUnit_Framework_TestCase
 {    
     
@@ -158,7 +160,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "--unknown-option",
             "--another-unknown=something"
         );
-        $options = ClearICE::parse();
+        $options = ClearICE::parse();        
         $this->assertArrayHasKey("unknowns", $options);
         $this->assertEquals(
             array(
