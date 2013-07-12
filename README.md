@@ -43,17 +43,13 @@ class's PHP file and you're good to go.
 Adding Options
 --------------
 To add options for the parser use the `ClearICE::addOptions` method. This method
-takes as many arguments as you want. Each argument is a structured array describing
-an option your application accepts.
+takes as many arguments as you want with each argument representing an option you
+want to make parsable. An argument could either be a single string for a very
+simple option or a structured array for a much more elaborate option. 
 
 ````php
 ClearICE::addOptions(
-    array(
-        'short' => 'i',
-        'long' => 'input',
-        'has_value' => true,
-        'help' => "specifies where the input files for the wiki are found."
-    ),
+    'input',
     array(
         'short' => 'o',
         'long' => 'output',
