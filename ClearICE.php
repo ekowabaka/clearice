@@ -95,10 +95,17 @@ class ClearICE
      */
     private static $footnote;
     
+    private static $commands = array();
+    
     public static function clearOptions()
     {
         self::$options = array();
         self::$optionsMap = array();
+    }
+    
+    public static function addCommands()
+    {
+        self::$commands = array_merge(self::$commands, func_get_args());
     }
 
     /**
@@ -123,8 +130,9 @@ class ClearICE
                 $option = $newOption;
             }
             self::$options[] = $option;
-            if(isset($option['short'])) self::$optionsMap[$option['short']] = $option;
-            if(isset($option['long'])) self::$optionsMap[$option['long']] = $option;
+            $command = isset($option['command']) ? $option['command'] : '__default__';
+            if(isset($option['short'])) self::$optionsMap[$command][$option['short']] = $option;
+            if(isset($option['long'])) self::$optionsMap[$command][$option['long']] = $option;
         }
     }
     
@@ -145,14 +153,15 @@ class ClearICE
     {
         $shortOption = $shortOptionsString[0];
         $remainder = substr($shortOptionsString, 1);
+        $command = $options['command'];
             
         //@todo Whoops ... I need to simplify this someday
-        if(isset(self::$optionsMap[$shortOption]))
+        if(isset(self::$optionsMap[$command][$shortOption]))
         {
-            $key = isset(self::$optionsMap[$shortOption]['long']) ? self::$optionsMap[$shortOption]['long'] : $shortOption;
-            if(isset(self::$optionsMap[$shortOption]['has_value']))
+            $key = isset(self::$optionsMap[$command][$shortOption]['long']) ? self::$optionsMap[$command][$shortOption]['long'] : $shortOption;
+            if(isset(self::$optionsMap[$command][$shortOption]['has_value']))
             {
-                if(self::$optionsMap[$shortOption]['has_value'] === true)
+                if(self::$optionsMap[$command][$shortOption]['has_value'] === true)
                 {
                     $options[$key] = $remainder;
                 }
@@ -292,23 +301,34 @@ class ClearICE
         
         if($arguments === false) $arguments = $argv;
         
-        $command = array_shift($arguments);
+        $executed = array_shift($arguments);
         $standAlones = array();
         $unknowns = array();
         $options = array();
+        
+        if(count(self::$commands) > 0)
+        {
+            $command = array_search($arguments[0], self::$commands);
+         
+        }
+        else
+        {
+            $command = '__default__';
+        }
+        $options['command'] = $command;
         
         foreach($arguments as $argument)
         {
             if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
             {
-                if(!isset(self::$optionsMap[$matches['option']]))
+                if(!isset(self::$optionsMap[$command][$matches['option']]))
                 {
                     $unknowns[] = $matches['option'];
                     $options[$matches['option']] = $matches['value'];
                 }
                 else
                 {
-                    if(self::$optionsMap[$matches['option']]['multi'] === true)
+                    if(self::$optionsMap[$command][$matches['option']]['multi'] === true)
                     {
                         $options[$matches['option']][] = $matches['value'];                                    
                     }
@@ -321,7 +341,7 @@ class ClearICE
             }
             else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
             {
-                if(!isset(self::$optionsMap[$matches['option']]))
+                if(!isset(self::$optionsMap[$command][$matches['option']]))
                 {
                     $unknowns[] = $matches['option'];
                 }
@@ -343,12 +363,12 @@ class ClearICE
             {
                 foreach($unknowns as $unknown)
                 {
-                    fputs(STDERR, "$command: invalid option -- {$unknown}\n");
+                    fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
                 }
                 
                 if(self::$hasHelp)
                 {
-                    fputs(STDERR, "Try `$command --help` for more information\n");
+                    fputs(STDERR, "Try `$executed --help` for more information\n");
                 }
                 die();
             }
@@ -372,6 +392,8 @@ class ClearICE
         {
             $options['unknowns'] = $unknowns;
         }
+        
+        if($command === '__default__') unset($options['command']);
         
         return $options;
     }
