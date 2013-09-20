@@ -153,7 +153,7 @@ class ClearICE
     {
         $shortOption = $shortOptionsString[0];
         $remainder = substr($shortOptionsString, 1);
-        $command = $options['command'];
+        $command = $options['__command__'];
             
         //@todo Whoops ... I need to simplify this someday
         if(isset(self::$optionsMap[$command][$shortOption]))
@@ -309,13 +309,22 @@ class ClearICE
         if(count(self::$commands) > 0)
         {
             $command = array_search($arguments[0], self::$commands);
-         
+            if($command === false)
+            {
+                $command = '__default__';
+            }
+            else
+            {
+                $command = $arguments[0];
+                array_shift($arguments);
+            }
+            
         }
         else
         {
             $command = '__default__';
         }
-        $options['command'] = $command;
+        $options['__command__'] = $command;
         
         foreach($arguments as $argument)
         {
@@ -393,7 +402,8 @@ class ClearICE
             $options['unknowns'] = $unknowns;
         }
         
-        if($command === '__default__') unset($options['command']);
+        // Hide the __default__ command from the outside world
+        if($options['__command__'] == '__default__') unset($options['__command__']);
         
         return $options;
     }
