@@ -264,11 +264,15 @@ class ClearICE
                 $valueHelp = "";
             }
             
-            $argumentPart = sprintf("  -%s,  --%-19s ", $option['short'], "{$option['long']}{$valueHelp}");
+            $argumentPart = sprintf(
+                "  %s, %-19s ", 
+                ($option['short'] == '' ? '' : "-{$option['short']}" ),
+                ($option['long'] == '' ? '' : "--{$option['long']}") . $valueHelp
+            );
 
             $helpMessage .= $argumentPart;
 
-            if(strlen($argumentPart) == 29)
+            if(strlen($argumentPart) <= 29)
             {
                 $helpMessage .= array_shift($help) . "\n";
             }
