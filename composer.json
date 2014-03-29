@@ -1,5 +1,5 @@
 {
-    "name" : "clearice/clearice",
+    "name" : "ekowabaka/clearice",
     "description": "A tool for parsing command line arguments",
     "require": {
         "php": ">=5.3.0"
