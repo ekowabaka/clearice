@@ -6,6 +6,6 @@
     },
     "autoload" : {
         "files" : ["ClearIce.php"]
-    }
+    },
     "license": "MIT"
 }
