@@ -2,7 +2,7 @@
 /**
  * A class for parsing command line arguments in PHP applications
  * 
- * ClearICE CLI Argument Parser
+ * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2013 James Ekow Abaka Ainooson
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -29,10 +29,11 @@
  * @license MIT
  */
 
+
 /**
- * ClearICE class.
+ * ClearIce class.
  */
-class ClearICE
+class ClearIce
 {
     /**
      * A map of all the options the parser recognises. The map is actually an
@@ -47,7 +48,7 @@ class ClearICE
     
     /**
      * An array of all the options that are available to the parser. Unlike the
-     * ClearICE::$optionsMap parameter, this paramter just lists all the options
+     * ClearIce::$optionsMap parameter, this paramter just lists all the options
      * and their parameters.
      * 
      * @var array

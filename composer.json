@@ -1,0 +1,8 @@
+{
+    "name" : "clearice/clearice",
+    "description": "A tool for parsing command line arguments",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "license": "MIT"
+}
