@@ -265,11 +265,24 @@ class ClearIce
                 $valueHelp = "";
             }
             
-            $argumentPart = sprintf(
-                "  %s, %-19s ", 
-                ($option['short'] == '' ? '' : "-{$option['short']}" ),
-                ($option['long'] == '' ? '' : "--{$option['long']}") . $valueHelp
-            );
+            if(isset($option['long']) && isset($option['short']))            
+            {
+                $argumentPart = sprintf(
+                    "  %s, %-22s ", "-{$option['short']}", "--{$option['long']}$valueHelp"
+                );
+            }
+            else if(isset($option['long']))
+            {
+                $argumentPart = sprintf(
+                    "  %-27s", "--{$option['long']}$valueHelp"
+                );
+            }
+            else if(isset($option['short']))
+            {
+                $argumentPart = sprintf(
+                    "  %-27s", "-{$option['short']}"
+                );                
+            }
 
             $helpMessage .= $argumentPart;
 

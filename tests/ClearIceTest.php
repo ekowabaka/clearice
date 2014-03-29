@@ -1,15 +1,15 @@
 <?php
-require "ClearICE.php";
+require "ClearIce.php";
 
 error_reporting(E_ALL ^ E_NOTICE);
 
-class ClearICETest extends PHPUnit_Framework_TestCase
+class ClearIceTest extends PHPUnit_Framework_TestCase
 {    
     
     public function setup()
     {
-        ClearICE::clearOptions();
-        ClearICE::addOptions(
+        ClearIce::clearOptions();
+        ClearIce::addOptions(
             array(
                 'short' => 'i',
                 'long' => 'input',
@@ -32,13 +32,30 @@ class ClearICETest extends PHPUnit_Framework_TestCase
                 'long' => 'create-default-index',
                 'has_value' => false,
                 "help" => "creates a default index page which lists all the wiki pages in a sorted order"
-            )
+            ),
+            
+            array(
+                'short' => 'd',
+                'long' => 'some-very-long-option-indeed',
+                'has_value' => false,
+                "help" => "an uneccesarily long option which is meant to to see if the wrapping of help lines actually works."
+            ),
+            array(
+                'short' => 's',
+                'has_value' => false,
+                "help" => "a short option only"
+            ),
+            array(
+                'long' => 'lone-long-option',
+                'has_value' => false,
+                "help" => "a long option only"
+            )                                
         );        
     }
     
     public function testParsing()
     {
-        ClearICE::addOptions(            
+        ClearIce::addOptions(            
             's',
             'some-long-option'
         );
@@ -53,7 +70,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "--verbose"
         );
         
-        $options  = ClearICE::parse();
+        $options  = ClearIce::parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -73,7 +90,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "-v"
         );
         
-        $options  = ClearICE::parse();
+        $options  = ClearIce::parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -91,7 +108,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "-o/myfiles/wiki",
         );
         
-        $options  = ClearICE::parse();
+        $options  = ClearIce::parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -108,7 +125,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "-vxs",
             "stand_alone"
         );        
-        $options  = ClearICE::parse();
+        $options  = ClearIce::parse();
         
         $this->assertArrayHasKey("verbose", $options);
         $this->assertArrayHasKey("create-default-index", $options);
@@ -118,7 +135,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "-sxv",
             "stand_alone"
         );        
-        $options  = ClearICE::parse();
+        $options  = ClearIce::parse();
         
         $this->assertEquals(
             array(
@@ -140,7 +157,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "stand_alone_1",
             "stand_alone_2"
         );        
-        $options  = ClearICE::parse();
+        $options  = ClearIce::parse();
         $this->assertArrayHasKey("stand_alones", $options);
         $this->assertEquals(
             array(
@@ -160,7 +177,7 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "--unknown-option",
             "--another-unknown=something"
         );
-        $options = ClearICE::parse();        
+        $options = ClearIce::parse();        
         $this->assertArrayHasKey("unknowns", $options);
         $this->assertEquals(
             array(
@@ -186,65 +203,38 @@ class ClearICETest extends PHPUnit_Framework_TestCase
             "test.php"
         );
         
-        ClearICE::setUsage("[input] [options]..");
-        ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
-        ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        ClearICE::addHelp();
+        ClearIce::setUsage("[input] [options]..");
+        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+        ClearIce::addHelp();
         
-        $helpMessage = ClearICE::getHelpMessage();
+        $helpMessage = ClearIce::getHelpMessage();
+        
+        print $helpMessage;
         
         $this->assertEquals(
 "Simple Wiki version 1.0
-A sample or should I say dummy wiki app to help explain ClearICE. This app
+A sample or should I say dummy wiki app to help explain ClearIce. This app
 practically does nothing.
 
 Usage:
   test.php [input] [options]..
 
-  -i,  --input=VALUE         specifies where the input files for the wiki are
+  -i, --input=VALUE          specifies where the input files for the wiki are
                              found.
-  -o,  --output=VALUE        specifies where the wiki should be written to
-  -v,  --verbose             displays detailed information about everything
+  -o, --output=VALUE         specifies where the wiki should be written to
+  -v, --verbose              displays detailed information about everything
                              that happens
-  -x,  --create-default-index 
-                             creates a default index page which lists all the
+  -x, --create-default-index creates a default index page which lists all the
                              wiki pages in a sorted order
-  -h,  --help                shows this help message
+  -d, --some-very-long-option-indeed 
+                             an uneccesarily long option which is meant to to
+                             see if the wrapping of help lines actually works.
+  -s                         a short option only
+  --lone-long-option         a long option only
+  -h, --help                 shows this help message
 
-Hope you had a nice time learning about ClearICE. We're pretty sure your
-cli apps would no longer be boring to work with.
-
-Report bugs to bugs@clearice.tld
-", $helpMessage);
-        
-        
-        ClearICE::setUsage(array("[input] [options]..", "[input] [something] [options].."));
-        ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
-        ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        ClearICE::addHelp();
-        
-        $helpMessage = ClearICE::getHelpMessage();
-        
-        $this->assertEquals(
-"Simple Wiki version 1.0
-A sample or should I say dummy wiki app to help explain ClearICE. This app
-practically does nothing.
-
-Usage:
-  test.php [input] [options]..
-  test.php [input] [something] [options]..
-
-  -i,  --input=VALUE         specifies where the input files for the wiki are
-                             found.
-  -o,  --output=VALUE        specifies where the wiki should be written to
-  -v,  --verbose             displays detailed information about everything
-                             that happens
-  -x,  --create-default-index 
-                             creates a default index page which lists all the
-                             wiki pages in a sorted order
-  -h,  --help                shows this help message
-
-Hope you had a nice time learning about ClearICE. We're pretty sure your
+Hope you had a nice time learning about ClearIce. We're pretty sure your
 cli apps would no longer be boring to work with.
 
 Report bugs to bugs@clearice.tld
