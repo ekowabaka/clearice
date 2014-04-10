@@ -1,4 +1,4 @@
-ClearICE PHP Command Line Argument Parser
+ClearIce PHP Command Line Argument Parser
 =========================================
 
 [![Build Status](https://travis-ci.org/ekowabaka/clearice.png)](https://travis-ci.org/ekowabaka/clearice)
@@ -35,20 +35,37 @@ it somewhat of a GEM.
 
 Using the library
 -----------------
-This library has no dependencies so you just have to require or include the 
-class's PHP file and you're good to go.
+If you use composer to manage your projects dependency then you can require
+`ekowabaka\clearice`. You can add the following line to the require section
+of your composer.json file
 
-    require_once "ClearICE.php";
+````json
+{
+    ...
+    "require" : {
+        "ekowabaka/clearice" : "0.2.*"
+    }
+    ...
+}
+````
+
+If you do not intend to use composer for your project you can just require or 
+include the class's PHP file and you're good to go.
+
+````php
+require_once "ClearIce.php";
+````
+
 
 Adding Options
 --------------
-To add options for the parser use the `ClearICE::addOptions` method. This method
+To add options for the parser use the `ClearIce::addOptions` method. This method
 takes as many arguments as you want with each argument representing an option you
 want to make parsable. An argument could either be a single string for a very
 simple option or a structured array for a much more elaborate option. 
 
 ````php
-ClearICE::addOptions(
+ClearIce::addOptions(
     'input',
     array(
         'short' => 'o',
@@ -99,10 +116,10 @@ generates a wiki.
 
 ````php
 // Require the clear ice sources
-require_once "ClearICE.php";
+require_once "ClearIce.php";
 
 // Add options
-ClearICE::addOptions(
+ClearIce::addOptions(
     array(
         'short' => 'i',
         'long' => 'input',
@@ -127,7 +144,7 @@ ClearICE::addOptions(
     )
 );
 
-$options = ClearICE::parse();
+$options = ClearIce::parse();
 print_r($options);
 ````
 
@@ -253,7 +270,7 @@ would give:
 
 Realise that a new key `stand_alones` was added. This key points to an array
 of all the arguments which do not fit the format for arguments that are parsed
-by ClearICE. 
+by ClearIce. 
 
 
 Dealing with Unknown Options 
@@ -288,7 +305,7 @@ you should get
     )
 
 You can use the parser in strict mode. This can be achieved by calling
-`ClearICE::setStrict(true)` anywhere before the `ClearICE::parse()` method. The
+`ClearIce::setStrict(true)` anywhere before the `ClearIce::parse()` method. The
 parser would terminate the application with a friendly message if it should 
 encounter any unknown options. 
 
@@ -306,12 +323,12 @@ would give the following friendly output:
 
 Auto Generating Help
 --------------------
-You can automatically generate a help option by calling the `ClearICE::addHelp()`
+You can automatically generate a help option by calling the `ClearIce::addHelp()`
 method. Once you've  provided help lines for all your options you pretty much 
 have all you need.
 
-With our example as shown above, if you should add `ClearICE::addHelp()` before
-the `ClearICE::parse()` and execute:
+With our example as shown above, if you should add `ClearIce::addHelp()` before
+the `ClearIce::parse()` and execute:
 
     php wiki.php --help
 
@@ -332,19 +349,19 @@ you should get:
     -h,  --help                shows this help message
 
 You can add a description, usage information and footnotes by calling; 
-`ClearICE::setDescription`, `ClearICE::setUsage` and `ClearICE::setFootnote`
+`ClearIce::setDescription`, `ClearIce::setUsage` and `ClearIce::setFootnote`
 respectively.
 
 ````php
-ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
-ClearICE::setUsage("[input] [options]..");
-ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+ClearIce::setUsage("[input] [options]..");
+ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
 ````
 
 Now your help command (`php wiki.php -h` or `php wiki.php --help`) would generate 
 
     Simple Wiki version 1.0
-    A sample or should I say dummy wiki app to help explain ClearICE. This app
+    A sample or should I say dummy wiki app to help explain ClearIce. This app
     practically does nothing.
 
     Usage:
@@ -360,7 +377,7 @@ Now your help command (`php wiki.php -h` or `php wiki.php --help`) would generat
                                  wiki pages in a sorted order
       -h,  --help                shows this help message
 
-    Hope you had a nice time learning about ClearICE. We're pretty sure your
+    Hope you had a nice time learning about ClearIce. We're pretty sure your
     cli apps would no longer be boring to work with.
 
     Report bugs to bugs@clearice.tld
@@ -372,10 +389,10 @@ Full Example Listing
 <?php
 
 // Require the clear ice sources
-require_once "ClearICE.php";
+require_once "ClearIce.php";
 
 // Add options
-ClearICE::addOptions(
+ClearIce::addOptions(
     array(
         'short' => 'i',
         'long' => 'input',
@@ -400,13 +417,13 @@ ClearICE::addOptions(
     )    
 );
 
-ClearICE::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearICE. This app practically does nothing.");
-ClearICE::setUsage("[input] [options]..");
-ClearICE::setFootnote("Hope you had a nice time learning about ClearICE. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+ClearIce::setUsage("[input] [options]..");
+ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
 
-ClearICE::setStrict(true);
-ClearICE::addHelp();
-$options = ClearICE::parse();
+ClearIce::setStrict(true);
+ClearIce::addHelp();
+$options = ClearIce::parse();
 print_r($options);
 ````
 
