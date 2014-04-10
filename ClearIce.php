@@ -96,21 +96,39 @@ class ClearIce
      */
     private static $footnote;
     
+    /**
+     * An array of all the commands that the script can work with
+     * @var array
+     */
     private static $commands = array();
     
+    /**
+     * Clear all the options that have been setup.
+     */
     public static function clearOptions()
     {
         self::$options = array();
         self::$optionsMap = array();
     }
     
+    /**
+     * Add commands for parsing. This method can take as many commands as possible.
+     * 
+     * <code>
+     * ClearIce::addCommands('add', 'remove');
+     * </code>
+     * 
+     * @param String
+     */
     public static function addCommands()
     {
         self::$commands = array_merge(self::$commands, func_get_args());
     }
 
     /**
-     * Add options to be recognized.
+     * Add options to be recognized. Options could either be strings or
+     * structured arrays. Strings only define simple options. Structured arrays
+     * describe options in deeper details.
      */
     public static function addOptions()
     {
@@ -196,7 +214,8 @@ class ClearIce
     }
     
     /**
-     * Adds the two automatic help options.
+     * Adds the two automatic help options. A long one represented by --help and
+     * a short one represented by -h.
      */
     public static function addHelp()
     {
@@ -211,21 +230,39 @@ class ClearIce
         self::$hasHelp = true;
     }
     
+    /**
+     * Set the usage text which forms part of the help text.
+     * @param string $usage
+     */
     public static function setUsage($usage)
     {
         self::$usage = $usage;
     }
 
+    /**
+     * Set the description text shown on top of the help text.
+     * @param string $description
+     */
     public static function setDescription($description)
     {
         self::$description = $description;
     }
     
+    /**
+     * Set the footnote text shown at the bottom of the help text.
+     * @param string $footnote
+     */
     public static function setFootnote($footnote)
     {
         self::$footnote = $footnote;
     }
     
+    /**
+     * Returns the help message as a string.
+     * 
+     * @global type $argv
+     * @return string
+     */
     public static function getHelpMessage() 
     {
         global $argv;
@@ -313,6 +350,14 @@ class ClearIce
     }
 
 
+    /**
+     * Parse the command line arguments and return a structured array which
+     * represents the arguments which were interpreted by clearice.
+     * 
+     * @global type $argv
+     * @param type $arguments
+     * @return array
+     */
     public static function parse($arguments = false)
     {
         global $argv;
