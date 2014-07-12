@@ -1,11 +1,20 @@
 {
     "name" : "ekowabaka/clearice",
+    "type" : "library",
     "description": "A tool for parsing command line arguments",
+    "license" : "MIT",
     "require": {
         "php": ">=5.3.0"
     },
     "autoload" : {
         "files" : ["ClearIce.php"]
     },
-    "license": "MIT"
+    "license": "MIT",
+    "authors": [
+        {
+            "name" : "James Ekow Abaka Ainooson",
+            "email" : "jainooson@gmail.com",
+            "homepage": "http://ekowabaka.me"
+        }
+    ]
 }
