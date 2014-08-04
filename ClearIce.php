@@ -348,8 +348,58 @@ class ClearIce
         
         return $helpMessage;
     }
+    
+    /**
+     * A function for getting answers to questions from users interractively.
+     * @param $question The question you want to ask
+     * @param $answers An array of possible answers that this function should validate
+     * @param $default The default answer this function should assume for the user.
+     * @param $notNull Is the answer required
+     */
+    public static function getResponse($question, $default=null, $answers=null, $required = false)
+    {
+        echo $question;
+        if(is_array($answers))
+        {
+            if(count($answers) > 0) {
+                echo " (" . implode("/", $answers) . ")";
+            }
+        }
 
+        echo " [$default]: ";
+        $response = str_replace(array("\n", "\r"),array("",""),fgets(STDIN));
 
+        if($response == "" && $required === true && $default == '')
+        {
+            echo "A value is required.\n";
+            return self::getResponse($question, $answers, $default, $notNull);
+        }
+        else if($response == "" && $required === true && $default != '')
+        {
+            return $default;
+        }
+        else if($response == "")
+        {
+            return $default;
+        }
+        else
+        {
+            if(count($answers) == 0)
+            {
+                return $response;
+            }
+            foreach($answers as $answer)
+            {
+                if(strtolower($answer) == strtolower($response))
+                {
+                    return strtolower($answer);
+                }
+            }
+            echo "Please provide a valid answer.\n";
+            return getResponse($question, $answers, $default, $notNull);
+        }
+    }    
+    
     /**
      * Parse the command line arguments and return a structured array which
      * represents the arguments which were interpreted by clearice.
