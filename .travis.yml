@@ -2,4 +2,4 @@ language: php
 php:
  - "5.4"
  - "5.3"
-script: phpunit tests
+script: phpunit tests --coverage-clover=coverage.clover && wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --access-token="654278b68c660a344050a4142331236080d99693d5de054bee974cc54c35d0ac" --format=php-clover coverage.clover
