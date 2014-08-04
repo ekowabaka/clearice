@@ -81,4 +81,22 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
             )
         );
     }
+    
+    public function testRequired()
+    {
+        $cli = $this->getMock('ClearIce', array('input', 'output'));
+        $cli->method('input')->will($this->onConsecutiveCalls("", "something"));
+        $cli->expects($this->at(0))->method('output')->with('Fails first []: ');
+        $cli->expects($this->at(2))->method('output')->with("A value is required.\n");
+        $cli->expects($this->at(3))->method('output')->with('Fails first []: ');          
+        $this->assertEquals('something', $cli->getResponse('Fails first', array('required' => true)));        
+    }
+    
+    public function testRequiredDefault()
+    {
+        $cli = $this->getMock('ClearIce', array('input', 'output'));
+        $cli->method('input')->will($this->onConsecutiveCalls("", "something"));
+        $cli->expects($this->at(0))->method('output')->with('Fails first [def]: ');
+        $this->assertEquals('def', $cli->getResponse('Fails first', array('required' => true, 'default' => 'def')));
+    }    
 }
