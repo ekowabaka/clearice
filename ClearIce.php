@@ -3,7 +3,7 @@
  * A class for parsing command line arguments in PHP applications
  * 
  * ClearIce CLI Argument Parser
- * Copyright (c) 2012-2013 James Ekow Abaka Ainooson
+ * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  * 
  * @author James Ainooson <jainooson@gmail.com>
- * @copyright Copyright 2010 James Ekow Abaka Ainooson
+ * @copyright Copyright 2012-s014 James Ekow Abaka Ainooson
  * @license MIT
  */
 
@@ -44,7 +44,7 @@ class ClearIce
      * 
      * @var array
      */
-    private static $optionsMap = array();
+    private $optionsMap = array();
     
     /**
      * An array of all the options that are available to the parser. Unlike the
@@ -53,7 +53,7 @@ class ClearIce
      * 
      * @var array
      */
-    private static $options = array();
+    private $options = array();
     
     /**
      * Should the parser be strict or not. A strict parser would terminate the
@@ -63,7 +63,7 @@ class ClearIce
      * 
      * @var boolean
      */
-    private static $strict = false;
+    private $strict = false;
     
     /**
      * A flag raised when the parser already has the automatic help option 
@@ -71,7 +71,7 @@ class ClearIce
      * 
      * @var boolean
      */
-    private static $hasHelp;
+    private $hasHelp;
     
     /**
      * The usage instructions for the application displayed as part of the
@@ -79,7 +79,7 @@ class ClearIce
      * 
      * @var array or string
      */
-    private static $usage;
+    private $usage;
     
     /**
      * The description displayed on top of the help message just after the
@@ -87,28 +87,28 @@ class ClearIce
      * 
      * @var string
      */
-    private static $description;
+    private $description;
     
     /**
      * A footnote displayed at the bottom of the help message.
      * 
      * @var string
      */
-    private static $footnote;
+    private $footnote;
     
     /**
      * An array of all the commands that the script can work with
      * @var array
      */
-    private static $commands = array();
+    private $commands = array();
     
     /**
      * Clear all the options that have been setup.
      */
-    public static function clearOptions()
+    public function clearOptions()
     {
-        self::$options = array();
-        self::$optionsMap = array();
+        $this->options = array();
+        $this->optionsMap = array();
     }
     
     /**
@@ -120,9 +120,9 @@ class ClearIce
      * 
      * @param String
      */
-    public static function addCommands()
+    public function addCommands()
     {
-        self::$commands = array_merge(self::$commands, func_get_args());
+        $this->commands = array_merge($this->commands, func_get_args());
     }
 
     /**
@@ -130,7 +130,7 @@ class ClearIce
      * structured arrays. Strings only define simple options. Structured arrays
      * describe options in deeper details.
      */
-    public static function addOptions()
+    public function addOptions()
     {
         $options = func_get_args();
         foreach($options as $option)
@@ -148,10 +148,10 @@ class ClearIce
                 }
                 $option = $newOption;
             }
-            self::$options[] = $option;
+            $this->options[] = $option;
             $command = isset($option['command']) ? $option['command'] : '__default__';
-            if(isset($option['short'])) self::$optionsMap[$command][$option['short']] = $option;
-            if(isset($option['long'])) self::$optionsMap[$command][$option['long']] = $option;
+            if(isset($option['short'])) $this->optionsMap[$command][$option['short']] = $option;
+            if(isset($option['long'])) $this->optionsMap[$command][$option['long']] = $option;
         }
     }
     
@@ -163,24 +163,24 @@ class ClearIce
      * 
      * @param boolean $strict A boolean value for the strictness state
      */
-    public static function setStrict($strict)
+    public function setStrict($strict)
     {
-        self::$strict = $strict;
+        $this->strict = $strict;
     }
     
-    private static function parseShortOptions($shortOptionsString, &$options, &$unknowns)
+    private function parseShortOptions($shortOptionsString, &$options, &$unknowns)
     {
         $shortOption = $shortOptionsString[0];
         $remainder = substr($shortOptionsString, 1);
         $command = $options['__command__'];
             
         //@todo Whoops ... I need to simplify this someday
-        if(isset(self::$optionsMap[$command][$shortOption]))
+        if(isset($this->optionsMap[$command][$shortOption]))
         {
-            $key = isset(self::$optionsMap[$command][$shortOption]['long']) ? self::$optionsMap[$command][$shortOption]['long'] : $shortOption;
-            if(isset(self::$optionsMap[$command][$shortOption]['has_value']))
+            $key = isset($this->optionsMap[$command][$shortOption]['long']) ? $this->optionsMap[$command][$shortOption]['long'] : $shortOption;
+            if(isset($this->optionsMap[$command][$shortOption]['has_value']))
             {
-                if(self::$optionsMap[$command][$shortOption]['has_value'] === true)
+                if($this->optionsMap[$command][$shortOption]['has_value'] === true)
                 {
                     $options[$key] = $remainder;
                 }
@@ -188,14 +188,14 @@ class ClearIce
                 {
                     $options[$key] = true;
                     if(strlen($remainder) == 0) return;
-                    self::parseShortOptions($remainder, $options, $unknowns);
+                    $this->parseShortOptions($remainder, $options, $unknowns);
                 }
             }
             else
             {
                 $options[$key] = true;
                 if(strlen($remainder) == 0) return;
-                self::parseShortOptions($remainder, $options, $unknowns);
+                $this->parseShortOptions($remainder, $options, $unknowns);
             }
         }
         else
@@ -208,7 +208,7 @@ class ClearIce
             }
             else
             {
-                self::parseShortOptions($remainder, $options, $unknowns);
+                $this->parseShortOptions($remainder, $options, $unknowns);
             }
         }
     }
@@ -217,44 +217,44 @@ class ClearIce
      * Adds the two automatic help options. A long one represented by --help and
      * a short one represented by -h.
      */
-    public static function addHelp()
+    public function addHelp()
     {
-        if(self::$hasHelp) return;
-        self::addOptions(
+        if($this->hasHelp) return;
+        $this->addOptions(
             array(
                 'short' => 'h',
                 'long' => 'help',
                 'help' => 'shows this help message'
             )
         );
-        self::$hasHelp = true;
+        $this->hasHelp = true;
     }
     
     /**
      * Set the usage text which forms part of the help text.
      * @param string $usage
      */
-    public static function setUsage($usage)
+    public function setUsage($usage)
     {
-        self::$usage = $usage;
+        $this->usage = $usage;
     }
 
     /**
      * Set the description text shown on top of the help text.
      * @param string $description
      */
-    public static function setDescription($description)
+    public function setDescription($description)
     {
-        self::$description = $description;
+        $this->description = $description;
     }
     
     /**
      * Set the footnote text shown at the bottom of the help text.
      * @param string $footnote
      */
-    public static function setFootnote($footnote)
+    public function setFootnote($footnote)
     {
-        self::$footnote = $footnote;
+        $this->footnote = $footnote;
     }
     
     /**
@@ -263,23 +263,23 @@ class ClearIce
      * @global type $argv
      * @return string
      */
-    public static function getHelpMessage() 
+    public function getHelpMessage() 
     {
         global $argv;
-        $helpMessage = wordwrap(self::$description);
+        $helpMessage = wordwrap($this->description);
         if($helpMessage != '') $helpMessage .= "\n";
         
-        if(self::$usage != '' || is_array(self::$usage))
+        if($this->usage != '' || is_array($this->usage))
         {
             if($helpMessage != '') $helpMessage .= "\n";
-            if(is_string(self::$usage))
+            if(is_string($this->usage))
             {
-                $helpMessage .= "Usage:\n  {$argv[0]} " . self::$usage . "\n";
+                $helpMessage .= "Usage:\n  {$argv[0]} " . $this->usage . "\n";
             }
-            elseif (is_array(self::$usage)) 
+            elseif (is_array($this->usage)) 
             {
                 $helpMessage .= "Usage:\n";
-                foreach(self::$usage as $usage)
+                foreach($this->usage as $usage)
                 {
                     $helpMessage .= "  {$argv[0]} $usage\n";
                 }
@@ -287,7 +287,7 @@ class ClearIce
             $helpMessage .= "\n";
         }
         
-        foreach (self::$options as $option)
+        foreach ($this->options as $option)
         {
             $help = @explode("\n", wordwrap($option['help'], 50));
             if(isset($option['has_value']))
@@ -339,9 +339,9 @@ class ClearIce
             }
         }
         
-        if(self::$footnote != '')
+        if($this->footnote != '')
         {
-            $helpMessage .= "\n" . wordwrap(self::$footnote);
+            $helpMessage .= "\n" . wordwrap($this->footnote);
         }
         
         $helpMessage .= "\n";
@@ -352,53 +352,61 @@ class ClearIce
     /**
      * A function for getting answers to questions from users interractively.
      * @param $question The question you want to ask
-     * @param $answers An array of possible answers that this function should validate
-     * @param $default The default answer this function should assume for the user.
-     * @param $notNull Is the answer required
+     * @param $params An array of possible answers that this function should validate
      */
-    public static function getResponse($question, $default=null, $answers=null, $required = false)
+    public function getResponse($question, $params = array())
     {
-        echo $question;
-        if(is_array($answers))
+        $this->output($question);
+        if(is_array($params['answers']))
         {
-            if(count($answers) > 0) {
-                echo " (" . implode("/", $answers) . ")";
+            if(count($params['answers']) > 0) {
+                $this->output(" (" . implode("/", $params['answers']) . ")");
             }
         }
 
-        echo " [$default]: ";
-        $response = str_replace(array("\n", "\r"),array("",""),fgets(STDIN));
+        $this->output(" [{$params['default']}]: ");
+        $response = str_replace(array("\n", "\r"),array("",""), $this->input());
 
-        if($response == "" && $required === true && $default == '')
+        if($response == "" && $params['required'] === true && $params['default'] == '')
         {
-            echo "A value is required.\n";
-            return self::getResponse($question, $answers, $default, $notNull);
+            $this->output("A value is required.\n");
+            return $this->getResponse($question, $params);
         }
-        else if($response == "" && $required === true && $default != '')
+        else if($response == "" && $params['required'] === true && $params['default'] != '')
         {
-            return $default;
+            return $params['default'];
         }
         else if($response == "")
         {
-            return $default;
+            return $params['default'];
         }
         else
         {
-            if(count($answers) == 0)
+            if(count($params['answers']) == 0)
             {
                 return $response;
             }
-            foreach($answers as $answer)
+            foreach($params['answers'] as $answer)
             {
                 if(strtolower($answer) == strtolower($response))
                 {
                     return strtolower($answer);
                 }
             }
-            echo "Please provide a valid answer.\n";
-            return getResponse($question, $answers, $default, $notNull);
+            $this->output("Please provide a valid answer.\n");
+            return $this->getResponse($question, $params);
         }
-    }    
+    }  
+    
+    protected function output($string)
+    {
+        echo $string;
+    }
+    
+    protected function input()
+    {
+        return fgets(STDIN);
+    }
     
     /**
      * Parse the command line arguments and return a structured array which
@@ -408,7 +416,7 @@ class ClearIce
      * @param type $arguments
      * @return array
      */
-    public static function parse($arguments = false)
+    public function parse($arguments = false)
     {
         global $argv;
         
@@ -419,9 +427,9 @@ class ClearIce
         $unknowns = array();
         $options = array();
         
-        if(count(self::$commands) > 0)
+        if(count($this->commands) > 0)
         {
-            $command = array_search($arguments[0], self::$commands);
+            $command = array_search($arguments[0], $this->commands);
             if($command === false)
             {
                 $command = '__default__';
@@ -443,14 +451,14 @@ class ClearIce
         {
             if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
             {
-                if(!isset(self::$optionsMap[$command][$matches['option']]))
+                if(!isset($this->optionsMap[$command][$matches['option']]))
                 {
                     $unknowns[] = $matches['option'];
                     $options[$matches['option']] = $matches['value'];
                 }
                 else
                 {
-                    if(self::$optionsMap[$command][$matches['option']]['multi'] === true)
+                    if($this->optionsMap[$command][$matches['option']]['multi'] === true)
                     {
                         $options[$matches['option']][] = $matches['value'];                                    
                     }
@@ -463,7 +471,7 @@ class ClearIce
             }
             else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
             {
-                if(!isset(self::$optionsMap[$command][$matches['option']]))
+                if(!isset($this->optionsMap[$command][$matches['option']]))
                 {
                     $unknowns[] = $matches['option'];
                 }
@@ -471,7 +479,7 @@ class ClearIce
             }
             else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
             {
-                self::parseShortOptions($matches['option'], $options, $unknowns);
+                $this->parseShortOptions($matches['option'], $options, $unknowns);
             }
             else
             {
@@ -479,7 +487,7 @@ class ClearIce
             }
         }
         
-        if(self::$strict)
+        if($this->strict)
         {
             if(count($unknowns) > 0)
             {
@@ -488,7 +496,7 @@ class ClearIce
                     fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
                 }
                 
-                if(self::$hasHelp)
+                if($this->hasHelp)
                 {
                     fputs(STDERR, "Try `$executed --help` for more information\n");
                 }
@@ -500,7 +508,7 @@ class ClearIce
         {
             if($options['help'])
             {
-                echo self::getHelpMessage();
+                echo $this->getHelpMessage();
                 die();
             }
         }

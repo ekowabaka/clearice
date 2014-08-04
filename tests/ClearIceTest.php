@@ -1,15 +1,16 @@
 <?php
-require "ClearIce.php";
+require_once "ClearIce.php";
 
 error_reporting(E_ALL ^ E_NOTICE);
 
 class ClearIceTest extends PHPUnit_Framework_TestCase
-{    
+{
+    private $cli;
     
     public function setup()
     {
-        ClearIce::clearOptions();
-        ClearIce::addOptions(
+        $this->cli = new ClearIce();
+        $this->cli->addOptions(
             array(
                 'short' => 'i',
                 'long' => 'input',
@@ -55,7 +56,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
     
     public function testParsing()
     {
-        ClearIce::addOptions(            
+        $this->cli->addOptions(            
             's',
             'some-long-option'
         );
@@ -70,7 +71,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "--verbose"
         );
         
-        $options  = ClearIce::parse();
+        $options  = $this->cli->parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -90,7 +91,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-v"
         );
         
-        $options  = ClearIce::parse();
+        $options  = $this->cli->parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -108,7 +109,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-o/myfiles/wiki",
         );
         
-        $options  = ClearIce::parse();
+        $options  = $this->cli->parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -125,7 +126,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-vxs",
             "stand_alone"
         );        
-        $options  = ClearIce::parse();
+        $options  = $this->cli->parse();
         
         $this->assertArrayHasKey("verbose", $options);
         $this->assertArrayHasKey("create-default-index", $options);
@@ -135,7 +136,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-sxv",
             "stand_alone"
         );        
-        $options  = ClearIce::parse();
+        $options  = $this->cli->parse();
         
         $this->assertEquals(
             array(
@@ -157,7 +158,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "stand_alone_1",
             "stand_alone_2"
         );        
-        $options  = ClearIce::parse();
+        $options  = $this->cli->parse();
         $this->assertArrayHasKey("stand_alones", $options);
         $this->assertEquals(
             array(
@@ -177,7 +178,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "--unknown-option",
             "--another-unknown=something"
         );
-        $options = ClearIce::parse();        
+        $options = $this->cli->parse();        
         $this->assertArrayHasKey("unknowns", $options);
         $this->assertEquals(
             array(
@@ -203,14 +204,12 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "test.php"
         );
         
-        ClearIce::setUsage("[input] [options]..");
-        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
-        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        ClearIce::addHelp();
+        $this->cli->setUsage("[input] [options]..");
+        $this->cli->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+        $this->cli->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+        $this->cli->addHelp();
         
-        $helpMessage = ClearIce::getHelpMessage();
-        
-        print $helpMessage;
+        $helpMessage = $this->cli->getHelpMessage();
         
         $this->assertEquals(
 "Simple Wiki version 1.0
