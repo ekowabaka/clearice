@@ -25,7 +25,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  * 
  * @author James Ainooson <jainooson@gmail.com>
- * @copyright Copyright 2012-s014 James Ekow Abaka Ainooson
+ * @copyright Copyright 2012-2014 James Ekow Abaka Ainooson
  * @license MIT
  */
 
@@ -113,10 +113,6 @@ class ClearIce
     
     /**
      * Add commands for parsing. This method can take as many commands as possible.
-     * 
-     * <code>
-     * ClearIce::addCommands('add', 'remove');
-     * </code>
      * 
      * @param String
      */
