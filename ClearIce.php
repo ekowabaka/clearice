@@ -356,15 +356,15 @@ class ClearIce
      */
     public function getResponse($question, $params = array())
     {
-        $this->output($question);
+        $prompt = $question;
         if(is_array($params['answers']))
         {
             if(count($params['answers']) > 0) {
-                $this->output(" (" . implode("/", $params['answers']) . ")");
+                $prompt .= " (" . implode("/", $params['answers']) . ")";
             }
         }
 
-        $this->output(" [{$params['default']}]: ");
+        $this->output($prompt . " [{$params['default']}]: ");
         $response = str_replace(array("\n", "\r"),array("",""), $this->input());
 
         if($response == "" && $params['required'] === true && $params['default'] == '')
