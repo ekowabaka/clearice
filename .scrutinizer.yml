@@ -24,9 +24,18 @@ checks:
         avoid_conflicting_incrementers: true
         assignment_of_null_return: true
 tools:
-    external_code_coverage:
-        timeout: 600   # How long should we wait for code coverage (in seconds).
-        runs: 1 
+    php_sim: true
+    php_pdepend: true
+    php_analyzer: true
+    
 filter:
     excluded_paths:
-        - tests/*        
+        - tests/*   
+build:
+    tests:
+        override:
+            -
+                command: 'phpunit tests --coverage-clover=test.out'
+                coverage:
+                    file: 'test.out'
+                    format: 'php-clover'
