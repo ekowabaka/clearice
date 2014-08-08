@@ -102,14 +102,17 @@ class ClearIce
      */
     private $commands = array();
     
+    private $parsedOptions;
+    private $unknownOptions;
+    
     /**
      * Clear all the options that have been setup.
      */
-    public function clearOptions()
+    /*public function clearOptions()
     {
         $this->options = array();
         $this->optionsMap = array();
-    }
+    }*/
     
     /**
      * Add commands for parsing. This method can take as many commands as possible.
@@ -164,11 +167,11 @@ class ClearIce
         $this->strict = $strict;
     }
     
-    private function parseShortOptions($shortOptionsString, &$options, &$unknowns)
+    private function parseShortOptions($shortOptionsString)
     {
         $shortOption = $shortOptionsString[0];
         $remainder = substr($shortOptionsString, 1);
-        $command = $options['__command__'];
+        $command = $this->parsedOptions['__command__'];
             
         //@todo Whoops ... I need to simplify this someday
         if(isset($this->optionsMap[$command][$shortOption]))
@@ -178,33 +181,33 @@ class ClearIce
             {
                 if($this->optionsMap[$command][$shortOption]['has_value'] === true)
                 {
-                    $options[$key] = $remainder;
+                    $this->parsedOptions[$key] = $remainder;
                 }
                 else
                 {
-                    $options[$key] = true;
+                    $this->parsedOptions[$key] = true;
                     if(strlen($remainder) == 0) return;
-                    $this->parseShortOptions($remainder, $options, $unknowns);
+                    $this->parseShortOptions($remainder);
                 }
             }
             else
             {
-                $options[$key] = true;
+                $this->parsedOptions[$key] = true;
                 if(strlen($remainder) == 0) return;
-                $this->parseShortOptions($remainder, $options, $unknowns);
+                $this->parseShortOptions($remainder);
             }
         }
         else
         {
-            $unknowns[] = $shortOption;
-            $options[$shortOption] = true;
+            $this->unknownOptions[] = $shortOption;
+            $this->parsedOptions[$shortOption] = true;
             if(strlen($remainder) == 0) 
             {
                 return;
             }
             else
             {
-                $this->parseShortOptions($remainder, $options, $unknowns);
+                $this->parseShortOptions($remainder, $this->parsedOptions, $this->unknownOptions);
             }
         }
     }
@@ -404,6 +407,26 @@ class ClearIce
         return fgets(STDIN);
     }
     
+    private function parseLongOptionsWithValue($command, $argument, $value)
+    {
+        if(!isset($this->optionsMap[$command][$argument]))
+        {
+            $this->unknownOptions[] = $argument;
+            $this->parsedOptions[$argument] = $value;
+        }
+        else
+        {
+            if($this->optionsMap[$command][$argument]['multi'] === true)
+            {
+                $this->parsedOptions[$argument][] = $value;                                    
+            }
+            else
+            {
+                $this->parsedOptions[$argument] = $value;
+            }
+        }        
+    }
+    
     /**
      * Parse the command line arguments and return a structured array which
      * represents the arguments which were interpreted by clearice.
@@ -420,8 +443,8 @@ class ClearIce
         
         $executed = array_shift($arguments);
         $standAlones = array();
-        $unknowns = array();
-        $options = array();
+        $this->unknownOptions = array();
+        $this->parsedOptions = array();
         
         if(count($this->commands) > 0)
         {
@@ -441,41 +464,25 @@ class ClearIce
         {
             $command = '__default__';
         }
-        $options['__command__'] = $command;
+        $this->parsedOptions['__command__'] = $command;
         
         foreach($arguments as $argument)
         {
             if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
             {
-                if(!isset($this->optionsMap[$command][$matches['option']]))
-                {
-                    $unknowns[] = $matches['option'];
-                    $options[$matches['option']] = $matches['value'];
-                }
-                else
-                {
-                    if($this->optionsMap[$command][$matches['option']]['multi'] === true)
-                    {
-                        $options[$matches['option']][] = $matches['value'];                                    
-                    }
-                    else
-                    {
-                        $options[$matches['option']] = $matches['value'];
-                    }
-                }
-                    
+                $this->parseLongOptionsWithValue($command, $matches['option'], $matches['value']);
             }
             else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
             {
                 if(!isset($this->optionsMap[$command][$matches['option']]))
                 {
-                    $unknowns[] = $matches['option'];
+                    $this->unknownOptions[] = $matches['option'];
                 }
-                $options[$matches['option']] = true;
+                $this->parsedOptions[$matches['option']] = true;
             }
             else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
             {
-                $this->parseShortOptions($matches['option'], $options, $unknowns);
+                $this->parseShortOptions($matches['option']);
             }
             else
             {
@@ -485,9 +492,9 @@ class ClearIce
         
         if($this->strict)
         {
-            if(count($unknowns) > 0)
+            if(count($this->unknownOptions) > 0)
             {
-                foreach($unknowns as $unknown)
+                foreach($this->unknownOptions as $unknown)
                 {
                     fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
                 }
@@ -500,9 +507,9 @@ class ClearIce
             }
         }
         
-        if(isset($options['help']))
+        if(isset($this->parsedOptions['help']))
         {
-            if($options['help'])
+            if($this->parsedOptions['help'])
             {
                 echo $this->getHelpMessage();
                 die();
@@ -511,18 +518,18 @@ class ClearIce
         
         if(count($standAlones) > 0)
         {
-            $options['stand_alones'] = $standAlones;
+            $this->parsedOptions['stand_alones'] = $standAlones;
         }
         
-        if(count($unknowns) > 0)
+        if(count($this->unknownOptions) > 0)
         {
-            $options['unknowns'] = $unknowns;
+            $this->parsedOptions['unknowns'] = $this->unknownOptions;
         }
         
         // Hide the __default__ command from the outside world
-        if($options['__command__'] == '__default__') unset($options['__command__']);
+        if($this->parsedOptions['__command__'] == '__default__') unset($this->parsedOptions['__command__']);
         
-        return $options;
+        return $this->parsedOptions;
     }
 }
 
