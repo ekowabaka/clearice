@@ -104,6 +104,7 @@ class ClearIce
     
     private $parsedOptions;
     private $unknownOptions;
+    private $standAlones;
     
     /**
      * Clear all the options that have been setup.
@@ -428,7 +429,7 @@ class ClearIce
         }        
     }
     
-    private function parseLongOptions($argument)
+    private function parseLongOptionsWithoutValue($argument)
     {
         $command = $this->parsedOptions['__command__'];
         if(!isset($this->optionsMap[$command][$argument]))
@@ -438,6 +439,27 @@ class ClearIce
         $this->parsedOptions[$argument] = true;        
     }
     
+    private function parseArgument($argument)
+    {
+        if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
+        {
+            $this->parseLongOptionsWithValue($matches['option'], $matches['value']);
+        }
+        else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
+        {
+            $this->parseLongOptionsWithoutValue($matches['option']);
+        }
+        else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
+        {
+            $this->parseShortOptions($matches['option']);
+        }
+        else
+        {
+            $this->standAlones[] = $argument;
+        }        
+    }
+            
+    
     /**
      * Parse the command line arguments and return a structured array which
      * represents the arguments which were interpreted by clearice.
@@ -446,14 +468,13 @@ class ClearIce
      * @param type $arguments
      * @return array
      */
-    public function parse($arguments = false)
+    public function parse($arguments = '')
     {
         global $argv;
-        
-        if($arguments === false) $arguments = $argv;
+        if($arguments == '') $arguments = $argv;
         
         $executed = array_shift($arguments);
-        $standAlones = array();
+        $this->standAlones = array();
         $this->unknownOptions = array();
         $this->parsedOptions = array();
         
@@ -479,22 +500,7 @@ class ClearIce
         
         foreach($arguments as $argument)
         {
-            if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
-            {
-                $this->parseLongOptionsWithValue($matches['option'], $matches['value']);
-            }
-            else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
-            {
-                $this->parseLongOptions($matches['option']);
-            }
-            else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
-            {
-                $this->parseShortOptions($matches['option']);
-            }
-            else
-            {
-                $standAlones[] = $argument;
-            }
+            $this->parseArgument($argument);
         }
         
         if($this->strict && count($this->unknownOptions) > 0)
@@ -515,9 +521,9 @@ class ClearIce
             echo $this->getHelpMessage();
         }
         
-        if(count($standAlones) > 0)
+        if(count($this->standAlones) > 0)
         {
-            $this->parsedOptions['stand_alones'] = $standAlones;
+            $this->parsedOptions['stand_alones'] = $this->standAlones;
         }
         
         if(count($this->unknownOptions) > 0)
