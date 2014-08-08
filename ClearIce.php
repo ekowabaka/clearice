@@ -174,6 +174,9 @@ class ClearIce
         $this->strict = $strict;
     }
     
+    /**
+     * @param string $shortOptionsString
+     */
     private function parseShortOptions($shortOptionsString)
     {
         $shortOption = $shortOptionsString[0];
@@ -395,6 +398,9 @@ class ClearIce
         }
     }  
     
+    /**
+     * @param string $string
+     */
     protected function output($string)
     {
         echo $string;
@@ -405,6 +411,10 @@ class ClearIce
         return fgets(STDIN);
     }
     
+    /**
+     * @param string $argument
+     * @param string $value
+     */
     private function parseLongOptionsWithValue($argument, $value)
     {
         $command = $this->parsedOptions['__command__'];
@@ -426,6 +436,9 @@ class ClearIce
         }        
     }
     
+    /**
+     * @param string $argument
+     */
     private function parseLongOptionsWithoutValue($argument)
     {
         $command = $this->parsedOptions['__command__'];
@@ -484,7 +497,6 @@ class ClearIce
      * represents the arguments which were interpreted by clearice.
      * 
      * @global type $argv
-     * @param type $arguments
      * @return array
      */
     public function parse()
