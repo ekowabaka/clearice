@@ -207,7 +207,7 @@ class ClearIce
             }
             else
             {
-                $this->parseShortOptions($remainder, $this->parsedOptions, $this->unknownOptions);
+                $this->parseShortOptions($remainder);
             }
         }
     }
@@ -407,8 +407,9 @@ class ClearIce
         return fgets(STDIN);
     }
     
-    private function parseLongOptionsWithValue($command, $argument, $value)
+    private function parseLongOptionsWithValue($argument, $value)
     {
+        $command = $this->parsedOptions['__command__'];
         if(!isset($this->optionsMap[$command][$argument]))
         {
             $this->unknownOptions[] = $argument;
@@ -425,6 +426,16 @@ class ClearIce
                 $this->parsedOptions[$argument] = $value;
             }
         }        
+    }
+    
+    private function parseLongOptions($argument)
+    {
+        $command = $this->parsedOptions['__command__'];
+        if(!isset($this->optionsMap[$command][$argument]))
+        {
+            $this->unknownOptions[] = $argument;
+        }
+        $this->parsedOptions[$argument] = true;        
     }
     
     /**
@@ -470,15 +481,11 @@ class ClearIce
         {
             if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
             {
-                $this->parseLongOptionsWithValue($command, $matches['option'], $matches['value']);
+                $this->parseLongOptionsWithValue($matches['option'], $matches['value']);
             }
             else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
             {
-                if(!isset($this->optionsMap[$command][$matches['option']]))
-                {
-                    $this->unknownOptions[] = $matches['option'];
-                }
-                $this->parsedOptions[$matches['option']] = true;
+                $this->parseLongOptions($matches['option']);
             }
             else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
             {
@@ -490,30 +497,22 @@ class ClearIce
             }
         }
         
-        if($this->strict)
+        if($this->strict && count($this->unknownOptions) > 0)
         {
-            if(count($this->unknownOptions) > 0)
+            foreach($this->unknownOptions as $unknown)
             {
-                foreach($this->unknownOptions as $unknown)
-                {
-                    fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
-                }
-                
-                if($this->hasHelp)
-                {
-                    fputs(STDERR, "Try `$executed --help` for more information\n");
-                }
-                die();
+                fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
+            }
+
+            if($this->hasHelp)
+            {
+                fputs(STDERR, "Try `$executed --help` for more information\n");
             }
         }
         
         if(isset($this->parsedOptions['help']))
         {
-            if($this->parsedOptions['help'])
-            {
-                echo $this->getHelpMessage();
-                die();
-            }
+            echo $this->getHelpMessage();
         }
         
         if(count($standAlones) > 0)
