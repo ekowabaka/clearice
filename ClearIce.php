@@ -178,18 +178,9 @@ class ClearIce
         if(isset($this->optionsMap[$command][$shortOption]))
         {
             $key = isset($this->optionsMap[$command][$shortOption]['long']) ? $this->optionsMap[$command][$shortOption]['long'] : $shortOption;
-            if(isset($this->optionsMap[$command][$shortOption]['has_value']))
+            if($this->optionsMap[$command][$shortOption]['has_value'] === true)
             {
-                if($this->optionsMap[$command][$shortOption]['has_value'] === true)
-                {
-                    $this->parsedOptions[$key] = $remainder;
-                }
-                else
-                {
-                    $this->parsedOptions[$key] = true;
-                    if(strlen($remainder) == 0) return;
-                    $this->parseShortOptions($remainder);
-                }
+                $this->parsedOptions[$key] = $remainder;
             }
             else
             {
