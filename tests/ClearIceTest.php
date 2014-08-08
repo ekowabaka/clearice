@@ -54,14 +54,13 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         );        
     }
     
-    public function testParsing()
+    public function testParsingLongOptions()
     {
+        global $argv;
         $this->cli->addOptions(            
             's',
             'some-long-option'
-        );
-        
-        global $argv;
+        );        
                 
         $argv = array(
             "test",
@@ -83,6 +82,11 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             ),
             $options
         );
+    }
+    
+    public function testParsingShortOptions()
+    {   
+        global $argv;
         
         $argv = array(
             "test",
@@ -102,6 +106,11 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             ),
             $options
         );
+    }
+    
+    public function testParsingMixedOptions()
+    {
+        global $argv;
         
         $argv = array(
             "test",
@@ -119,8 +128,11 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             ),
             $options
         );
+    }
         
-        
+    public function testParsingGroupedShortsAndStandAlone()
+    {
+        global $argv;
         $argv = array(
             "test",
             "-vxs",
@@ -130,7 +142,11 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         
         $this->assertArrayHasKey("verbose", $options);
         $this->assertArrayHasKey("create-default-index", $options);
-        
+    }
+    
+    public function testParsingGroupedShortsAndStandAloneReversed()
+    {
+        global $argv;
         $argv = array(
             "test",
             "-sxv",
@@ -149,8 +165,11 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             ),
             $options
         );
+    }
         
-        
+    public function testParsingMixedAndStandAlones()
+    {
+        global $argv;
         $argv = array(
             "test",
             "--input=/myfiles/wiki-sources",
@@ -171,6 +190,11 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             ),
             $options
         );    
+    }
+    
+    public function testParsingUnknowns()
+    {
+        global $argv;
         
         $argv = array(
             "test",

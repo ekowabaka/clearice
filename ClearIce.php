@@ -102,9 +102,10 @@ class ClearIce
      */
     private $commands = array();
     
-    private $parsedOptions;
-    private $unknownOptions;
-    private $standAlones;
+    private $parsedOptions = array();
+    private $unknownOptions = array();
+    private $standAlones = array();
+    private $arguments = false;
     
     /**
      * Clear all the options that have been setup.
@@ -185,7 +186,8 @@ class ClearIce
             else
             {
                 $this->parsedOptions[$key] = true;
-                if(strlen($remainder) == 0) return;
+                if(strlen($remainder) == 0) 
+                    return;
                 $this->parseShortOptions($remainder);
             }
         }
@@ -194,13 +196,9 @@ class ClearIce
             $this->unknownOptions[] = $shortOption;
             $this->parsedOptions[$shortOption] = true;
             if(strlen($remainder) == 0) 
-            {
                 return;
-            }
             else
-            {
                 $this->parseShortOptions($remainder);
-            }
         }
     }
     
@@ -449,29 +447,12 @@ class ClearIce
             $this->standAlones[] = $argument;
         }        
     }
-            
     
-    /**
-     * Parse the command line arguments and return a structured array which
-     * represents the arguments which were interpreted by clearice.
-     * 
-     * @global type $argv
-     * @param type $arguments
-     * @return array
-     */
-    public function parse($arguments = '')
+    private function getCommand()
     {
-        global $argv;
-        if($arguments == '') $arguments = $argv;
-        
-        $executed = array_shift($arguments);
-        $this->standAlones = array();
-        $this->unknownOptions = array();
-        $this->parsedOptions = array();
-        
         if(count($this->commands) > 0)
         {
-            $command = array_search($arguments[0], $this->commands);
+            $command = array_search($this->arguments, $this->commands);
             if($command === false)
             {
                 $command = '__default__';
@@ -481,15 +462,40 @@ class ClearIce
                 $command = $arguments[0];
                 array_shift($arguments);
             }
-            
         }
         else
         {
             $command = '__default__';
-        }
-        $this->parsedOptions['__command__'] = $command;
+        }   
         
-        foreach($arguments as $argument)
+        return $command;
+    }
+    
+    public function initializeArguments()
+    {
+        global $argv;
+        if($this->arguments === false)
+        {
+            $this->arguments = $argv;
+        }
+    }    
+    
+    /**
+     * Parse the command line arguments and return a structured array which
+     * represents the arguments which were interpreted by clearice.
+     * 
+     * @global type $argv
+     * @param type $arguments
+     * @return array
+     */
+    public function parse()
+    {
+        $this->initializeArguments();
+        $executed = array_shift($this->arguments);
+
+        $this->parsedOptions['__command__'] = $this->getCommand();
+        
+        foreach($this->arguments as $argument)
         {
             $this->parseArgument($argument);
         }
@@ -511,19 +517,15 @@ class ClearIce
         {
             echo $this->getHelpMessage();
         }
-        
-        if(count($this->standAlones) > 0)
-        {
-            $this->parsedOptions['stand_alones'] = $this->standAlones;
-        }
-        
-        if(count($this->unknownOptions) > 0)
-        {
-            $this->parsedOptions['unknowns'] = $this->unknownOptions;
-        }
+            
+        if(count($this->standAlones)) $this->parsedOptions['stand_alones'] = $this->standAlones;
+        if(count($this->unknownOptions)) $this->parsedOptions['unknowns'] = $this->unknownOptions;
         
         // Hide the __default__ command from the outside world
-        if($this->parsedOptions['__command__'] == '__default__') unset($this->parsedOptions['__command__']);
+        if($this->parsedOptions['__command__'] == '__default__') 
+        {
+            unset($this->parsedOptions['__command__']);
+        }
         
         return $this->parsedOptions;
     }
