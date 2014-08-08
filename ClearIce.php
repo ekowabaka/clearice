@@ -77,7 +77,7 @@ class ClearIce
      * The usage instructions for the application displayed as part of the
      * automatically generated help message.
      * 
-     * @var array or string
+     * @var array|string
      */
     private $usage;
     
@@ -105,6 +105,11 @@ class ClearIce
     private $parsedOptions = array();
     private $unknownOptions = array();
     private $standAlones = array();
+    
+    /**
+     *
+     * @var boolean|array
+     */
     private $arguments = false;
     
     /**
@@ -221,7 +226,7 @@ class ClearIce
     
     /**
      * Set the usage text which forms part of the help text.
-     * @param string $usage
+     * @param string|array $usage
      */
     public function setUsage($usage)
     {
@@ -279,6 +284,9 @@ class ClearIce
         foreach ($this->options as $option)
         {
             $help = @explode("\n", wordwrap($option['help'], 50));
+            $valueHelp = '';
+            $argumentPart = '';
+            
             if(isset($option['has_value']))
             {
                 if($option['has_value'])
@@ -459,8 +467,8 @@ class ClearIce
             }
             else
             {
-                $command = $arguments[0];
-                array_shift($arguments);
+                $command = $this->arguments[0];
+                array_shift($this->arguments);
             }
         }
         else
