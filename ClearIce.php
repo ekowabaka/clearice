@@ -108,9 +108,9 @@ class ClearIce
     
     /**
      *
-     * @var boolean|array
+     * @var array
      */
-    private $arguments = false;
+    private $arguments = array();
     
     /**
      * Clear all the options that have been setup.
@@ -477,16 +477,7 @@ class ClearIce
         }   
         
         return $command;
-    }
-    
-    public function initializeArguments()
-    {
-        global $argv;
-        if($this->arguments === false)
-        {
-            $this->arguments = $argv;
-        }
-    }    
+    } 
     
     /**
      * Parse the command line arguments and return a structured array which
@@ -498,7 +489,8 @@ class ClearIce
      */
     public function parse()
     {
-        $this->initializeArguments();
+        global $argv;
+        $this->arguments = $argv;
         $executed = array_shift($this->arguments);
 
         $this->parsedOptions['__command__'] = $this->getCommand();
