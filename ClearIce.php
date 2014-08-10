@@ -254,6 +254,73 @@ class ClearIce
         $this->footnote = $footnote;
     }
     
+    private function getUsageMessage()
+    {
+        global $argv;
+        $usageMessage = array('');
+        
+        if(is_string($this->usage))
+        {
+            $usageMessage[] = "Usage:\n  {$argv[0]} " . $this->usage;
+        }
+        elseif (is_array($this->usage)) 
+        {
+            $usageMessage[] = "Usage:";
+            foreach($this->usage as $usage)
+            {
+                $usageMessage[] = "  {$argv[0]} $usage";
+            }
+        }
+        $usageMessage[] = "";
+        
+        return $usageMessage;
+    }
+    
+    private function formatOptionHelp($option)
+    {
+        $optionHelp = array();
+        $help = explode("\n", wordwrap($option['help'], 50));
+
+        if($option['has_value'])
+        {
+            $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
+        }
+
+        if(isset($option['long']) && isset($option['short']))            
+        {
+            $argumentPart = sprintf(
+                "  %s, %-22s ", "-{$option['short']}", "--{$option['long']}$valueHelp"
+            );
+        }
+        else if(isset($option['long']))
+        {
+            $argumentPart = sprintf(
+                "  %-27s", "--{$option['long']}$valueHelp"
+            );
+        }
+        else if(isset($option['short']))
+        {
+            $argumentPart = sprintf(
+                "  %-27s", "-{$option['short']}"
+            );                
+        }
+
+        if(strlen($argumentPart) <= 29)
+        {
+            $optionHelp[] = $argumentPart . array_shift($help);
+        }
+        else
+        {
+            $optionHelp[] = $argumentPart;
+        }
+
+        foreach($help as $helpLine)
+        {  
+            $optionHelp[] = str_repeat(' ', 29) . "$helpLine" ;
+        }        
+        return $optionHelp;
+    }
+    
     /**
      * Returns the help message as a string.
      * 
@@ -262,91 +329,26 @@ class ClearIce
      */
     public function getHelpMessage() 
     {
-        global $argv;
-        $helpMessage = wordwrap($this->description);
-        if($helpMessage != '') $helpMessage .= "\n";
-        
-        if($this->usage != '' || is_array($this->usage))
-        {
-            if($helpMessage != '') $helpMessage .= "\n";
-            if(is_string($this->usage))
-            {
-                $helpMessage .= "Usage:\n  {$argv[0]} " . $this->usage . "\n";
-            }
-            elseif (is_array($this->usage)) 
-            {
-                $helpMessage .= "Usage:\n";
-                foreach($this->usage as $usage)
-                {
-                    $helpMessage .= "  {$argv[0]} $usage\n";
-                }
-            }
-            $helpMessage .= "\n";
-        }
-        
+        $optionHelp = array();
         foreach ($this->options as $option)
         {
-            $help = @explode("\n", wordwrap($option['help'], 50));
-            $valueHelp = '';
-            $argumentPart = '';
-            
-            if(isset($option['has_value']))
-            {
-                if($option['has_value'])
-                {
-                    $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
-                }
-            }
-            else 
-            {
-                $valueHelp = "";
-            }
-            
-            if(isset($option['long']) && isset($option['short']))            
-            {
-                $argumentPart = sprintf(
-                    "  %s, %-22s ", "-{$option['short']}", "--{$option['long']}$valueHelp"
-                );
-            }
-            else if(isset($option['long']))
-            {
-                $argumentPart = sprintf(
-                    "  %-27s", "--{$option['long']}$valueHelp"
-                );
-            }
-            else if(isset($option['short']))
-            {
-                $argumentPart = sprintf(
-                    "  %-27s", "-{$option['short']}"
-                );                
-            }
-
-            $helpMessage .= $argumentPart;
-
-            if(strlen($argumentPart) <= 29)
-            {
-                $helpMessage .= array_shift($help) . "\n";
-            }
-            else
-            {
-                $helpMessage .= "\n";
-            }
-            
-            foreach($help as $helpLine)
-            {
-               
-                $helpMessage .= str_repeat(' ', 29) . "$helpLine\n" ;
-            }
+            $optionHelp[] = implode("\n", $this->formatOptionHelp($option));
         }
         
-        if($this->footnote != '')
+        $sections = array(
+            'description' => array(wordwrap($this->description)),
+            'usage' => $this->getUsageMessage(),
+            'options' => $optionHelp,
+            'footnote' => array('', wordwrap($this->footnote), '')
+        );
+        
+        foreach($sections as $i => $section)
         {
-            $helpMessage .= "\n" . wordwrap($this->footnote);
+            $sections[$i] = implode("\n", $section);
         }
         
-        $helpMessage .= "\n";
         
-        return $helpMessage;
+        return implode("\n", $sections);
     }
     
     /**
