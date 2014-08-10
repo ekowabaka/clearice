@@ -492,6 +492,19 @@ class ClearIce
         return $command;
     } 
     
+    public function showStrictErrors()
+    {
+        foreach($this->unknownOptions as $unknown)
+        {
+            fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
+        }
+
+        if($this->hasHelp)
+        {
+            fputs(STDERR, "Try `$executed --help` for more information\n");
+        }        
+    }
+    
     /**
      * Parse the command line arguments and return a structured array which
      * represents the arguments which were interpreted by clearice.
@@ -514,15 +527,7 @@ class ClearIce
         
         if($this->strict && count($this->unknownOptions) > 0)
         {
-            foreach($this->unknownOptions as $unknown)
-            {
-                fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
-            }
-
-            if($this->hasHelp)
-            {
-                fputs(STDERR, "Try `$executed --help` for more information\n");
-            }
+            $this->showStrictErrors();
         }
         
         if(isset($this->parsedOptions['help']))
