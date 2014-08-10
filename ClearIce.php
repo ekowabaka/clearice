@@ -492,7 +492,7 @@ class ClearIce
         return $command;
     } 
     
-    public function showStrictErrors()
+    public function showStrictErrors($executed)
     {
         foreach($this->unknownOptions as $unknown)
         {
@@ -527,7 +527,7 @@ class ClearIce
         
         if($this->strict && count($this->unknownOptions) > 0)
         {
-            $this->showStrictErrors();
+            $this->showStrictErrors($executed);
         }
         
         if(isset($this->parsedOptions['help']))
