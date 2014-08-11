@@ -399,9 +399,9 @@ class ClearIce
     /**
      * @param string $string
      */
-    protected function output($string)
+    protected function output($string, $stream = 'stdout')
     {
-        echo $string;
+        file_put_contents("php://$stream", $string);
     }
     
     protected function input()
@@ -494,12 +494,12 @@ class ClearIce
     {
         foreach($this->unknownOptions as $unknown)
         {
-            fputs(STDERR, "$executed: invalid option -- {$unknown}\n");
+            $this->output("$executed: invalid option -- {$unknown}\n", 'stderr');
         }
 
         if($this->hasHelp)
         {
-            fputs(STDERR, "Try `$executed --help` for more information\n");
+            $this->output("Try `$executed --help` for more information\n", 'stderr');
         }        
     }
     
