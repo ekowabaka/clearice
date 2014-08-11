@@ -113,22 +113,17 @@ class ClearIce
     private $arguments = array();
     
     /**
-     * Clear all the options that have been setup.
-     */
-    /*public function clearOptions()
-    {
-        $this->options = array();
-        $this->optionsMap = array();
-    }*/
-    
-    /**
      * Add commands for parsing. This method can take as many commands as possible.
      * 
      * @param String
      */
     public function addCommands()
     {
-        $this->commands = array_merge($this->commands, func_get_args());
+        //$this->commands = array_merge($this->commands, func_get_args());
+        foreach(func_get_args() as $command)
+        {
+            $this->commands[] = $command;
+        }
     }
 
     /**
@@ -186,7 +181,8 @@ class ClearIce
         //@todo Whoops ... I need to simplify this someday
         if(isset($this->optionsMap[$command][$shortOption]))
         {
-            $key = isset($this->optionsMap[$command][$shortOption]['long']) ? $this->optionsMap[$command][$shortOption]['long'] : $shortOption;
+            $key = isset($this->optionsMap[$command][$shortOption]['long']) ? 
+                $this->optionsMap[$command][$shortOption]['long'] : $shortOption;
             if($this->optionsMap[$command][$shortOption]['has_value'] === true)
             {
                 $this->parsedOptions[$key] = $remainder;
@@ -549,5 +545,4 @@ class ClearIce
         return $this->parsedOptions;
     }
 }
-
 
