@@ -471,7 +471,7 @@ class ClearIce
     {
         if(count($this->commands) > 0)
         {
-            $command = array_search($this->arguments, $this->commands);
+            $command = array_search($this->arguments[0], $this->commands);
             if($command === false)
             {
                 $command = '__default__';
@@ -485,7 +485,7 @@ class ClearIce
         else
         {
             $command = '__default__';
-        }   
+        } 
         
         return $command;
     } 
