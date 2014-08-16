@@ -111,6 +111,16 @@ class ClearIce
      * @var array
      */
     private $arguments = array();
+    private $inputStream = false;
+    private $outputStream = false;
+    private $errorStream = false;
+    
+    public function __construct($inputStream = false, $outputStream = false, $errorStream = false) 
+    {
+        $this->inputStream = $inputStream === false ? fopen('php://stdin', 'r') : fopen($inputStream, 'r');
+        $this->outputStream = $outputStream === false ? fopen('php://stdout', 'w') : fopen($outputStream, 'w');
+        $this->errorStream = $errorStream === false ? fopen('php://stderr', 'w') : fopen($errorStream, 'w');        
+    }
     
     /**
      * Add commands for parsing. This method can take as many commands as possible.
@@ -276,6 +286,8 @@ class ClearIce
     {
         $optionHelp = array();
         $help = explode("\n", wordwrap($option['help'], 50));
+        $valueHelp = '';
+        $argumentPart = '';
 
         if($option['has_value'])
         {
@@ -367,7 +379,7 @@ class ClearIce
 
         if($response == "" && $params['required'] === true && $params['default'] == '')
         {
-            $this->output("A value is required.\n");
+            $this->error("A value is required.\n");
             return $this->getResponse($question, $params);
         }
         else if($response == "" && $params['required'] === true && $params['default'] != '')
@@ -391,7 +403,7 @@ class ClearIce
                     return strtolower($answer);
                 }
             }
-            $this->output("Please provide a valid answer.\n");
+            $this->error("Please provide a valid answer.\n");
             return $this->getResponse($question, $params);
         }
     }  
@@ -399,14 +411,19 @@ class ClearIce
     /**
      * @param string $string
      */
-    protected function output($string, $stream = 'stdout')
+    protected function output($string)
     {
-        file_put_contents("php://$stream", $string);
+        fputs($this->outputStream, $string);
     }
+    
+    protected function error($string)
+    {
+        fputs($this->errorStream, $string);
+    }    
     
     protected function input()
     {
-        return fgets(STDIN);
+        return fgets($this->inputStream);
     }
     
     /**
@@ -494,12 +511,12 @@ class ClearIce
     {
         foreach($this->unknownOptions as $unknown)
         {
-            $this->output("$executed: invalid option -- {$unknown}\n", 'stderr');
+            $this->error("$executed: invalid option -- {$unknown}\n");
         }
 
         if($this->hasHelp)
         {
-            $this->output("Try `$executed --help` for more information\n", 'stderr');
+            $this->error("Try `$executed --help` for more information\n");
         }        
     }
     
@@ -544,5 +561,23 @@ class ClearIce
         
         return $this->parsedOptions;
     }
+    
+    /*public function setInputStream($stream)
+    {
+        fclose($this->inputStream);
+        fopen($stream, 'r');
+    }
+
+    public function setOutputStream($stream)
+    {
+        fclose($this->outputStream);
+        fopen($stream, 'w');
+    }
+
+    public function setErrorStream($stream)
+    {
+        fclose($this->inputStream);
+        fopen($stream, 'w');
+    }*/
 }
 

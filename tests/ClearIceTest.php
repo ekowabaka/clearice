@@ -273,8 +273,8 @@ Report bugs to bugs@clearice.tld
             '--an-unknown'
         );
         
-        $cli = $this->getMock('ClearIce', array('output'));        
-        $cli->expects($this->once())->method('output')->with("test.php: invalid option -- an-unknown\n", 'stderr');
+        $cli = $this->getMock('ClearIce', array('error'));        
+        $cli->expects($this->once())->method('error')->with("test.php: invalid option -- an-unknown\n");
         
         $cli->addOptions('a-known');
         $cli->setStrict(true);
@@ -289,9 +289,9 @@ Report bugs to bugs@clearice.tld
             '--an-unknown'
         );
         
-        $cli = $this->getMock('ClearIce', array('output'));        
-        $cli->expects($this->at(0))->method('output')->with("test.php: invalid option -- an-unknown\n", 'stderr');
-        $cli->expects($this->at(1))->method('output')->with("Try `test.php --help` for more information\n", 'stderr');
+        $cli = $this->getMock('ClearIce', array('error'));        
+        $cli->expects($this->at(0))->method('error')->with("test.php: invalid option -- an-unknown\n");
+        $cli->expects($this->at(1))->method('error')->with("Try `test.php --help` for more information\n");
         
         $cli->addOptions('a-known');
         $cli->setStrict(true);

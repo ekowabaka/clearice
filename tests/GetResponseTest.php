@@ -5,6 +5,28 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 class GetResponseTest extends PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        if(file_exists('tests/streams/output.txt'))
+        {
+            unlink('tests/streams/output.txt');
+        }
+        
+        if(file_exists('tests/streams/error.txt'))
+        {
+            unlink('tests/streams/error.txt');
+        }        
+    }
+    
+    public function testStreams()
+    {
+        $cli = new ClearIce('tests/streams/input.txt', 'tests/streams/output.txt', 'tests/streams/error.txt');
+        $this->assertEquals('Hello World', $cli->getResponse('Heck'));
+        $this->assertEquals('Heck []: ', file_get_contents('tests/streams/output.txt'));
+        $cli->getResponse('Flag an error', array('answers' => array('value')));
+        //var_dump(file_get_contents('tests/streams/error.txt'));
+    }
+    
     public function testPlainEntry()
     {
         $cli = $this->getMock('ClearIce', array('input', 'output'));
@@ -64,10 +86,10 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
     
     public function testWrongAnswer()
     {
-        $cli = $this->getMock('ClearIce', array('input', 'output'));
+        $cli = $this->getMock('ClearIce', array('input', 'output', 'error'));
         $cli->method('input')->will($this->onConsecutiveCalls("wrong", "one"));
         $cli->expects($this->at(0))->method('output')->with('Some answers (one/two/three) [two]: ');
-        $cli->expects($this->at(2))->method('output')->with("Please provide a valid answer.\n");
+        $cli->expects($this->once())->method('error')->with("Please provide a valid answer.\n");
         $cli->expects($this->at(3))->method('output')->with('Some answers (one/two/three) [two]: ');        
         
         $this->assertEquals('one', 
@@ -84,10 +106,10 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
     
     public function testRequired()
     {
-        $cli = $this->getMock('ClearIce', array('input', 'output'));
+        $cli = $this->getMock('ClearIce', array('input', 'output', 'error'));
         $cli->method('input')->will($this->onConsecutiveCalls("", "something"));
         $cli->expects($this->at(0))->method('output')->with('Fails first []: ');
-        $cli->expects($this->at(2))->method('output')->with("A value is required.\n");
+        $cli->expects($this->once())->method('error')->with("A value is required.\n");
         $cli->expects($this->at(3))->method('output')->with('Fails first []: ');          
         $this->assertEquals('something', $cli->getResponse('Fails first', array('required' => true)));        
     }
@@ -98,5 +120,5 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
         $cli->method('input')->will($this->onConsecutiveCalls("", "something"));
         $cli->expects($this->at(0))->method('output')->with('Fails first [def]: ');
         $this->assertEquals('def', $cli->getResponse('Fails first', array('required' => true, 'default' => 'def')));
-    }    
+    }
 }
