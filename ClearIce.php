@@ -111,15 +111,30 @@ class ClearIce
      * @var array
      */
     private $arguments = array();
-    private $inputStream = false;
-    private $outputStream = false;
-    private $errorStream = false;
     
-    public function __construct($inputStream = false, $outputStream = false, $errorStream = false) 
+    /**
+     *
+     * @var boolean
+     */
+    private $inputStream = null;
+    private $outputStream = null;
+    private $errorStream = null;
+    
+    public static $defaultInputStream = 'php://stdin';
+    public static $defaultOutputStream = 'php://stdout';
+    public static $defaultErrorStream = 'php://stderr';
+    
+    /**
+     * 
+     * @param string $inputStream
+     * @param string $outputStream
+     * @param string $errorStream
+     */
+    public function __construct($inputStream = null, $outputStream = null, $errorStream = null) 
     {
-        $this->inputStream = $inputStream === false ? fopen('php://stdin', 'r') : fopen($inputStream, 'r');
-        $this->outputStream = $outputStream === false ? fopen('php://stdout', 'w') : fopen($outputStream, 'w');
-        $this->errorStream = $errorStream === false ? fopen('php://stderr', 'w') : fopen($errorStream, 'w');        
+        $this->inputStream = $inputStream === null ? fopen(self::$defaultInputStream, 'r') : fopen($inputStream, 'r');
+        $this->outputStream = $outputStream === null ? fopen(self::$defaultOutputStream, 'w') : fopen($outputStream, 'w');
+        $this->errorStream = $errorStream === null ? fopen(self::$defaultErrorStream, 'w') : fopen($errorStream, 'w');        
     }
     
     /**
