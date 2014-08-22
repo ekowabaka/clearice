@@ -576,23 +576,5 @@ class ClearIce
         
         return $this->parsedOptions;
     }
-    
-    /*public function setInputStream($stream)
-    {
-        fclose($this->inputStream);
-        fopen($stream, 'r');
-    }
-
-    public function setOutputStream($stream)
-    {
-        fclose($this->outputStream);
-        fopen($stream, 'w');
-    }
-
-    public function setErrorStream($stream)
-    {
-        fclose($this->inputStream);
-        fopen($stream, 'w');
-    }*/
 }
 
