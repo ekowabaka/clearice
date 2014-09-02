@@ -217,7 +217,7 @@ class ClearIce
                 $this->parsedOptions[$key] = true;
                 if(strlen($remainder) == 0) 
                     return;
-                $this->parseShortOptions($remainder);
+                $this->parseShortOptions($remainder, $command);
             }
         }
         else
@@ -227,7 +227,7 @@ class ClearIce
             if(strlen($remainder) == 0) 
                 return;
             else
-                $this->parseShortOptions($remainder);
+                $this->parseShortOptions($remainder, $command);
         }
     }
     
