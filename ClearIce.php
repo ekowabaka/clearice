@@ -119,6 +119,7 @@ class ClearIce
     private $inputStream = null;
     private $outputStream = null;
     private $errorStream = null;
+    private $logUnknownOption = true;
     
     public static $defaultInputStream = 'php://stdin';
     public static $defaultOutputStream = 'php://stdout';
@@ -197,11 +198,10 @@ class ClearIce
     /**
      * @param string $shortOptionsString
      */
-    private function parseShortOptions($shortOptionsString)
+    private function parseShortOptions($shortOptionsString, $command)
     {
         $shortOption = $shortOptionsString[0];
         $remainder = substr($shortOptionsString, 1);
-        $command = $this->parsedOptions['__command__'];
             
         //@todo Whoops ... I need to simplify this someday
         if(isset($this->optionsMap[$command][$shortOption]))
@@ -222,7 +222,7 @@ class ClearIce
         }
         else
         {
-            $this->unknownOptions[] = $shortOption;
+            if($this->logUnknownOption) $this->unknownOptions[] = $shortOption;
             $this->parsedOptions[$shortOption] = true;
             if(strlen($remainder) == 0) 
                 return;
@@ -445,12 +445,11 @@ class ClearIce
      * @param string $argument
      * @param string $value
      */
-    private function parseLongOptionsWithValue($argument, $value)
+    private function parseLongOptionsWithValue($argument, $value, $command)
     {
-        $command = $this->parsedOptions['__command__'];
         if(!isset($this->optionsMap[$command][$argument]))
         {
-            $this->unknownOptions[] = $argument;
+            if($this->logUnknownOption) $this->unknownOptions[] = $argument;
             $this->parsedOptions[$argument] = $value;
         }
         else
@@ -469,29 +468,29 @@ class ClearIce
     /**
      * @param string $argument
      */
-    private function parseLongOptionsWithoutValue($argument)
+    private function parseLongOptionsWithoutValue($argument, $command)
     {
-        $command = $this->parsedOptions['__command__'];
-        if(!isset($this->optionsMap[$command][$argument]))
+        if(!isset($this->optionsMap[$command][$argument]) && $this->logUnknownOption)
         {
             $this->unknownOptions[] = $argument;
         }
         $this->parsedOptions[$argument] = true;        
     }
     
-    private function parseArgument($argument)
+    private function parseArgument($argument, $command)
     {
+        
         if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
         {
-            $this->parseLongOptionsWithValue($matches['option'], $matches['value']);
+            $this->parseLongOptionsWithValue($matches['option'], $matches['value'], $command);
         }
         else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
         {
-            $this->parseLongOptionsWithoutValue($matches['option']);
+            $this->parseLongOptionsWithoutValue($matches['option'], $command);
         }
         else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
         {
-            $this->parseShortOptions($matches['option']);
+            $this->parseShortOptions($matches['option'], $command);
         }
         else
         {
@@ -552,7 +551,13 @@ class ClearIce
         
         foreach($this->arguments as $argument)
         {
-            $this->parseArgument($argument);
+            if($this->parsedOptions['__command__'] != '__default__')
+            {
+                $this->logUnknownOption = false;
+                $this->parseArgument($argument, $this->parsedOptions['__command__']);
+                $this->logUnknownOption = true;
+            }
+            $this->parseArgument($argument, '__default__');
         }
         
         if($this->strict && count($this->unknownOptions) > 0)
