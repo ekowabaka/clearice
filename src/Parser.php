@@ -249,6 +249,20 @@ class Parser
             $this->commands[] = $command;
         }
     }
+    
+    private function stringOptionToArray($option)
+    {
+        $newOption = array();
+        if(strlen($option) == 1) 
+        {
+            $newOption['short'] = $option;
+        }
+        else
+        {
+            $newOption['long'] = $option;
+        }
+        return $newOption;        
+    }
 
     /**
      * Add options to be recognized. Options could either be strings or
@@ -262,16 +276,7 @@ class Parser
         {
             if(is_string($option))
             {
-                $newOption = array();
-                if(strlen($option) == 1) 
-                {
-                    $newOption['short'] = $option;
-                }
-                else
-                {
-                    $newOption['long'] = $option;
-                }
-                $option = $newOption;
+                $option = $this->stringOptionToArray($option);
             }
             $this->options[] = $option;
             $command = isset($option['command']) ? $option['command'] : '__default__';
@@ -395,53 +400,6 @@ class Parser
         return $usageMessage;
     }
     
-    private function formatOptionHelp($option)
-    {
-        $optionHelp = array();
-        $help = explode("\n", wordwrap($option['help'], 50));
-        $valueHelp = '';
-        $argumentPart = '';
-
-        if($option['has_value'])
-        {
-            $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
-        }
-
-        if(isset($option['long']) && isset($option['short']))            
-        {
-            $argumentPart = sprintf(
-                "  %s, %-22s ", "-{$option['short']}", "--{$option['long']}$valueHelp"
-            );
-        }
-        else if(isset($option['long']))
-        {
-            $argumentPart = sprintf(
-                "  %-27s", "--{$option['long']}$valueHelp"
-            );
-        }
-        else if(isset($option['short']))
-        {
-            $argumentPart = sprintf(
-                "  %-27s", "-{$option['short']}"
-            );                
-        }
-
-        if(strlen($argumentPart) <= 29)
-        {
-            $optionHelp[] = $argumentPart . array_shift($help);
-        }
-        else
-        {
-            $optionHelp[] = $argumentPart;
-        }
-
-        foreach($help as $helpLine)
-        {  
-            $optionHelp[] = str_repeat(' ', 29) . "$helpLine" ;
-        }        
-        return $optionHelp;
-    }
-    
     /**
      * Returns the help message as a string.
      * 
@@ -450,26 +408,12 @@ class Parser
      */
     public function getHelpMessage() 
     {
-        $optionHelp = array();
-        foreach ($this->options as $option)
-        {
-            $optionHelp[] = implode("\n", $this->formatOptionHelp($option));
-        }
-        
-        $sections = array(
-            'description' => array(wordwrap($this->description)),
-            'usage' => $this->getUsageMessage(),
-            'options' => $optionHelp,
-            'footnote' => array('', wordwrap($this->footnote), '')
+        return (string) new HelpMessage(
+            $this->options, 
+            $this->description, 
+            $this->getUsageMessage(),
+            $this->footnote
         );
-        
-        foreach($sections as $i => $section)
-        {
-            $sections[$i] = implode("\n", $section);
-        }
-        
-        
-        return implode("\n", $sections);
     }    
 }
 
