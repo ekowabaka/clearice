@@ -5,7 +5,6 @@ namespace clearice;
 class HelpMessage
 {
     private $message = '';
-    private $line;
     
     public function __construct($options, $description, $usage, $footnote)
     {
@@ -43,22 +42,23 @@ class HelpMessage
         $valueHelp = $this->formatValue($option);
         if(isset($option['long']) && isset($option['short']))            
         {
-            return sprintf(
+            $argumentHelp = sprintf(
                 "  %s, %-22s ", "-{$option['short']}", "--{$option['long']}$valueHelp"
             );
         }
         else if(isset($option['long']))
         {
-            return sprintf(
+            $argumentHelp = sprintf(
                 "  %-27s", "--{$option['long']}$valueHelp"
             );
         }
         else if(isset($option['short']))
         {
-            return sprintf(
+            $argumentHelp = sprintf(
                 "  %-27s", "-{$option['short']}"
             );                
-        }        
+        }      
+        return $argumentHelp;
     }
     
     private function wrapHelp($argumentPart, &$help)

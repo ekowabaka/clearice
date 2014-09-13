@@ -53,7 +53,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
                 'long' => 'lone-long-option',
                 'has_value' => false,
                 "help" => "a long option only"
-            )                                
+            )
         );        
     }
     
@@ -238,34 +238,29 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         
         $helpMessage = ClearIce::getHelpMessage();
         
-        $this->assertEquals(
-"Simple Wiki version 1.0
-A sample or should I say dummy wiki app to help explain ClearIce. This app
-practically does nothing.
-
-Usage:
-  test.php [input] [options]..
-
-  -i, --input=VALUE          specifies where the input files for the wiki are
-                             found.
-  -o, --output=VALUE         specifies where the wiki should be written to
-  -v, --verbose              displays detailed information about everything
-                             that happens
-  -x, --create-default-index creates a default index page which lists all the
-                             wiki pages in a sorted order
-  -d, --some-very-long-option-indeed 
-                             an uneccesarily long option which is meant to to
-                             see if the wrapping of help lines actually works.
-  -s                         a short option only
-  --lone-long-option         a long option only
-  -h, --help                 shows this help message
-
-Hope you had a nice time learning about ClearIce. We're pretty sure your
-cli apps would no longer be boring to work with.
-
-Report bugs to bugs@clearice.tld
-", $helpMessage);
+        $this->assertEquals(file_get_contents('tests/fixtures/help.txt'), $helpMessage);
         
+    }
+    
+    public function testHelpOption()
+    {
+        global $argv;
+        $argv = array(
+            "test.php",
+            "--help"
+        );  
+        
+        vfsStream::setup('std');
+        $stdout = vfsStream::url('std/output');        
+        
+        ClearIce::setUsage("[input] [options]..");
+        ClearIce::setStreamUrl('output', $stdout);
+        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+        ClearIce::addHelp();
+        ClearIce::parse();
+        
+        $this->assertFileEquals('tests/fixtures/help.txt', vfsStream::url('std/output'));
     }
     
     public function testStrict()
@@ -332,34 +327,7 @@ Report bugs to bugs@clearice.tld
         
         $helpMessage = ClearIce::getHelpMessage();
         
-        $this->assertEquals(
-"Simple Wiki version 1.0
-A sample or should I say dummy wiki app to help explain ClearIce. This app
-practically does nothing.
-
-Usage:
-  test.php [input] [options]..
-  test.php [output] [options]..
-
-  -i, --input=VALUE          specifies where the input files for the wiki are
-                             found.
-  -o, --output=VALUE         specifies where the wiki should be written to
-  -v, --verbose              displays detailed information about everything
-                             that happens
-  -x, --create-default-index creates a default index page which lists all the
-                             wiki pages in a sorted order
-  -d, --some-very-long-option-indeed 
-                             an uneccesarily long option which is meant to to
-                             see if the wrapping of help lines actually works.
-  -s                         a short option only
-  --lone-long-option         a long option only
-  -h, --help                 shows this help message
-
-Hope you had a nice time learning about ClearIce. We're pretty sure your
-cli apps would no longer be boring to work with.
-
-Report bugs to bugs@clearice.tld
-", $helpMessage);
+        $this->assertEquals(file_get_contents('tests/fixtures/help_multi_usage.txt'), $helpMessage);
     }
     
     /**
@@ -369,5 +337,32 @@ Report bugs to bugs@clearice.tld
     public function testMethodException()
     {
         ClearIce::method();
+    }
+    
+    public function testMultiOptions()
+    {
+        global $argv;
+        $argv = array(
+            "test.php",
+            "--some-multi-option=one",
+            "--some-multi-option=two",
+            "-mthree"
+        );
+        
+        ClearIce::addOptions(array(
+            'long' => 'some-multi-option',
+            'short' => 'm',
+            'multi' => true,
+            'has_value' => true
+        ));
+        
+        $this->assertEquals(
+            array(
+                'some-multi-option' => array(
+                    'one', 'two', 'three'
+                )
+            ),
+            ClearIce::parse()
+        );
     }
 }

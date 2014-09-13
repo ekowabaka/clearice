@@ -9,6 +9,7 @@ class ClearIceCommandsTest extends PHPUnit_Framework_TestCase
 {   
     public function setup()
     {
+        ClearIce::reset();
         ClearIce::addCommands('init', 'generate', 'export');
         ClearIce::addOptions(
             array(
@@ -53,14 +54,38 @@ class ClearIceCommandsTest extends PHPUnit_Framework_TestCase
         $argv = array(
             "test",
             "init",
-            "--directory=./"
+            "--directory=./",
+            '-v',
+            '--export'
         );
         
         $options = ClearIce::parse();
         $this->assertEquals(
             array(
                 '__command__' => 'init',
-                'directory' => './'
+                'directory' => './',
+                'verbose' => true,
+                'export' => true,
+                'unknowns' => array(
+                    'export'
+                )
+            ),
+            $options
+        );
+    }
+    
+    function testDefaultCommand()
+    {
+        global $argv;
+        $argv = array(
+            "test",
+            '-v'
+        );
+        
+        $options = ClearIce::parse();
+        $this->assertEquals(
+            array(
+                'verbose' => true,
             ),
             $options
         );
