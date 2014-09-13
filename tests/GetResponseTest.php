@@ -27,10 +27,7 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
     
     public function testStreams()
     {
-        copy('tests/streams/input.txt', $this->stdin);
-        
-
-        
+        file_put_contents($this->stdin, "Hello World\nNot Valid");        
         $this->assertEquals('Hello World', ClearIce::getResponse('Heck'));
         $this->assertStringEqualsFile($this->stdout, 'Heck []: ');
         ClearIce::getResponse('Flag an error', array('answers' => array('value')));
@@ -39,7 +36,7 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
     
     public function testPlainEntry()
     {
-        copy('tests/streams/input.txt', $this->stdin);        
+        file_put_contents($this->stdin, "Hello World");        
         $this->assertEquals('Hello World', ClearIce::getResponse('Say hello world'));
     }
     
@@ -88,15 +85,9 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
         $this->assertStringEqualsFile($this->stdout, 'Some answers (one/two/three) [two]: ');          
     }
     
-    /*public function testWrongAnswer()
-    {
-        $cli = $this->getMock('\\clearice\\ClearIce', array('input', 'output', 'error'));
-        ClearIce::method('input')->will($this->onConsecutiveCalls("wrong", "one"));
-        ClearIce::expects($this->at(0))->method('output')->with('Some answers (one/two/three) [two]: ');
-        ClearIce::expects($this->once())->method('error')->with("Please provide a valid answer.\n");
-        ClearIce::expects($this->at(3))->method('output')->with('Some answers (one/two/three) [two]: '); 
-        
-        
+    public function testWrongAnswer()
+    {   
+        file_put_contents($this->stdin, "wrong\none\n");
         
         $this->assertEquals('one', 
             ClearIce::getResponse('Some answers',
@@ -108,23 +99,22 @@ class GetResponseTest extends PHPUnit_Framework_TestCase
                 )
             )
         );
+        $this->assertStringEqualsFile($this->stdout, 'Some answers (one/two/three) [two]: Some answers (one/two/three) [two]: ');  
+        $this->assertStringEqualsFile($this->stderr, "Please provide a valid answer.\n");  
     }
     
     public function testRequired()
-    {
-        $cli = $this->getMock('\\clearice\\ClearIce', array('input', 'output', 'error'));
-        ClearIce::method('input')->will($this->onConsecutiveCalls("", "something"));
-        ClearIce::expects($this->at(0))->method('output')->with('Fails first []: ');
-        ClearIce::expects($this->once())->method('error')->with("A value is required.\n");
-        ClearIce::expects($this->at(3))->method('output')->with('Fails first []: ');          
-        $this->assertEquals('something', ClearIce::getResponse('Fails first', array('required' => true)));        
+    {   
+        file_put_contents($this->stdin, "\nsomething\n");       
+        $this->assertEquals('something', ClearIce::getResponse('Fails first', array('required' => true)));  
+        $this->assertStringEqualsFile($this->stdout, 'Fails first []: Fails first []: ');  
+        $this->assertStringEqualsFile($this->stderr, "A value is required.\n");          
     }
     
     public function testRequiredDefault()
     {
-        $cli = $this->getMock('\\clearice\\ClearIce', array('input', 'output'));
-        ClearIce::method('input')->will($this->onConsecutiveCalls("", "something"));
-        ClearIce::expects($this->at(0))->method('output')->with('Fails first [def]: ');
+        file_put_contents($this->stdin, "\n");       
         $this->assertEquals('def', ClearIce::getResponse('Fails first', array('required' => true, 'default' => 'def')));
-    }*/
+        $this->assertStringEqualsFile($this->stdout, 'Fails first [def]: ');          
+    }
 }

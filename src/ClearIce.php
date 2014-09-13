@@ -157,7 +157,7 @@ class ClearIce
     {
         if(array_search($name, self::$parserMethods) === false)
         {
-            throw new \Exception("Unknown clearice method $name");
+            throw new \Exception("Unknown method $name");
         }
         else
         {

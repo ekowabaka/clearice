@@ -361,4 +361,13 @@ cli apps would no longer be boring to work with.
 Report bugs to bugs@clearice.tld
 ", $helpMessage);
     }
+    
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage Unknown method method
+     */
+    public function testMethodException()
+    {
+        ClearIce::method();
+    }
 }
