@@ -43,25 +43,25 @@ class HelpMessage
         $valueHelp = $this->formatValue($option);
         if(isset($option['long']) && isset($option['short']))            
         {
-            $argumentPart = sprintf(
+            return sprintf(
                 "  %s, %-22s ", "-{$option['short']}", "--{$option['long']}$valueHelp"
             );
         }
         else if(isset($option['long']))
         {
-            $argumentPart = sprintf(
+            return sprintf(
                 "  %-27s", "--{$option['long']}$valueHelp"
             );
         }
         else if(isset($option['short']))
         {
-            $argumentPart = sprintf(
+            return sprintf(
                 "  %-27s", "-{$option['short']}"
             );                
         }        
     }
     
-    private function wrapHelp($argumentPart, $help)
+    private function wrapHelp($argumentPart, &$help)
     {
         if(strlen($argumentPart) <= 29)
         {
