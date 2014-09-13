@@ -5,6 +5,7 @@ namespace clearice;
 class HelpMessage
 {
     private $message = '';
+    private $line;
     
     public function __construct($options, $description, $usage, $footnote)
     {
@@ -29,18 +30,17 @@ class HelpMessage
         $this->message = implode("\n", $sections);        
     }
     
-    private function formatOptionHelp($option)
+    private function formatValue($option)
     {
-        $optionHelp = array();
-        $help = explode("\n", wordwrap($option['help'], 50));
-        $valueHelp = '';
-        $argumentPart = '';
-
         if($option['has_value'])
         {
-            $valueHelp = "=" . (isset($option['value']) ? $option['value'] : "VALUE");
+            return "=" . (isset($option['value']) ? $option['value'] : "VALUE");
         }
-
+    }
+    
+    private function formatArgument($option)
+    {
+        $valueHelp = $this->formatValue($option);
         if(isset($option['long']) && isset($option['short']))            
         {
             $argumentPart = sprintf(
@@ -58,16 +58,28 @@ class HelpMessage
             $argumentPart = sprintf(
                 "  %-27s", "-{$option['short']}"
             );                
-        }
-
+        }        
+    }
+    
+    private function wrapHelp($argumentPart, $help)
+    {
         if(strlen($argumentPart) <= 29)
         {
-            $optionHelp[] = $argumentPart . array_shift($help);
+            return $argumentPart . array_shift($help);
         }
         else
         {
-            $optionHelp[] = $argumentPart;
-        }
+            return $argumentPart;
+        }        
+    }
+    
+    private function formatOptionHelp($option)
+    {
+        $optionHelp = array();
+        $help = explode("\n", wordwrap($option['help'], 50));
+        $argumentPart = $this->formatArgument($option);
+
+        $optionHelp[] = $this->wrapHelp($argumentPart, $help);
 
         foreach($help as $helpLine)
         {  
