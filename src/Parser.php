@@ -112,39 +112,47 @@ class Parser
             }
         }
         
-        if($this->strict && count($this->unknownOptions) > 0)
-        {
-            $this->showStrictErrors($executed);
-        }
+        $this->showStrictErrors($executed);
+        $this->showHelp();
+        $this->aggregateOptions();
         
-        if(isset($this->parsedOptions['help']))
-        {
-            ClearIce::output($this->getHelpMessage());
-        }
-            
+        return $this->parsedOptions;
+    }
+    
+    private function aggregateOptions()
+    {
         if(count($this->standAlones)) $this->parsedOptions['stand_alones'] = $this->standAlones;
-        if(count($this->unknownOptions)) $this->parsedOptions['unknowns'] = $this->unknownOptions;
+        if(count($this->unknownOptions)) $this->parsedOptions['unknowns'] = $this->unknownOptions;  
         
         // Hide the __default__ command from the outside world
         if($this->parsedOptions['__command__'] == '__default__') 
         {
             unset($this->parsedOptions['__command__']);
-        }
-        
-        return $this->parsedOptions;
+        }        
+    }
+    
+    private function showHelp()
+    {
+        if(isset($this->parsedOptions['help']))
+        {
+            ClearIce::output($this->getHelpMessage());
+        }        
     }
 
-    public function showStrictErrors($executed)
+    private function showStrictErrors($executed)
     {
-        foreach($this->unknownOptions as $unknown)
-        {
-            ClearIce::error("$executed: invalid option -- {$unknown}\n");
-        }
+        if($this->strict && count($this->unknownOptions) > 0)
+        {        
+            foreach($this->unknownOptions as $unknown)
+            {
+                ClearIce::error("$executed: invalid option -- {$unknown}\n");
+            }
 
-        if($this->hasHelp)
-        {
-            ClearIce::error("Try `$executed --help` for more information\n");
-        }        
+            if($this->hasHelp)
+            {
+                ClearIce::error("Try `$executed --help` for more information\n");
+            } 
+        }            
     }
     
     /**
