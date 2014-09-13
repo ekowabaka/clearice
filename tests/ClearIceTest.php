@@ -1,16 +1,19 @@
 <?php
-require_once "ClearIce.php";
 
 error_reporting(E_ALL ^ E_NOTICE);
 
+require "vendor/autoload.php";
+
+use clearice\ClearIce;
+use org\bovigo\vfs\vfsStream;
+
 class ClearIceTest extends PHPUnit_Framework_TestCase
 {
-    private $cli;
     
     public function setup()
     {
-        $this->cli = new ClearIce();
-        $this->cli->addOptions(
+        ClearIce::reset();
+        ClearIce::addOptions(
             array(
                 'short' => 'i',
                 'long' => 'input',
@@ -57,7 +60,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
     public function testParsingLongOptions()
     {
         global $argv;
-        $this->cli->addOptions(            
+        ClearIce::addOptions(            
             's',
             'some-long-option'
         );        
@@ -70,7 +73,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "--verbose"
         );
         
-        $options  = $this->cli->parse();
+        $options = ClearIce::parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -95,7 +98,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-v"
         );
         
-        $options  = $this->cli->parse();
+        $options  = ClearIce::parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -118,7 +121,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-o/myfiles/wiki",
         );
         
-        $options  = $this->cli->parse();
+        $options  = ClearIce::parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -138,7 +141,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-vxs",
             "stand_alone"
         );        
-        $options  = $this->cli->parse();
+        $options  = ClearIce::parse();
         
         $this->assertArrayHasKey("verbose", $options);
         $this->assertArrayHasKey("create-default-index", $options);
@@ -152,7 +155,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-sxv",
             "stand_alone"
         );        
-        $options  = $this->cli->parse();
+        $options  = ClearIce::parse();
         
         $this->assertEquals(
             array(
@@ -177,7 +180,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "stand_alone_1",
             "stand_alone_2"
         );        
-        $options  = $this->cli->parse();
+        $options  = ClearIce::parse();
         $this->assertArrayHasKey("stand_alones", $options);
         $this->assertEquals(
             array(
@@ -202,7 +205,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "--unknown-option",
             "--another-unknown=something"
         );
-        $options = $this->cli->parse();        
+        $options = ClearIce::parse();        
         $this->assertArrayHasKey("unknowns", $options);
         $this->assertEquals(
             array(
@@ -228,12 +231,12 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "test.php"
         );
         
-        $this->cli->setUsage("[input] [options]..");
-        $this->cli->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
-        $this->cli->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        $this->cli->addHelp();
+        ClearIce::setUsage("[input] [options]..");
+        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+        ClearIce::addHelp();
         
-        $helpMessage = $this->cli->getHelpMessage();
+        $helpMessage = ClearIce::getHelpMessage();
         
         $this->assertEquals(
 "Simple Wiki version 1.0
@@ -273,12 +276,18 @@ Report bugs to bugs@clearice.tld
             '--an-unknown'
         );
         
-        $cli = $this->getMock('ClearIce', array('error'));        
-        $cli->expects($this->once())->method('error')->with("test.php: invalid option -- an-unknown\n");
+        vfsStream::setup('std');
+        $stderr = vfsStream::url('std/error');
         
-        $cli->addOptions('a-known');
-        $cli->setStrict(true);
-        $cli->parse(); 
+        ClearIce::addOptions('a-known');
+        ClearIce::setStrict(true);
+        ClearIce::setStreamUrl('error', $stderr);
+        ClearIce::parse(); 
+        
+        $this->assertStringEqualsFile(
+            $stderr, 
+            "test.php: invalid option -- an-unknown\n"
+        );
     }
     
     public function testStrictWithHelp()
@@ -288,16 +297,21 @@ Report bugs to bugs@clearice.tld
             "test.php",
             '--an-unknown'
         );
+
+        vfsStream::setup('std');
+        $stderr = vfsStream::url('std/error');
         
-        $cli = $this->getMock('ClearIce', array('error'));        
-        $cli->expects($this->at(0))->method('error')->with("test.php: invalid option -- an-unknown\n");
-        $cli->expects($this->at(1))->method('error')->with("Try `test.php --help` for more information\n");
-        
-        $cli->addOptions('a-known');
-        $cli->setStrict(true);
-        $cli->addHelp();
-        $cli->parse(); 
-    }    
+        ClearIce::addOptions('a-known');
+        ClearIce::setStrict(true);
+        ClearIce::setStreamUrl('error', $stderr);
+        ClearIce::addHelp();
+        ClearIce::parse();
+                
+        $this->assertStringEqualsFile(
+            $stderr, 
+            "test.php: invalid option -- an-unknown\nTry `test.php --help` for more information\n"
+        );
+    }
     
     public function testMultipleUsage()
     {
@@ -306,17 +320,17 @@ Report bugs to bugs@clearice.tld
             "test.php"
         );
         
-        $this->cli->setUsage(
+        ClearIce::setUsage(
             array(
                 "[input] [options]..",
                 "[output] [options].."
             )
         );
-        $this->cli->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
-        $this->cli->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        $this->cli->addHelp();
+        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+        ClearIce::addHelp();
         
-        $helpMessage = $this->cli->getHelpMessage();
+        $helpMessage = ClearIce::getHelpMessage();
         
         $this->assertEquals(
 "Simple Wiki version 1.0
