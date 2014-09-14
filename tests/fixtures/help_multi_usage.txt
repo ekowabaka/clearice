@@ -6,6 +6,7 @@ Usage:
   test.php [input] [options]..
   test.php [output] [options]..
 
+Options:
   -i, --input=VALUE          specifies where the input files for the wiki are
                              found.
   -o, --output=VALUE         specifies where the wiki should be written to

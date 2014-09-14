@@ -1,0 +1,18 @@
+Simple Wiki version 1.0
+A sample or should I say dummy wiki app to help explain ClearIce. This app
+practically does nothing.
+
+Usage:
+  test generate --target=[TARGET]
+
+Options for generate command:
+  -t, --target=VALUE         specify where the generated wiki should be
+
+Options:
+  -v, --verbose              display more information
+  -h, --help                 shows this help message
+
+Hope you had a nice time learning about ClearIce. We're pretty sure your
+cli apps would no longer be boring to work with.
+
+Report bugs to bugs@clearice.tld

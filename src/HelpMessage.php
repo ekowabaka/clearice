@@ -6,20 +6,28 @@ class HelpMessage
 {
     private $message = '';
     
-    public function __construct($options, $description, $usage, $footnote)
+    public function __construct($params)
     {
-        $optionHelp = array();
-        foreach ($options as $option)
+        $optionHelp = $this->getOptionsHelp($params['options']);
+        
+        $sections['description'] = array(wordwrap($params['description']));
+        $sections['usage'] = $this->getUsageMessage($params);
+        
+        if(count($params['commands']) > 0 && $params['command'] == '') 
         {
-            $optionHelp[] = implode("\n", $this->formatOptionHelp($option));
+            $sections['commands'] = $this->getCommandsHelp($params['commands']); 
+        }
+        else if($params['command'] != '')
+        {
+            $sections['command_options'] = $this->getOptionsHelp(
+                $params['options'], 
+                $params['command'], 
+                "Options for {$params['command']} command:"
+            );
         }
         
-        $sections = array(
-            'description' => array(wordwrap($description)),
-            'usage' => $this->getUsageMessage($usage),
-            'options' => $optionHelp,
-            'footnote' => array('', wordwrap($footnote), '')
-        );
+        $sections['options'] = $optionHelp;
+        $sections['footnote'] = array(wordwrap($params['footnote']), '');
         
         foreach($sections as $i => $section)
         {
@@ -27,6 +35,29 @@ class HelpMessage
         }
         
         $this->message = implode("\n", $sections);        
+    }
+    
+    private function getCommandsHelp($commands)
+    {
+        $commandsHelp = array('Commands:');
+        foreach ($commands as $command)
+        {
+            $commandsHelp[] = implode("\n", $this->formatCommandHelp($command));
+        }
+        $commandsHelp[] = '';    
+        return $commandsHelp;
+    }
+    
+    private function getOptionsHelp($options, $command = '', $title = 'Options:')
+    {
+        $optionHelp = array($title);
+        foreach ($options as $option)
+        {
+            if($option['command'] != $command) continue;
+            $optionHelp[] = implode("\n", $this->formatOptionHelp($option));
+        }      
+        $optionHelp[] = '';
+        return $optionHelp;
     }
     
     private function formatValue($option)
@@ -61,9 +92,9 @@ class HelpMessage
         return $argumentHelp;
     }
     
-    private function wrapHelp($argumentPart, &$help)
+    private function wrapHelp($argumentPart, &$help, $minSize = 29)
     {
-        if(strlen($argumentPart) <= 29)
+        if(strlen($argumentPart) <= $minSize)
         {
             return $argumentPart . array_shift($help);
         }
@@ -88,10 +119,38 @@ class HelpMessage
         return $optionHelp;
     }  
     
-    private function getUsageMessage($usage)
+    private function formatCommandHelp($command)
+    {
+        $commandHelp = array();
+        $help = explode("\n", wordwrap($command['help'], 59));
+        $commandHelp[] = $this->wrapHelp(sprintf("% -20s", $command['command']), $help, 20);
+        foreach($help as $helpLine)
+        {
+            $commandHelp[] = str_repeat(' ', 20) . $helpLine;
+        }
+        return $commandHelp;
+    }
+    
+    private function getUsageMessage($params)
     {
         global $argv;
         $usageMessage = array('');
+        
+        if($params['command'] != '')
+        {
+            if(isset($params['commands'][$params['command']]['usage']))
+            {
+                $usage = $params['commands'][$params['command']]['usage'];
+            }
+            else
+            {
+                $usage = "{$params['command']} [options]..";
+            }
+        }
+        else
+        {
+            $usage = $params['usage'];
+        }
         
         if(is_string($usage))
         {
@@ -102,7 +161,7 @@ class HelpMessage
             $usageMessage[] = "Usage:";
             foreach($usage as $usage)
             {
-                $usageMessage[] = "  {$argv[0]} $usage";
+                $usageMessage[] = "  {$argv[0]} {$usage}";
             }
         }
         $usageMessage[] = "";

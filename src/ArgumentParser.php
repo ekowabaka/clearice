@@ -121,8 +121,8 @@ class ArgumentParser
         }
         
         $this->showStrictErrors($executed);
-        $this->showHelp();
         $this->aggregateOptions();
+        $this->showHelp();
         
         return $this->parsedOptions;
     }
@@ -159,8 +159,12 @@ class ArgumentParser
     {
         if(isset($this->parsedOptions['help']))
         {
-            ClearIce::output($this->getHelpMessage());
-        }        
+            ClearIce::output($this->getHelpMessage($this->parsedOptions['__command__']));
+        } 
+        if($this->parsedOptions['__command__'] == 'help')
+        {
+            ClearIce::output($this->getHelpMessage($this->standAlones[0]));
+        }
     }
 
     private function showStrictErrors($executed)
@@ -207,9 +211,10 @@ class ArgumentParser
     
     private function getCommand()
     {
-        if(count($this->commands) > 0)
+        $commands = array_keys($this->commands);
+        if(count($commands) > 0)
         {
-            $command = array_search($this->arguments[0], $this->commands);
+            $command = array_search($this->arguments[0], $commands);
             if($command === false)
             {
                 $command = '__default__';
@@ -228,6 +233,14 @@ class ArgumentParser
         return $command;
     } 
     
+    private function stringCommandToArray($command)
+    {
+        return array(
+            'help' => '',
+            'command' => $command
+        );
+    }
+    
     
     /**
      * Add commands for parsing. This method can take as many commands as possible.
@@ -239,7 +252,14 @@ class ArgumentParser
         //$this->commands = array_merge($this->commands, func_get_args());
         foreach(func_get_args() as $command)
         {
-            $this->commands[] = $command;
+            if(is_string($command))
+            {
+                $this->commands[$command] = $this->stringCommandToArray($command);
+            }
+            else
+            {
+                $this->commands[$command['command']] = $command;
+            }
         }
     }
     
@@ -296,8 +316,9 @@ class ArgumentParser
      * a short one represented by -h.
      */
     public function addHelp()
-    {
-        if($this->hasHelp) return;
+    {  
+        global $argv;
+      
         $this->addOptions(
             array(
                 'short' => 'h',
@@ -305,6 +326,17 @@ class ArgumentParser
                 'help' => 'shows this help message'
             )
         );
+        
+        if(count($this->commands) > 0)
+        {
+            $this->addCommands(
+                array(
+                    'command' => 'help',
+                    'help' => "displays specific help for any of the given commands.\nUsage: {$argv[0]} help [command]"
+                )
+            );
+        }
+        
         $this->hasHelp = true;
     }
     
@@ -341,13 +373,17 @@ class ArgumentParser
      * @global type $argv
      * @return string
      */
-    public function getHelpMessage() 
+    public function getHelpMessage($command = '') 
     {
         return (string) new HelpMessage(
-            $this->options, 
-            $this->description, 
-            $this->usage,
-            $this->footnote
+            array(
+                'options' => $this->options, 
+                'description' => $this->description, 
+                'usage' => $this->usage,
+                'commands' => $this->commands,
+                'footnote' => $this->footnote,
+                'command' => $command
+            )
         );
     }    
 }
