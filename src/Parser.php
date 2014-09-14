@@ -320,19 +320,24 @@ class Parser
         }        
     }
     
+    private function getShortOptionLongKey($command, $shortOption)
+    {
+        return isset($this->optionsMap[$command][$shortOption]['long']) ? 
+            $this->optionsMap[$command][$shortOption]['long'] : $shortOption;        
+    }
+    
     /**
      * @param string $shortOptionsString
      */
     private function parseShortOptions($shortOptionsString, $command)
     {
+        if(strlen($shortOptionsString) == 0) return;
         $shortOption = $shortOptionsString[0];
         $remainder = substr($shortOptionsString, 1);
             
-        //@todo Whoops ... I need to simplify this someday
         if(isset($this->optionsMap[$command][$shortOption]))
         {
-            $key = isset($this->optionsMap[$command][$shortOption]['long']) ? 
-                $this->optionsMap[$command][$shortOption]['long'] : $shortOption;
+            $key = $this->getShortOptionLongKey($command, $shortOption);
             if($this->optionsMap[$command][$shortOption]['has_value'] === true)
             {
                 $this->setValue($command, $key, $remainder);
@@ -340,10 +345,6 @@ class Parser
             else
             {
                 $this->parsedOptions[$key] = true;
-                if(strlen($remainder) == 0) 
-                {
-                    return;
-                }
                 $this->parseShortOptions($remainder, $command);
             }
         }
@@ -356,15 +357,7 @@ class Parser
             }
             
             $this->skippedShorts .= $shortOption;
-            
-            if(strlen($remainder) == 0) 
-            {
-                return;
-            }
-            else
-            {
-                return $this->parseShortOptions($remainder, $command);
-            }
+            $this->parseShortOptions($remainder, $command);
         }
     }
     
