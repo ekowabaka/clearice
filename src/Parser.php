@@ -96,24 +96,13 @@ class Parser
     {
         global $argv;
         $this->arguments = $argv;
-        $success = FALSE;
         $executed = array_shift($this->arguments);
 
         $this->parsedOptions['__command__'] = $this->getCommand();
         
         foreach($this->arguments as $argument)
         {
-            if($this->parsedOptions['__command__'] != '__default__')
-            {
-                $this->logUnknownOption = false;
-                $success = $this->parseArgument($argument, $this->parsedOptions['__command__']);
-            }
-            
-            if($success === false)
-            {
-                $this->logUnknownOption = true;                
-                $this->parseArgument($argument, '__default__');
-            }
+            $this->identifyArgument($argument);
         }
         
         $this->showStrictErrors($executed);
@@ -121,6 +110,22 @@ class Parser
         $this->aggregateOptions();
         
         return $this->parsedOptions;
+    }
+    
+    private function identifyArgument($argument)
+    {
+        $success = FALSE;        
+        if($this->parsedOptions['__command__'] != '__default__')
+        {
+            $this->logUnknownOption = false;
+            $success = $this->parseArgument($argument, $this->parsedOptions['__command__']);
+        }
+
+        if($success === false)
+        {
+            $this->logUnknownOption = true;                
+            $this->parseArgument($argument, '__default__');
+        }        
     }
     
     private function aggregateOptions()
@@ -161,7 +166,8 @@ class Parser
     
     /**
      * @param string $argument
-     * @param string $value
+     * @param mixed $value
+     * @param string $command Description
      */
     private function setLongOption($argument, $value, $command)
     {
@@ -182,6 +188,17 @@ class Parser
         return $return;
     }
     
+    private function setShortOption($argument, $command)
+    {
+        $this->skippedShorts = '';
+        $this->parseShortOptions($argument, $command);
+        if($this->skippedShorts != '' && $command != '__default__')
+        {
+            $this->logUnknownOption = true;                
+            $this->parseShortOptions($this->skippedShorts, '__default__');
+        }
+    }
+    
     private function parseArgument($argument, $command)
     {
         $return = true;
@@ -195,14 +212,8 @@ class Parser
         }
         else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
         {
-            $this->skippedShorts = '';
-            $this->parseShortOptions($matches['option'], $command);
-            if($this->skippedShorts != '' && $command != '__default__')
-            {
-                $this->logUnknownOption = true;                
-                $this->parseShortOptions($this->skippedShorts, '__default__');
-                $return = true;
-            }
+            $this->setShortOption($matches['option'], $command);
+            $return = true;
         }
         else
         {
