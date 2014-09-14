@@ -16,7 +16,7 @@ class HelpMessage
         
         $sections = array(
             'description' => array(wordwrap($description)),
-            'usage' => $usage,
+            'usage' => $this->getUsageMessage($usage),
             'options' => $optionHelp,
             'footnote' => array('', wordwrap($footnote), '')
         );
@@ -87,6 +87,28 @@ class HelpMessage
         }        
         return $optionHelp;
     }  
+    
+    private function getUsageMessage($usage)
+    {
+        global $argv;
+        $usageMessage = array('');
+        
+        if(is_string($usage))
+        {
+            $usageMessage[] = "Usage:\n  {$argv[0]} " . $usage;
+        }
+        elseif (is_array($usage)) 
+        {
+            $usageMessage[] = "Usage:";
+            foreach($usage as $usage)
+            {
+                $usageMessage[] = "  {$argv[0]} $usage";
+            }
+        }
+        $usageMessage[] = "";
+        
+        return $usageMessage;
+    }    
     
     public function __toString()
     {

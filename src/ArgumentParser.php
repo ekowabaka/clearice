@@ -2,7 +2,7 @@
 
 namespace clearice;
 
-class Parser
+class ArgumentParser
 {
     /**
      * A map of all the options the parser recognises. The map is actually an
@@ -74,8 +74,8 @@ class Parser
     private $parsedOptions = array();
     private $unknownOptions = array();
     private $standAlones = array();
-
-    private $logUnknownOption = true;    
+    private $longOptionParser;
+    private $shortOptionParser;
     
     /**
      *
@@ -83,7 +83,20 @@ class Parser
      */
     private $arguments = array();
     
-    private $skippedShorts;
+    public function addUnknownOption($unknown)
+    {
+        $this->unknownOptions[] = $unknown;
+    }
+    
+    public function addParsedOption($key, $value)
+    {
+        $this->parsedOptions[$key] = $value;
+    }
+    
+    public function addParsedMultiOption($key, $value)
+    {
+        $this->parsedOptions[$key][] = $value;
+    }
     
     /**
      * Parse the command line arguments and return a structured array which
@@ -99,10 +112,12 @@ class Parser
         $executed = array_shift($this->arguments);
 
         $this->parsedOptions['__command__'] = $this->getCommand();
+        $this->longOptionParser = new parsers\LongOptionParser($this, $this->optionsMap);
+        $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->optionsMap);
         
         foreach($this->arguments as $argument)
         {
-            $this->identifyArgument($argument);
+            $this->parseArgument($argument);
         }
         
         $this->showStrictErrors($executed);
@@ -112,19 +127,19 @@ class Parser
         return $this->parsedOptions;
     }
     
-    private function identifyArgument($argument)
+    private function parseArgument($argument)
     {
         $success = FALSE;        
         if($this->parsedOptions['__command__'] != '__default__')
         {
-            $this->logUnknownOption = false;
-            $success = $this->parseArgument($argument, $this->parsedOptions['__command__']);
+            parsers\BaseParser::setLogUnknowns(false);
+            $success = $this->getArgumentWithCommand($argument, $this->parsedOptions['__command__']);
         }
 
         if($success === false)
         {
-            $this->logUnknownOption = true;                
-            $this->parseArgument($argument, '__default__');
+            parsers\BaseParser::setLogUnknowns(true);                
+            $this->getArgumentWithCommand($argument, '__default__');
         }        
     }
     
@@ -164,55 +179,23 @@ class Parser
         }            
     }
     
-    /**
-     * @param string $argument
-     * @param mixed $value
-     * @param string $command Description
-     */
-    private function setLongOption($argument, $value, $command)
-    {
-        $return = true;
-        if(!isset($this->optionsMap[$command][$argument]))
-        {
-            if($this->logUnknownOption) 
-            {
-                $this->unknownOptions[] = $argument;
-                $this->parsedOptions[$argument] = $value;
-            }
-            $return = false;
-        }
-        else
-        {
-            $this->setValue($command, $argument, $value);
-        }
-        return $return;
-    }
-    
-    private function setShortOption($argument, $command)
-    {
-        $this->skippedShorts = '';
-        $this->parseShortOptions($argument, $command);
-        if($this->skippedShorts != '' && $command != '__default__')
-        {
-            $this->logUnknownOption = true;                
-            $this->parseShortOptions($this->skippedShorts, '__default__');
-        }
-    }
-    
-    private function parseArgument($argument, $command)
+    private function getArgumentWithCommand($argument, $command)
     {
         $return = true;
         if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches))
         {
-            $return = $this->setLongOption($matches['option'], $matches['value'], $command);
+            $parser = $this->longOptionParser;
+            $return = $parser->parse($matches['option'], $matches['value'], $command);
         }
         else if(preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches))
         {
-            $return = $this->setLongOption($matches['option'], true, $command);
+            $parser = $this->longOptionParser;
+            $return = $parser->parse($matches['option'], true, $command);
         }
         else if(preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches))
         {
-            $this->setShortOption($matches['option'], $command);
+            $parser = $this->shortOptionParser;
+            $parser->parse($matches['option'], $command);
             $return = true;
         }
         else
@@ -308,59 +291,6 @@ class Parser
         $this->strict = $strict;
     }
     
-    private function setValue($command, $key, $value)
-    {
-        if($this->optionsMap[$command][$key]['multi'] === true)
-        {
-            $this->parsedOptions[$key][] = $value;                                    
-        }
-        else
-        {
-            $this->parsedOptions[$key] = $value;
-        }        
-    }
-    
-    private function getShortOptionLongKey($command, $shortOption)
-    {
-        return isset($this->optionsMap[$command][$shortOption]['long']) ? 
-            $this->optionsMap[$command][$shortOption]['long'] : $shortOption;        
-    }
-    
-    /**
-     * @param string $shortOptionsString
-     */
-    private function parseShortOptions($shortOptionsString, $command)
-    {
-        if(strlen($shortOptionsString) == 0) return;
-        $shortOption = $shortOptionsString[0];
-        $remainder = substr($shortOptionsString, 1);
-            
-        if(isset($this->optionsMap[$command][$shortOption]))
-        {
-            $key = $this->getShortOptionLongKey($command, $shortOption);
-            if($this->optionsMap[$command][$shortOption]['has_value'] === true)
-            {
-                $this->setValue($command, $key, $remainder);
-            }
-            else
-            {
-                $this->parsedOptions[$key] = true;
-                $this->parseShortOptions($remainder, $command);
-            }
-        }
-        else
-        {
-            if($this->logUnknownOption) 
-            {
-                $this->unknownOptions[] = $shortOption;
-                $this->parsedOptions[$shortOption] = true;
-            }
-            
-            $this->skippedShorts .= $shortOption;
-            $this->parseShortOptions($remainder, $command);
-        }
-    }
-    
     /**
      * Adds the two automatic help options. A long one represented by --help and
      * a short one represented by -h.
@@ -405,28 +335,6 @@ class Parser
         $this->footnote = $footnote;
     }
     
-    private function getUsageMessage()
-    {
-        global $argv;
-        $usageMessage = array('');
-        
-        if(is_string($this->usage))
-        {
-            $usageMessage[] = "Usage:\n  {$argv[0]} " . $this->usage;
-        }
-        elseif (is_array($this->usage)) 
-        {
-            $usageMessage[] = "Usage:";
-            foreach($this->usage as $usage)
-            {
-                $usageMessage[] = "  {$argv[0]} $usage";
-            }
-        }
-        $usageMessage[] = "";
-        
-        return $usageMessage;
-    }
-    
     /**
      * Returns the help message as a string.
      * 
@@ -438,7 +346,7 @@ class Parser
         return (string) new HelpMessage(
             $this->options, 
             $this->description, 
-            $this->getUsageMessage(),
+            $this->usage,
             $this->footnote
         );
     }    

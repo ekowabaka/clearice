@@ -148,7 +148,7 @@ class ClearIce
     {
         if(self::$parser === null)
         {
-            self::$parser = new Parser();
+            self::$parser = new ArgumentParser();
         }
         return self::$parser;
     }
