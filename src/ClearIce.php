@@ -30,28 +30,69 @@
 namespace clearice;
 
 /**
- * ClearIce class.
+ * ClearIce class forms the static entry for the entire library. All operations
+ * of the library are done through this class. Being static, the class maintains
+ * singleton objects with which it performs all its operations.
  */
 class ClearIce
 {   
     /**
-     *
+     * An array of the three streams used primarily for I/O. These are the
+     * standard output stream, the standard input stream and the error stream.
+     * Being an associative array, this property presents the three streams
+     * through its output, input and error keys.
+     * 
      * @var array
      */
     private static $streams = array();
     
+    /**
+     * The URLs of the various streams used for I/O. This variable stores these
+     * URLs under the input, output and error streams respectively. 
+     * 
+     * @see ClearIce::$streams
+     * @var array
+     */
     private static $streamUrls = array(
         'input' => 'php://stdin',
         'output' => 'php://stdout',
         'error' => 'php://stderr'
     );
     
+    /**
+     * An instance of the ArgumentParser class which is maintained as a singleton
+     * for the purposes of parsing command line arguments.
+     * 
+     * @var \clearice\ArgumentParser
+     */
     private static $parser = null;
     
     /**
      * A function for getting answers to questions from users interractively.
+     * This function takes the question and an optional array of parameters. 
+     * The question is a regular string and the array provides extra information
+     * about the question being asked.
+     * 
+     * The array takes the following parameters
+     * 
+     * **answers**
+     * An array of posible answers to the question. Once this array is available
+     * the user would be expected to provide an answer which is specifically in
+     * the list. Any other answer would be rejected. The library would print
+     * out all the possible answers so the user is aware of which answers
+     * are valid.
+     * 
+     * **default**
+     * A default answer which should be used in case the user does not supply an
+     * answer. The library would make the user aware of this default by placing
+     * it in square brackets after the question.
+     * 
+     * **required**
+     * If this flag is set, the user would be required to provide an answer. A
+     * blank answer would be rejected.
+     * 
      * @param $question The question you want to ask
-     * @param $params An array of possible answers that this function should validate
+     * @param $params An array of options that this function takes.
      */
     public static function getResponse($question, $params = array())
     {
@@ -97,18 +138,36 @@ class ClearIce
         }
     } 
     
+    /**
+     * Set the URL of a particular stream. Once a new URL is set, any old streams
+     * are closed and the new one is opened in its place.
+     * 
+     * @param string $type The type of stream to set a URL for. The value of this 
+     *                     could either be 'error', 'input' or 'output'.
+     * 
+     * @param string $url  The URL of the stream. Based on the type of stream
+     *                     being requested, the right kind of permissions must
+     *                     be set. For instance 
+     */
     public static function setStreamUrl($type, $url)
     {
         self::$streamUrls[$type] = $url;
         unset(self::$streams[$type]);
     }
     
+    /**
+     * Safely EXIT the app. Usefull if testing so that the termination doesn't 
+     * kill the test environment. 
+     */
     public static function terminate()
     {
         if(!defined('TESTING')) die();
     }
     
     /**
+     * Write a string to the output stream. If an output stream is not defined
+     * this method writes to the standard output (the console) by default.
+     * 
      * @param string $string
      */
     public static function output($string)
@@ -116,16 +175,37 @@ class ClearIce
         fputs(self::getStream('output'), $string);
     }
     
+    /**
+     * Write a string to the error stream. If an error stream is not defined
+     * this method writes to the standard error (the console) by default.
+     * 
+     * @param string $string
+     */    
     public static function error($string)
     {
         fputs(self::getStream('error'), $string);
     }    
     
+    /**
+     * Reads a line from the input stream. If an input stream is not defined
+     * this method reads an input from the standard input (usually a keyboard)
+     * by default.
+     * 
+     * @return string
+     */
     public static function input()
     {
         return fgets(self::getStream('input'));
     }
     
+    /**
+     * Returns a stream resource for a given stream type. If the stream has not
+     * been opened this method opens the stream before returning it. This ensures
+     * that there is only one handle to any stream at any given time.
+     * 
+     * @param string $type
+     * @return resource
+     */
     private static function getStream($type)
     {
         if(!isset(self::$streams[$type]))
