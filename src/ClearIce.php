@@ -1,7 +1,5 @@
 <?php
-/**
- * A class for parsing command line arguments in PHP applications
- * 
+/*
  * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
  * 

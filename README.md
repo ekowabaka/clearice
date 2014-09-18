@@ -124,7 +124,7 @@ For example the following script is intended for an app which
 generates a wiki. 
 
 ````php
-// Create an instance
+
 use clearice\ClearIce;
 
 // Add options
@@ -400,7 +400,6 @@ Full Example Listing
 // Require the clear ice sources
 require_once "ClearIce.php";
 
-// Create an instance
 $cli = new ClearIce();
 
 // Add options
