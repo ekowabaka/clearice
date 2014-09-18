@@ -165,7 +165,7 @@ class ArgumentParser
         {
             ClearIce::output($this->getHelpMessage($this->standAlones[0]));
         }
-        die();
+        ClearIce::terminate();
     }
 
     private function showStrictErrors($executed)

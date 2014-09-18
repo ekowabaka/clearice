@@ -7,6 +7,8 @@ require "vendor/autoload.php";
 use clearice\ClearIce;
 use org\bovigo\vfs\vfsStream;
 
+define('TESTING', 'yes');
+
 class ClearIceTest extends PHPUnit_Framework_TestCase
 {
     

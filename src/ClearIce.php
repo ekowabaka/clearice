@@ -103,6 +103,11 @@ class ClearIce
         unset(self::$streams[$type]);
     }
     
+    public static function terminate()
+    {
+        if(!defined('TESTING')) die();
+    }
+    
     /**
      * @param string $string
      */
