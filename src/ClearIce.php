@@ -200,8 +200,9 @@ class ClearIce
     
     /**
      * Returns a stream resource for a given stream type. If the stream has not
-     * been opened this method opens the stream before returning it. This ensures
-     * that there is only one handle to any stream at any given time.
+     * been opened this method opens the stream before returning the asociated
+     * resource. This ensures that there is only one resource handle to any 
+     * stream at any given time.
      * 
      * @param string $type
      * @return resource
@@ -227,6 +228,11 @@ class ClearIce
         'setStrict'
     );
     
+    /**
+     * Returns a singleton instance of the argument parser.
+     * 
+     * @return \clearice\ArgumentParser
+     */
     private static function getParserInstance()
     {
         if(self::$parser === null)
@@ -236,6 +242,13 @@ class ClearIce
         return self::$parser;
     }
     
+    
+    /**
+     * @param string $name The name of the method called
+     * @param array $arguments An array of arguments passed to the method
+     * @return mixed
+     * @throws \Exception
+     */
     public static function __callStatic($name, $arguments)
     {
         if(array_search($name, self::$parserMethods) === false)
@@ -250,6 +263,10 @@ class ClearIce
         }
     }
     
+    /**
+     * Reset the library. Deletes all singletons and provides you with a fresh
+     * class.
+     */
     public static function reset()
     {
         self::$parser = null;
