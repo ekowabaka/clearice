@@ -30,7 +30,11 @@
 namespace clearice;
 
 /**
- * Class responsible for generating the help messages.
+ * Class responsible for generating the help messages. This class reads all the
+ * options passed on to the ClearIce library and generates help messages. The
+ * help messages could either be displayed automatically when the passes the --help
+ * option (on an app with the automatic help feature enabled) is passed or when 
+ * the app explicitly calls the ClearIce::getHelpMessage() method.
  */
 class HelpMessage
 {
@@ -82,7 +86,7 @@ class HelpMessage
     
     /**
      * The method runs through all the commands and generates formatted lines
-     * of text to be used as the help message for all commands.
+     * of text to be used as the help message for each commands.
      * 
      * @param array $commands An array of associative arrays with infomation 
      *                        about all commands configured into ClearIce.
@@ -101,7 +105,7 @@ class HelpMessage
     
     /**
      * The method runs through all the commands and generates formatted lines
-     * of text to be used as the help message for options.
+     * of text to be used as the help message each option.
      * 
      * @param array $options    An array of associative arrays with infomation 
         *                       about all options configured into ClearIce.
@@ -123,6 +127,14 @@ class HelpMessage
         return $optionHelp;
     }
     
+    /**
+     * Formats the help line of a value which is accepted by an option. If a 
+     * value type is provided in the option, it is used if not it uses a generic 
+     * "VALUE" to show that an option can accept a value.
+     * 
+     * @param array $option
+     * @return string
+     */
     private function formatValue($option)
     {
         if($option['has_value'])
@@ -131,6 +143,16 @@ class HelpMessage
         }
     }
     
+    /**
+     * Formats the argument parts of the help line. If an option has both a long
+     * and a short form both forms are put together, if it has either a short or
+     * a long form, the respective form is formatted. The formatting includes
+     * placing a comma between the two forms and padding the output with the
+     * appropriate spaces.
+     * 
+     * @param array $option
+     * @return string
+     */
     private function formatArgument($option)
     {
         $valueHelp = $this->formatValue($option);
