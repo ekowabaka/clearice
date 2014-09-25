@@ -46,7 +46,9 @@ class HelpMessage
     
     /**
      * The constructor for the HelpMessage class. This constructor does the work
-     * of generating the help message.
+     * of generating the help message. This means that nothing can be done to
+     * change the help message after the class has been instantiated.
+     * 
      * @param array $params An associative array which contains the details needed
      *                      to help generate the help message.s
      */
@@ -177,6 +179,16 @@ class HelpMessage
         return $argumentHelp;
     }
     
+    /**
+     * Wraps the help message arround the argument by producing two different
+     * columns. The argument is placed in the first column and the help message
+     * is placed in the second column.
+     * 
+     * @param string $argumentPart
+     * @param string $help
+     * @param integer $minSize
+     * @return array
+     */
     private function wrapHelp($argumentPart, &$help, $minSize = 29)
     {
         if(strlen($argumentPart) <= $minSize)
@@ -189,6 +201,13 @@ class HelpMessage
         }        
     }
     
+    /**
+     * Format the help message for an option. This would involve generating a 
+     * sring with your option and and wrapping the help message around it.
+     * 
+     * @param type $option
+     * @return string
+     */
     private function formatOptionHelp($option)
     {
         $optionHelp = array();
@@ -204,6 +223,13 @@ class HelpMessage
         return $optionHelp;
     }  
     
+    /**
+     * Format the help message for a command. This would involve wrapping the
+     * help message for a given command around the command.
+     * 
+     * @param type $command
+     * @return string
+     */
     private function formatCommandHelp($command)
     {
         $commandHelp = array();
@@ -216,6 +242,14 @@ class HelpMessage
         return $commandHelp;
     }
     
+    /**
+     * Returns the usage message for either the command or the main script
+     * depending on the state in which the HelpMessage class currently is.
+     * 
+     * @global array $argv The arguments passed to the 
+     * @param array $params A copy of the parameters passed to the HelpMessage class
+     * @return string
+     */
     private function getUsageMessage($params)
     {
         global $argv;
@@ -254,6 +288,10 @@ class HelpMessage
         return $usageMessage;
     }    
     
+    /**
+     * Returns the message as a string.
+     * @return string
+     */
     public function __toString()
     {
         return $this->message;

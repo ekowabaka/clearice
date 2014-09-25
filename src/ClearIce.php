@@ -36,6 +36,16 @@ namespace clearice;
  */
 class ClearIce
 {   
+    const OUTPUT_LEVEL_0 = 0;
+    
+    const OUTPUT_LEVEL_1 = 1;
+    
+    const OUTPUT_LEVEL_2 = 2;
+    
+    const OUTPUT_LEVEL_3 = 3;
+    
+    private static $defaultOutputLevel = self::OUTPUT_LEVEL_1;
+    
     /**
      * An array of the three streams used primarily for I/O. These are the
      * standard output stream, the standard input stream and the error stream.
@@ -170,9 +180,12 @@ class ClearIce
      * 
      * @param string $string
      */
-    public static function output($string)
+    public static function output($string, $outputLevel = self::OUTPUT_LEVEL_1, $stream = 'output')
     {
-        fputs(self::getStream('output'), $string);
+        if($outputLevel >= self::$defaultOutputLevel)
+        {
+            fputs(self::getStream($stream), $string);
+        }
     }
     
     /**
@@ -181,11 +194,21 @@ class ClearIce
      * 
      * @param string $string
      */    
-    public static function error($string)
+    public static function error($string, $outputLevel = self::OUTPUT_LEVEL_1)
     {
-        fputs(self::getStream('error'), $string);
+        self::output($string, $outputLevel, 'error');
     }    
     
+    public static function setOutputLevel($outputLevel)
+    {
+        self::$defaultOutputLevel = $outputLevel;
+    }
+    
+    public static function getOutputLevel()
+    {
+        return self::$defaultOutputLevel;
+    }
+
     /**
      * Reads a line from the input stream. If an input stream is not defined
      * this method reads an input from the standard input (usually a keyboard)
@@ -265,7 +288,8 @@ class ClearIce
     
     /**
      * Reset the library. Deletes all singletons and provides you with a fresh
-     * class.
+     * class ... sort of! This method is primarily used during testing to 
+     * refresh the class in between tests.
      */
     public static function reset()
     {

@@ -1,5 +1,31 @@
 <?php
-
+/*
+ * ClearIce CLI Argument Parser
+ * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ * 
+ * @author James Ainooson <jainooson@gmail.com>
+ * @copyright Copyright 2012-2014 James Ekow Abaka Ainooson
+ * @license MIT
+ */
 namespace clearice;
 
 class ArgumentParser
@@ -9,7 +35,8 @@ class ArgumentParser
      * array which associates short or long options with their appropriate 
      * parameters. Options which have both long and short versions would be
      * repeated. This structure is used to quickly find the paramters of an option
-     * whether in the short form or long form.
+     * whether in the short form or long form. This parameter is automatically
+     * populated by the library as options are added.
      * 
      * @var array
      */
@@ -18,17 +45,22 @@ class ArgumentParser
     /**
      * An array of all the options that are available to the parser. Unlike the
      * ClearIce::$optionsMap parameter, this paramter just lists all the options
-     * and their parameters.
+     * and their parameters. Any option added through the ArgumentParser::addOptions()
+     * parameter is just appended to this array.
      * 
      * @var array
      */
     private $options = array();
     
     /**
-     * Should the parser be strict or not. A strict parser would terminate the
+     * Specifies whether the parser should be strict about errors or not. 
+     * A strict parser would terminate the
      * application if it doesn't understand any options. A not-strict parser
      * would just return the unknown options it encountered and expect the
-     * application to deal with it appropriately.
+     * application to deal with it appropriately. When a strict parser exits 
+     * ClearIce prints a descriptive help message which advises the user
+     * about the unknown options. In cases where the help feature has been
+     * enabled, ClearIce would go ahead to advice the user to request for help.
      * 
      * @var boolean
      */
@@ -36,7 +68,7 @@ class ArgumentParser
     
     /**
      * A flag raised when the parser already has the automatic help option 
-     * added.
+     * added. This is used to prevent multiple help options.
      * 
      * @var boolean
      */
@@ -44,7 +76,8 @@ class ArgumentParser
     
     /**
      * The usage instructions for the application displayed as part of the
-     * automatically generated help message.
+     * automatically generated help message. This message is usually printed
+     * after the description.
      * 
      * @var array|string
      */
@@ -66,23 +99,57 @@ class ArgumentParser
     private $footnote;
     
     /**
-     * An array of all the commands that the script can work with
+     * An array of all the commands that the script can work with.
      * @var array
      */
     private $commands = array();
     
+    /**
+     * Holds all the options that have already been parsed and recognized.
+     * @var array
+     */
     private $parsedOptions = array();
+    
+    /**
+     * Holds all the options that have been parsed but are unknown.
+     * @var array
+     */
     private $unknownOptions = array();
+    
+    /**
+     * Options that are standing alone.
+     * @var array
+     */
     private $standAlones = array();
+    
+    /**
+     * An instance of the long option parser used for the parsing of long options
+     * which are preceed with a double dash "--".
+     * @var \clearice\parsers\LongOptionParser
+     */
     private $longOptionParser;
+    
+    /**
+     * An instance of the short option parser used for the parsing of short optoins
+     * which are preceeded with a single dash "-".
+     * @var \clearice\parsers\ShortOptionParser
+     */
     private $shortOptionParser;
     
     /**
-     *
+     * The arguments that were passed through the command line to the script or
+     * application.
+     * 
      * @var array
      */
     private $arguments = array();
     
+    /**
+     * Adds an unknown option to the list of unknown options currently held in
+     * the parser.
+     * 
+     * @param string $unknown
+     */
     public function addUnknownOption($unknown)
     {
         $this->unknownOptions[] = $unknown;
@@ -100,7 +167,7 @@ class ArgumentParser
     
     /**
      * Parse the command line arguments and return a structured array which
-     * represents the arguments which were interpreted by clearice.
+     * represents the options which were interpreted by ClearIce.
      * 
      * @global type $argv
      * @return array
