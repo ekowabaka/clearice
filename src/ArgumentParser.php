@@ -249,6 +249,7 @@ class ArgumentParser
             {
                 ClearIce::error("Try `$executed --help` for more information\n");
             } 
+            ClearIce::terminate();
         }            
     }
     
