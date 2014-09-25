@@ -227,12 +227,13 @@ class ArgumentParser
         if(isset($this->parsedOptions['help']))
         {
             ClearIce::output($this->getHelpMessage($this->parsedOptions['__command__']));
+            ClearIce::terminate();
         } 
         if($this->parsedOptions['__command__'] == 'help')
         {
             ClearIce::output($this->getHelpMessage($this->standAlones[0]));
+            ClearIce::terminate();
         }
-        ClearIce::terminate();
     }
 
     private function showStrictErrors($executed)
