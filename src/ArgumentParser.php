@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
  * 
@@ -28,15 +28,18 @@
  */
 namespace clearice;
 
+/**
+ * Class responsible for parsing individual arguments.
+ */
 class ArgumentParser
 {
     /**
-     * A map of all the options the parser recognises. The map is actually an
-     * array which associates short or long options with their appropriate 
-     * parameters. Options which have both long and short versions would be
-     * repeated. This structure is used to quickly find the paramters of an option
-     * whether in the short form or long form. This parameter is automatically
-     * populated by the library as options are added.
+     * A map of all the options the parser recognises. 
+     * The map is actually an array which associates short or long options with 
+     * their appropriate parameters. Options which have both long and short 
+     * versions would be repeated. This structure is used to quickly find the 
+     * paramters of an option whether in the short form or long form. This 
+     * parameter is automatically populated by the library as options are added.
      * 
      * @var array
      */
@@ -155,11 +158,22 @@ class ArgumentParser
         $this->unknownOptions[] = $unknown;
     }
     
+    /**
+     * Adds a known parsed option to the list of parsed options currently held
+     * in the parser.
+     * @param string $key The option.
+     * @param string $value The value asigned to the option.
+     */
     public function addParsedOption($key, $value)
     {
         $this->parsedOptions[$key] = $value;
     }
     
+    /**
+     * Adds a new value of a multi option.
+     * @param string $key The option.
+     * @param string $value The value to be appended to the list.
+     */
     public function addParsedMultiOption($key, $value)
     {
         $this->parsedOptions[$key][] = $value;
@@ -167,7 +181,9 @@ class ArgumentParser
     
     /**
      * Parse the command line arguments and return a structured array which
-     * represents the options which were interpreted by ClearIce.
+     * represents the options which were interpreted by ClearIce. The array
+     * returned has the following structure.
+     * 
      * 
      * @global type $argv
      * @return array
@@ -313,13 +329,13 @@ class ArgumentParser
     
     
     /**
-     * Add commands for parsing. This method can take as many commands as possible.
+     * Add commands for parsing. 
+     * This method can take as many commands as possible.
      * 
      * @param String
      */
     public function addCommands()
     {
-        //$this->commands = array_merge($this->commands, func_get_args());
         foreach(func_get_args() as $command)
         {
             if(is_string($command))
@@ -348,7 +364,8 @@ class ArgumentParser
     }
 
     /**
-     * Add options to be recognized. Options could either be strings or
+     * Add options to be recognized. 
+     * Options could either be strings or
      * structured arrays. Strings only define simple options. Structured arrays
      * describe options in deeper details.
      */

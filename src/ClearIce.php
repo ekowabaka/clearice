@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
  * 
@@ -30,9 +30,15 @@
 namespace clearice;
 
 /**
- * ClearIce class forms the static entry for the entire library. All operations
- * of the library are done through this class. Being static, the class maintains
- * singleton objects with which it performs all its operations.
+ * ClearIce class forms the static entry for the entire library. 
+ * All operations of the library are done through this class. Being static, 
+ * the class maintains singleton objects with which it performs all its 
+ * operations.
+ * 
+ * @method array parse() Parse the command line arguments. 
+ *          This method parses the command line arguments and return a structured array which
+ *          represents the options which were interpreted by ClearIce. The array
+ *          returned has the following structure.
  */
 class ClearIce
 {   
