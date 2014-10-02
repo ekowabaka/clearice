@@ -14,7 +14,7 @@
         <visibility></visibility>
     </parser>
     <transformer>
-        <target>docs</target>
+        <target>docs_generated</target>
     </transformer>
     <logging>
         <level>warn</level>
