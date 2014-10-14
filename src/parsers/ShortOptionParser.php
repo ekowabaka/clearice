@@ -66,8 +66,6 @@ class ShortOptionParser extends BaseParser
         {
             if(self::$logUnknowns) 
             {
-                //$this->unknownOptions[] = $shortOption;
-                //$this->parsedOptions[$shortOption] = true;
                 $this->parser->addUnknownOption($shortOption);
                 $this->parser->addParsedOption($shortOption, true);
             }
