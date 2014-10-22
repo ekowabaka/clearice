@@ -30,7 +30,7 @@
 namespace clearice;
 
 /**
- * ClearIce class forms the static entry for the entire library. 
+ * The ClearIce class forms the static entry for the entire library. 
  * All operations of the library are done through this class. Being static, 
  * the class maintains singleton objects with which it performs all its 
  * operations.
@@ -188,7 +188,7 @@ class ClearIce
      */
     public static function output($string, $outputLevel = self::OUTPUT_LEVEL_1, $stream = 'output')
     {
-        if($outputLevel >= self::$defaultOutputLevel)
+        if($outputLevel <= self::$defaultOutputLevel)
         {
             fputs(self::getStream($stream), $string);
         }
