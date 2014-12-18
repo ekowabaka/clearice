@@ -193,8 +193,9 @@ class ArgumentParser
         global $argv;
         $this->arguments = $argv;
         $executed = array_shift($this->arguments);
+        $command = $this->getCommand();
 
-        $this->parsedOptions['__command__'] = $this->getCommand();
+        $this->parsedOptions['__command__'] = $command;
         $this->longOptionParser = new parsers\LongOptionParser($this, $this->optionsMap);
         $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->optionsMap);
         
@@ -207,7 +208,22 @@ class ArgumentParser
         $this->aggregateOptions();
         $this->showHelp();
         
-        return $this->parsedOptions;
+        return $this->executeCommand($command, $this->parsedOptions);
+    }
+    
+    private function executeCommand($command, $options)
+    {
+        if($command === '__default__' || !isset($this->commands[$command]['class']))
+        {
+            return $options;
+        }
+        else
+        {
+            $class = $this->commands[$command]['class'];
+            $object = new $class();
+            unset($options['__command__']);
+            $object->run($options);
+        }
     }
     
     private function parseArgument($argument)
