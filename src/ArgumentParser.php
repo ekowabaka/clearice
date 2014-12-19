@@ -108,6 +108,12 @@ class ArgumentParser
     private $commands = array();
     
     /**
+     * The current command being run.
+     * @var string
+     */
+    private $command;
+    
+    /**
      * Holds all the options that have already been parsed and recognized.
      * @var array
      */
@@ -193,9 +199,9 @@ class ArgumentParser
         global $argv;
         $this->arguments = $argv;
         $executed = array_shift($this->arguments);
-        $command = $this->getCommand();
+        $this->command = $this->getCommand();
 
-        $this->parsedOptions['__command__'] = $command;
+        $this->parsedOptions['__command__'] = $this->command;
         $this->longOptionParser = new parsers\LongOptionParser($this, $this->optionsMap);
         $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->optionsMap);
         
@@ -208,7 +214,7 @@ class ArgumentParser
         $this->aggregateOptions();
         $this->showHelp();
         
-        return $this->executeCommand($command, $this->parsedOptions);
+        return $this->executeCommand($this->command, $this->parsedOptions);
     }
     
     private function executeCommand($command, $options)
@@ -261,7 +267,7 @@ class ArgumentParser
             ClearIce::output($this->getHelpMessage($this->parsedOptions['__command__']));
             ClearIce::terminate();
         } 
-        if($this->parsedOptions['__command__'] == 'help')
+        if($this->command == 'help')
         {
             ClearIce::output($this->getHelpMessage($this->standAlones[0]));
             ClearIce::terminate();
@@ -330,8 +336,7 @@ class ArgumentParser
         else
         {
             $command = '__default__';
-        } 
-        
+        }
         return $command;
     } 
     
