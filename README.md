@@ -12,12 +12,14 @@ presented in a style similar to what you would find in most GNU applications.
 It also allows you to perform simple I/O operations such as outputing text to standard
 output (with the capability of controlling output verbosity levels) and reading input
 from the standard input (with the capability of interactively validating input).
+Another cool feature of ClearIce is that it can automatically generate help
+texts for your apps.
 
 Using ClearIce
 --------------
-ClearIce can easily be included into any application with the help of composer.
-The packagist.org package for clearice is 
-[ekowabaka/composer](http://packagist.org/packages/ekowabaka/clearice). 
+If you manage your projects dependencies with composer then you can easily require
+[ekowabaka/composer](http://packagist.org/packages/ekowabaka/clearice) to have
+clearice included in your application. 
 
 To use clearice to parse command line arguments you can simply put ...
 

@@ -38,22 +38,6 @@ system can also provide help messages for each command defined in the applicatio
 Although you'll have to provide some of the content for all the help magic to happen,
 the tool helps format and display your content in a very consistent form.
 
-Using the library
------------------
-If you use composer to manage your project's dependencies then you can require
-`ekowabaka\clearice`. You can add the following line to the require section
-of your composer.json file
-
-````json
-{
-    ...
-    "require" : {
-        "ekowabaka/clearice" : "0.3.*"
-    }
-    ...
-}
-````
-
 Adding Options
 --------------
 To add options for the parser use the `ClearIce::addOptions` method. This method
