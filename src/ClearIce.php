@@ -220,6 +220,7 @@ class ClearIce
      * this method reads an input from the standard input (usually a keyboard)
      * by default.
      * 
+     * @todo look into using readline for this in cases where it's available
      * @return string
      */
     public static function input()

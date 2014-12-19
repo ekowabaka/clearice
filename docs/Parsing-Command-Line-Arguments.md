@@ -1,3 +1,10 @@
+Parsing Command Line Arguments
+==============================
+ClearIce started out as a command line argument parser and it pretty much does
+quite well doing that. ClearIce allows you to define which options and commands 
+are passed to your application. Option styles are quite similar to what you would
+find with most GNU style applications.
+
 Option Styles
 -------------
 Long options are preceeded with a double dash `--` and short options are preceeded with a 

@@ -8,15 +8,18 @@ ClearIce PHP Command Line Argument Parser
 [![Total Downloads](https://poser.pugx.org/ekowabaka/clearice/downloads.svg)](https://packagist.org/packages/ekowabaka/clearice)
 
 ClearIce helps PHP CLI applications to parse command line arguments which are 
-presented in an argument style similar to what you find with most GNU applications. 
-It also allows you to perform simple I/O operations.
+presented in a style similar to what you would find in most GNU applications. 
+It also allows you to perform simple I/O operations such as outputing text to standard
+output (with the capability of controlling output verbosity levels) and reading input
+from the standard input (with the capability of interactively validating input).
 
 Using ClearIce
 --------------
 ClearIce can easily be included into any application with the help of composer.
 The packagist.org package for clearice is 
-[ekowabaka/composer](http://packagist.org/packages/ekowabaka/clearice). To
-use clearice to parse command line arguments you can simply put ...
+[ekowabaka/composer](http://packagist.org/packages/ekowabaka/clearice). 
+
+To use clearice to parse command line arguments you can simply put ...
 
 ````php
 <?php
@@ -25,17 +28,36 @@ $options = \clearice\ClearIce::parse();
 print_r($options);
 ````
 
-in a file (which you can for example save as wiki.php). Then execute ...
+in a file (which you can for example save as wiki.php). Then executing ...
 
-    php wiki.php generate --input=/home/james --output=/cool
+    php wiki.php generate --input=/home/james --output=/var/www/cool-wiki
 
-Which would produce
+would produce ...
 
+    Array
+    (
+        [input] => /home/james
+        [output] => /var/www/cool-wiki
+        [stand_alones] => Array
+            (
+                [0] => generate
+            )
+
+        [unknowns] => Array
+            (
+                [0] => input
+                [1] => output
+            )
+
+    )
+
+Form more information on how to use clearice you can read through the 
+documentation. Happy programming ...
     
 
 License
 -------
-Copyright (c) 2012-2013 James Ekow Abaka Ainooson
+Copyright (c) 2012-2014 James Ekow Abaka Ainooson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
