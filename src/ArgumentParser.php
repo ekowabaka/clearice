@@ -229,6 +229,7 @@ class ArgumentParser
             $object = new $class();
             unset($options['__command__']);
             $object->run($options);
+            return $options;
         }
     }
     
