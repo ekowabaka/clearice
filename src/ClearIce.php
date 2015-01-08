@@ -52,6 +52,8 @@ class ClearIce
     
     private static $defaultOutputLevel = self::OUTPUT_LEVEL_1;
     
+    private static $outputLevelStack = array();
+    
     /**
      * An array of the three streams used primarily for I/O. These are the
      * standard output stream, the standard input stream and the error stream.
@@ -213,6 +215,17 @@ class ClearIce
     public static function getOutputLevel()
     {
         return self::$defaultOutputLevel;
+    }
+    
+    public static function pushOutputLevel($outputLevel)
+    {
+        self::$outputLevelStack[] = self::getOutputLevel();
+        self::setOutputLevel($outputLevel);
+    }
+    
+    public static function popOutputLevel()
+    {
+        self::setOutputLevel(array_pop(self::$outputLevelStack));
     }
 
     /**
