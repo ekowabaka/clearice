@@ -227,6 +227,15 @@ class ClearIce
     {
         self::setOutputLevel(array_pop(self::$outputLevelStack));
     }
+    
+    public static function resetOutputLevel()
+    {
+        if(count(self::$outputLevelStack) > 0)
+        {
+            self::setOutputLevel(reset(self::$outputLevelStack));
+            self::$outputLevelStack = array();
+        }
+    }
 
     /**
      * Reads a line from the input stream. If an input stream is not defined
