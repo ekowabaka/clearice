@@ -10,18 +10,22 @@ Option Styles
 Long options are preceeded with a double dash `--` and short options are preceeded with a 
 single dash `-`. This means we can use `-s` for a short option and `--long-option` 
 for a longer option. Options can have values assigned to them. A long option may 
-take a value through an assignment like this `--long-option=value` and a short 
-option may take a value through an assignment like this `-svalue`. Long options 
-and a short options may be synonymous to each other so `-l` and `--long` may 
-point to the same option.
+take a value through an assignment like this `--long-option=value` or this 
+`--long-option value`, provided the specific option is configured to take values. 
+A short option may also take a value through an assignment like this `-svalue`
+or this `-s value`, provided the specific option is configured to take values. 
+Long options and a short options may be synonymous to each other; 
+so `-l` and `--long` may resolve to the same option.
 
 It is worth noting that a group of short options may also be specified preceeded 
 by a single dash. For example if `a`, `b` and `c` are all valid options which
 do not take values, passing `-abc` would be equivalent to passing `-a -b -c`.
 
 Arguments that are not preceeded by either a single dash or a double dash would
-be returned as stand alone arguments and the application may be required to deal
-with them.
+be returned as stand alone arguments provided they do not follow options which
+accept values. In cases where stand alone arguments are not absorbed as values,
+ClearIce would return such arguments and the application would be required to 
+deal with them.
 
 Command Groups
 --------------
@@ -327,6 +331,55 @@ ClearIce::addOptions(
     )
 );
 ````
+
+### Automatically Executing Commands (ClearIce CLI Framework?)
+ClearIce provides an interface which makes it possible to associate Classes with
+commands. With such an association, classes could be instantiated and a specific method executed
+to implement the actions of the command. This action is performed for you automatically
+by ClearIce. 
+
+Let us assume we have written a cool version control system (called coolver)
+and we want to let it have an initialize command. We could write a class called
+`InitCommand` and have it implement the `\clearice\Command` interface.
+
+````php
+<?php
+class InitCommand implements \clearice\Command
+{
+    public function run($options)
+    {
+        \\ Work some initialization magic here
+    }
+}
+````
+
+Our app's entry could be in a file called `coolver` which might look something
+close to this.
+
+````php
+#!/usr/bin/env php
+<?php
+
+require 'vendor/autoload.php';
+
+use \clearice\ClearIce;
+
+ClearIce::addCommands(
+    array(
+        'command' => 'init',
+        'help' => 'initialize a new coolver repository',
+        'class' => 'InitCommand'
+    );
+);
+
+ClearIce::parse();
+````
+
+Now when we execute our `coolver` app with the `init` command (`coolver init`), 
+an instance of the `InitCommand` class would be created and the `run` method 
+would be executed. The `run` method would receive the options parsed by ClearIce 
+as the `$options` argument.
+
 
 Stand Alone Arguments
 ---------------------

@@ -7,7 +7,7 @@ php:
  - "nightly"
 
 matrix:
-  allowed_failures:
+  allow_failures:
     - php: "nightly"
  
 before_script:

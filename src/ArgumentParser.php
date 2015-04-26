@@ -30,6 +30,7 @@ namespace clearice;
 
 /**
  * Class responsible for parsing individual arguments.
+ * @internal 
  */
 class ArgumentParser
 {

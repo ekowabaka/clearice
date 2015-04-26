@@ -55,7 +55,26 @@ would produce ...
 
 Form more information on how to use clearice you can read through the 
 documentation. Happy programming ...
-    
+
+Features
+--------
+A summary of what ClearIce can currently do.
+- Command line argument parsing.
+- Command line argument validation.
+- Support for grouping valid arguments under specific commands.
+- Automatic generation of help messages
+- Automatic instantiation of Command classes for CLI applications (Framework?)
+- Interactive console I/O with input validation.
+- Any other stuff I forgot to mention.
+
+Road Map
+--------
+What I hope to see in ClearIce some time in the future:
+
+- Colour output on the terminal.
+- Correction and suggestion of mis-spelled commands.
+- Shell TAB completion of commands and options.
+- A whole lot of awesomeness!
 
 License
 -------
