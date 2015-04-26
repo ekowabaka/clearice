@@ -49,6 +49,20 @@ Apart from the output stream, ClearIce also allows writing to the error stream
 through the `ClearIce::error()` method. This method behaves exactly as the output
 method except that it writes to an error stream (standard error by default).
 
+### Using the output level stack
+ClearIce ships with an output level stack which allows you to manage output 
+levels more effectively. The stack could be accessed through the `ClearIce::pushOutputLevel`
+and `ClearIce::popOutputLevel` methods. Anytime the `ClearIce::pushOutputLevel` method is
+called, the current output level is set to the value that was pushed unto the stack.
+When the outputLevel is popped, the output level reverts to the output level
+that existed before the last push occurred. This way the developer does not have
+to keep track of the existing output level if the need exists to temporarily 
+switch output levels.
+
+It is also perfectly safe to mix the stack methods with the already existing
+`ClearIce::setOutputLevel` method. Anytime the stack is built, the current
+value set through the setOutputLevel is considered.
+
 Consuming Input
 ---------------
 ClearIce also provides a `ClearIce::input()` method which reads a line of text 

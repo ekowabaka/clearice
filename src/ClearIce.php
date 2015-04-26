@@ -202,6 +202,12 @@ class ClearIce
         self::output($string, $outputLevel, 'error');
     }    
     
+    /**
+     * Set the output level of the ClearIce output streams (including the error)
+     * stream. 
+     * 
+     * @param int $outputLevel
+     */
     public static function setOutputLevel($outputLevel)
     {
         self::$defaultOutputLevel = $outputLevel;
