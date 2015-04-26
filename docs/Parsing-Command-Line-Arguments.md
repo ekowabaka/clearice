@@ -154,6 +154,18 @@ or
 
     php wiki.php --input=/myfiles/wiki-sources -o/myfiles/wiki
 
+or
+
+    php wiki.php --input /myfiles/wiki-sources --output /myfiles/wiki
+
+or
+
+    php wiki.php --input /myfiles/wiki-sources -o /myfiles/wiki
+
+or
+
+    php wiki.php --input=/myfiles/wiki-sources -o /myfiles/wiki
+
 Your output would always be:
 
     Array
@@ -161,6 +173,9 @@ Your output would always be:
         [input] => /myfiles/wiki-sources
         [output] => /myfiles/wiki
     )
+
+And if you take some time to look at the examples given you should realize that
+there could be several more combinations which would end in the same output.
 
 For options which do not take values like the `--verbose` option in our example
 
