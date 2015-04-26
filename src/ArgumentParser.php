@@ -153,6 +153,8 @@ class ArgumentParser
      */
     private $arguments = array();
     
+    private $argumentPointer;
+    
     /**
      * Adds an unknown option to the list of unknown options currently held in
      * the parser.
@@ -205,9 +207,9 @@ class ArgumentParser
         $this->longOptionParser = new parsers\LongOptionParser($this, $this->optionsMap);
         $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->optionsMap);
         
-        foreach($this->arguments as $argument)
+        for($this->argumentPointer = 0; $this->argumentPointer < count($this->arguments); $this->argumentPointer++)
         {
-            $this->parseArgument($argument);
+            $this->parseArgument($this->arguments[$this->argumentPointer]);
         }
         
         $this->showStrictErrors($executed);
@@ -215,6 +217,16 @@ class ArgumentParser
         $this->showHelp();
         
         return $this->executeCommand($this->command, $this->parsedOptions);
+    }
+    
+    public function getLookAheadArgument()
+    {
+        return $this->arguments[$this->argumentPointer + 1];
+    }
+    
+    public function moveToNextArgument()
+    {
+        $this->argumentPointer++;
     }
     
     private function executeCommand($command, $options)

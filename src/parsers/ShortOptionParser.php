@@ -39,27 +39,32 @@ class ShortOptionParser extends BaseParser
             $this->optionsMap[$command][$shortOption]['long'] : $shortOption;        
     }
     
+    private function getValueFromRemainder($remainder)
+    {
+        $remainder = substr($remainder, 1);
+        return $remainder === false ? true : $remainder;
+    }
+    
     /**
-     * @param string $shortOptionsString
+     * @param string|boolean $shortOptionsString
      */
     private function parseShortOptions($shortOptionsString, $command)
     {
-        if(strlen($shortOptionsString) == 0) return;
+        if($shortOptionsString === true) return;
         $shortOption = $shortOptionsString[0];
-        $remainder = substr($shortOptionsString, 1);
+        $value = $this->getValueFromRemainder($shortOptionsString);
             
         if(isset($this->optionsMap[$command][$shortOption]))
         {
             $key = $this->getShortOptionLongKey($command, $shortOption);
             if($this->optionsMap[$command][$shortOption]['has_value'] === true)
             {
-                $this->setValue($command, $key, $remainder);
+                $this->setValue($command, $key, $this->parseStandAloneValue($key, $value, $command));
             }
             else
             {
-                //$this->parsedOptions[$key] = true;
                 $this->parser->addParsedOption($key, true);
-                $this->parseShortOptions($remainder, $command);
+                $this->parseShortOptions($value, $command);
             }
         }
         else
@@ -71,7 +76,7 @@ class ShortOptionParser extends BaseParser
             }
             
             $this->skippedShorts .= $shortOption;
-            $this->parseShortOptions($remainder, $command);
+            $this->parseShortOptions($value, $command);
         }
     }
     

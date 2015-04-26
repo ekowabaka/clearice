@@ -332,15 +332,6 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(file_get_contents('tests/fixtures/help_multi_usage.txt'), $helpMessage);
     }
     
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Unknown method method
-     */
-    public function testMethodException()
-    {
-        ClearIce::method();
-    }
-    
     public function testMultiOptions()
     {
         global $argv;

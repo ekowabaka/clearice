@@ -50,8 +50,8 @@ class LongOptionParser extends BaseParser
         }
         else
         {
-            $this->setValue($command, $argument, $value);
+            $this->setValue($command, $argument, $this->parseStandAloneValue($argument, $value, $command));
         }
         return $return;
-    }    
+    }        
 }

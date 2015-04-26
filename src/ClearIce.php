@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
  * 
@@ -34,11 +34,6 @@ namespace clearice;
  * All operations of the library are done through this class. Being static, 
  * the class maintains singleton objects with which it performs all its 
  * operations.
- * 
- * @method array parse() Parse the command line arguments. 
- *          This method parses the command line arguments and return a structured array which
- *          represents the options which were interpreted by ClearIce. The array
- *          returned has the following structure.
  */
 class ClearIce
 {   
@@ -268,17 +263,50 @@ class ClearIce
         return self::$streams[$type];
     }
     
-    private static $parserMethods = array(
-        'addCommands',
-        'addOptions',
-        'setUsage',
-        'parse',
-        'setDescription',
-        'setFootnote',
-        'addHelp',
-        'getHelpMessage',
-        'setStrict'
-    );
+    public static function addCommands()
+    {
+        return self::callParserMethod('addCommands', func_get_args());
+    }
+    
+    public static function addOptions()
+    {
+        return self::callParserMethod('addOptions', func_get_args());
+    }
+    
+    public static function parse()
+    {
+        return self::callParserMethod('parse', func_get_args());
+    }
+    
+    public static function setUsage()
+    {
+        return self::callParserMethod('setUsage', func_get_args());
+    }
+    
+    public static function setDescription()
+    {
+        return self::callParserMethod('setDescription', func_get_args());
+    }
+    
+    public static function setFootnote()
+    {
+        return self::callParserMethod('setFootnote', func_get_args());
+    }
+    
+    public static function addHelp()
+    {
+        return self::callParserMethod('addHelp', func_get_args());
+    }
+    
+    public static function getHelpMessage()
+    {
+        return self::callParserMethod('getHelpMessage', func_get_args());
+    }
+    
+    public static function setStrict()
+    {
+        return self::callParserMethod('setStrict', func_get_args());
+    }
     
     /**
      * Returns a singleton instance of the argument parser.
@@ -294,25 +322,17 @@ class ClearIce
         return self::$parser;
     }
     
-    
     /**
      * @param string $name The name of the method called
      * @param array $arguments An array of arguments passed to the method
      * @return mixed
      * @throws \Exception
      */
-    public static function __callStatic($name, $arguments)
+    private static function callParserMethod($name, $arguments)
     {
-        if(array_search($name, self::$parserMethods) === false)
-        {
-            throw new \clearice\ClearIceException("Unknown method $name");
-        }
-        else
-        {
-            $parser = self::getParserInstance();
-            $method = new \ReflectionMethod($parser, $name);
-            return $method->invokeArgs($parser, $arguments);            
-        }
+        $parser = self::getParserInstance();
+        $method = new \ReflectionMethod($parser, $name);
+        return $method->invokeArgs($parser, $arguments);            
     }
     
     /**

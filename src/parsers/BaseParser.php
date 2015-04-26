@@ -62,6 +62,21 @@ class BaseParser
         {
             $this->parser->addParsedOption($key, $value);
         }        
+    }
+    
+    protected function parseStandAloneValue($argument, $value, $command)
+    {
+        $newValue = $value;
+        if($this->optionsMap[$command][$argument]['has_value'] == true && $value === true)
+        {
+            $lookahead = $this->parser->getLookAheadArgument();
+            if(!preg_match('/^(--|-)(.*)/', $lookahead))
+            {
+                $this->parser->moveToNextArgument();
+                $newValue = $lookahead;
+            }
+        }
+        return $newValue;
     }    
 }
 
