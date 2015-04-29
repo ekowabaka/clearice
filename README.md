@@ -74,6 +74,7 @@ What I hope to see in ClearIce some time in the future:
 - Colour output on the terminal.
 - Correction and suggestion of mis-spelled commands.
 - Shell TAB completion of commands and options.
+- Use readline for reading console inputs.
 - A whole lot of awesomeness!
 
 License

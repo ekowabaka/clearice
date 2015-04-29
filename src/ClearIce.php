@@ -36,15 +36,39 @@ namespace clearice;
  * operations.
  */
 class ClearIce
-{   
+{
+    /**
+     * Least output level.
+     * At this level clearice is expected to be mute. Nothing would be outputted
+     * to any of the streams.
+     * @var int
+     */
     const OUTPUT_LEVEL_0 = 0;
     
+    /**
+     * Output level 1
+     * @var int
+     */
     const OUTPUT_LEVEL_1 = 1;
     
+    /**
+     * Output level 2
+     * @var int
+     */
     const OUTPUT_LEVEL_2 = 2;
     
+    /**
+     * Output level 3.
+     * At this level clearice is expected not to filter any output. Everything
+     * that is sent to ClearIce would be outputted to the streams.
+     * @var int
+     */
     const OUTPUT_LEVEL_3 = 3;
     
+    /**
+     * The default output level of the ClearIce library.
+     * @var int
+     */
     private static $defaultOutputLevel = self::OUTPUT_LEVEL_1;
     
     private static $outputLevelStack = array();
@@ -104,8 +128,8 @@ class ClearIce
      * If this flag is set, the user would be required to provide an answer. A
      * blank answer would be rejected.
      * 
-     * @param $question The question you want to ask
-     * @param $params An array of options that this function takes.
+     * @param string $question The question you want to ask
+     * @param array  $params   An array of options that this function takes.
      */
     public static function getResponse($question, $params = array())
     {

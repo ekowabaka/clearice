@@ -2,7 +2,7 @@
 <phpdoc>
     <title>ClearIce Library</title>
     <parser>
-        <target>docs</target>
+        <target>docs_generated/phpdoc</target>
         <encoding>utf8</encoding>
         <markers>
             <item>TODO</item>
@@ -14,7 +14,7 @@
         <visibility></visibility>
     </parser>
     <transformer>
-        <target>docs_generated</target>
+        <target>docs_generated/phpdoc</target>
     </transformer>
     <logging>
         <level>warn</level>
