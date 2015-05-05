@@ -32,8 +32,7 @@ namespace clearice;
 /**
  * The ClearIce class forms the static entry for the entire library. 
  * All operations of the library are done through this class. Being static, 
- * the class maintains singleton objects with which it performs all its 
- * operations.
+ * the class contains sigleton objects with which it performs all its operations.
  */
 class ClearIce
 {
@@ -71,6 +70,10 @@ class ClearIce
      */
     private static $defaultOutputLevel = self::OUTPUT_LEVEL_1;
     
+    /**
+     * An array to hold the output level stack.
+     * @var array
+     */
     private static $outputLevelStack = array();
     
     /**
@@ -112,24 +115,25 @@ class ClearIce
      * 
      * The array takes the following parameters
      * 
-     * **answers**
+     * **answers**  
      * An array of posible answers to the question. Once this array is available
      * the user would be expected to provide an answer which is specifically in
      * the list. Any other answer would be rejected. The library would print
      * out all the possible answers so the user is aware of which answers
      * are valid.
      * 
-     * **default**
+     * **default**  
      * A default answer which should be used in case the user does not supply an
      * answer. The library would make the user aware of this default by placing
      * it in square brackets after the question.
      * 
-     * **required**
+     * **required**  
      * If this flag is set, the user would be required to provide an answer. A
      * blank answer would be rejected.
      * 
      * @param string $question The question you want to ask
      * @param array  $params   An array of options that this function takes.
+     * @return string The response provided by the user to the prompt.
      */
     public static function getResponse($question, $params = array())
     {
@@ -176,8 +180,24 @@ class ClearIce
     } 
     
     /**
-     * Set the URL of a particular stream. Once a new URL is set, any old streams
-     * are closed and the new one is opened in its place.
+     * Set the URL of any of the streams used by ClearIce.
+     * ClearIce maintains three different streams for its I/O operations. The
+     * `output` stream is used for output, the `error` stream is used for errors 
+     * and the `input` stream is used for input. The `output` and `error` streams
+     * are represented by the standard output and standard error streams 
+     * respectively. The `input` stream on the other hand is represented by the 
+     * standard input stream by default. 
+     * 
+     * Streams could be any valid PHP stream URL.
+     * Example to write all output to a file you could set.
+     * 
+     * ````php
+     * ClearIce::setStreamUrl('output', '/path/to/file');
+     * ClearIce::setStreamUrl('error', '/path/to/file');
+     * ````
+     * 
+     * Once a new URL is set, any old streams are closed and the new one is 
+     * opened in its place immediately the stream is accessed.
      * 
      * @param string $type The type of stream to set a URL for. The value of this 
      *                     could either be 'error', 'input' or 'output'.
@@ -193,8 +213,9 @@ class ClearIce
     }
     
     /**
-     * Safely EXIT the app. Usefull if testing so that the termination doesn't 
-     * kill the test environment. 
+     * Safely EXIT the app. 
+     * Usefull if testing so that the termination doesn't kill the test 
+     * environment. 
      */
     public static function terminate()
     {
@@ -202,8 +223,9 @@ class ClearIce
     }
     
     /**
-     * Write a string to the output stream. If an output stream is not defined
-     * this method writes to the standard output (the console) by default.
+     * Write a string to the output stream. 
+     * If an output stream is not defined this method writes to the standard 
+     * output (the console) by default.
      * 
      * @param string $string
      */
@@ -216,8 +238,9 @@ class ClearIce
     }
     
     /**
-     * Write a string to the error stream. If an error stream is not defined
-     * this method writes to the standard error (the console) by default.
+     * Write a string to the error stream. 
+     * If an error stream is not defined this method writes to the standard 
+     * error (the console) by default.
      * 
      * @param string $string
      */    
@@ -263,9 +286,9 @@ class ClearIce
     }
 
     /**
-     * Reads a line from the input stream. If an input stream is not defined
-     * this method reads an input from the standard input (usually a keyboard)
-     * by default.
+     * Reads a line from the input stream. 
+     * If an input stream is not defined this method reads an input from the 
+     * standard input (usually a keyboard) by default.
      * 
      * @todo look into using readline for this in cases where it's available
      * @return string
@@ -276,10 +299,10 @@ class ClearIce
     }
     
     /**
-     * Returns a stream resource for a given stream type. If the stream has not
-     * been opened this method opens the stream before returning the asociated
-     * resource. This ensures that there is only one resource handle to any 
-     * stream at any given time.
+     * Returns a stream resource for a given stream type. 
+     * If the stream has not been opened this method opens the stream before 
+     * returning the asociated resource. This ensures that there is only one 
+     * resource handle to any stream at any given time.
      * 
      * @param string $type
      * @return resource

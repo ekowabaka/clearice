@@ -11,7 +11,7 @@
         <extensions>
             <extension>php</extension>
         </extensions>
-        <visibility></visibility>
+        <visibility>public,protected</visibility>
     </parser>
     <transformer>
         <target>docs_generated/phpdoc</target>
