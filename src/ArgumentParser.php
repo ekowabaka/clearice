@@ -58,13 +58,6 @@ class ArgumentParser
     
     /**
      * Specifies whether the parser should be strict about errors or not. 
-     * A strict parser would terminate the
-     * application if it doesn't understand any options. A not-strict parser
-     * would just return the unknown options it encountered and expect the
-     * application to deal with it appropriately. When a strict parser exits 
-     * ClearIce prints a descriptive help message which advises the user
-     * about the unknown options. In cases where the help feature has been
-     * enabled, ClearIce would go ahead to advice the user to request for help.
      * 
      * @var boolean
      */

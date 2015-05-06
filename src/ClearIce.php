@@ -461,7 +461,9 @@ class ClearIce
      * instantiates and executes classes for commands which have specified
      * a `Command` class.
      * 
-     * @return array
+     * @return array A structured array which contains options as keys and the
+     *       values assigned to the options as array values. Options which do not 
+     *       accept value would have true assigned.
      */
     public static function parse()
     {
@@ -475,7 +477,7 @@ class ClearIce
      * of strings could be passed to this method. Usage strings passed as arrays
      * would be properly formatted into a multi-line usage hint format.
      * 
-     * @param string|array $usage
+     * @param string|array $usage A short usage hint for the application.
      */
     public static function setUsage($usage)
     {
@@ -489,7 +491,7 @@ class ClearIce
      * the help message and as such can include anything from the name of the
      * application, copyright information to ACII art graphics.
     * 
-     * @param string $description
+     * @param string $description Text for the description message.
      */
     public static function setDescription($description)
     {
@@ -497,27 +499,63 @@ class ClearIce
     }
     
     /**
+     * Set a foonote for the help message of your application.
+     * The footnote specified would be displayed at the bottom of the automatic
+     * help message generated. This text could contain information about where
+     * to find more help, how to report bugs or you could also put some awesome
+     * ASCII art here.
      * 
-     * @return type
+     * @param string $footnote Text for the footnote message
      */
-    public static function setFootnote()
+    public static function setFootnote($footnote)
     {
-        return self::callParserMethod('setFootnote', func_get_args());
+        self::getParserInstance()->setFootnote($footnote);
     }
     
+    /**
+     * Add the automatic help options.
+     * This would add the `-h` and `--help` options to your application. When
+     * these options are passed, the library would automatically display a help
+     * message to the user. The help options are also added to commands so
+     * users can get help which are specific to commands.
+     */
     public static function addHelp()
     {
-        return self::callParserMethod('addHelp', func_get_args());
+        self::getParserInstance()->addHelp();
     }
     
-    public static function getHelpMessage()
+    /**
+     * Generate and return a help message.
+     * This method generates and returns a help message based on the various
+     * options and commands passed to the library. This method is used internally
+     * to generate and display the automatic help message. Note however that this
+     * message would still be active even when the automatic help message has
+     * not been activated.
+     * 
+     * @param string $command Generate the help message for the command specified 
+     *     or null to generate help for the application.
+     * @return string
+     */
+    public static function getHelpMessage($command = '')
     {
-        return self::callParserMethod('getHelpMessage', func_get_args());
+        return self::getParserInstance()->getHelpMessage($command);
     }
     
-    public static function setStrict()
+    /**
+     * Sets the parser into strict mode.
+     * A strict parser would terminate the application if it doesn't understand 
+     * any options. A not-strict parser would just return the unknown options it 
+     * encountered and expect the application to deal with it appropriately. 
+     * When a parser is in strict mode, ClearIce prints a descriptive help 
+     * message which advises the user about the unknown options. In cases where 
+     * the help feature has been enabled, ClearIce would go ahead to advice the 
+     * user to request for help.
+     * 
+     * @param bool $strict
+     */
+    public static function setStrict($strict)
     {
-        return self::callParserMethod('setStrict', func_get_args());
+        self::getParserInstance()->setStrict($strict);
     }
     
     /**
