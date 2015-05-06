@@ -192,6 +192,7 @@ class ClearIce
      * Example to write all output to a file you could set.
      * 
      * ````php
+     * <?php
      * ClearIce::setStreamUrl('output', '/path/to/file');
      * ClearIce::setStreamUrl('error', '/path/to/file');
      * ````
@@ -260,22 +261,49 @@ class ClearIce
         self::$defaultOutputLevel = $outputLevel;
     }
     
+    /**
+     * Returns the current output level of the CliearIce library.
+     * @return int
+     */
     public static function getOutputLevel()
     {
         return self::$defaultOutputLevel;
     }
     
+    /**
+     * Push an output level unto the output level stack.
+     * The output level pushed becomes the new output level with which ClearIce
+     * would work. The previous level pushed would be automatically restored
+     * when the ClearIce::popOutputLevel() method is called. Using the output
+     * level stack gives you a convenient way to change the output level 
+     * temporarily without having to keep a record of the previous output level.
+     * 
+     * @param int $outputLevel
+     */
     public static function pushOutputLevel($outputLevel)
     {
         self::$outputLevelStack[] = self::getOutputLevel();
         self::setOutputLevel($outputLevel);
     }
     
+    /**
+     * Pop the last output level which was pushed unto the output level stack.
+     * This restores the previous output level which was active before the last
+     * call to the ClearIce::pushOutputLevel() method. Using the output
+     * level stack gives you a convenient way to change the output level 
+     * temporarily without having to keep a record of the previous output level.
+     * 
+     */
     public static function popOutputLevel()
     {
         self::setOutputLevel(array_pop(self::$outputLevelStack));
     }
     
+    /**
+     * Resets the output level stack.
+     * This method clears all items off the output level stack leaving only the
+     * current output level.
+     */
     public static function resetOutputLevel()
     {
         if(count(self::$outputLevelStack) > 0)
@@ -286,7 +314,7 @@ class ClearIce
     }
 
     /**
-     * Reads a line from the input stream. 
+     * Reads a line of string from the input stream. 
      * If an input stream is not defined this method reads an input from the 
      * standard input (usually a keyboard) by default.
      * 
@@ -316,31 +344,162 @@ class ClearIce
         return self::$streams[$type];
     }
     
-    public static function addCommands()
+    /**
+     * Adds commands which are to be recognized during argument parsing.
+     * Commands to be added could be passed as strings or structured arrays. 
+     * This method takes as many arguments as possible. 
+     * 
+     * For example you could add commands with ...
+     * 
+     * ````php
+     * <?php
+     * ClearIce::addCommands('start', 'stop', 'restart');
+     * ````
+     * 
+     * ... or more expressively ...
+     * 
+     * ````php
+     * <?php
+     * ClearIce::addCommands(
+     *     array(
+     *         'command' => 'start',
+     *         'help' => 'start a new instance of the server'
+     *     ),
+     *     array(
+     *         'command' => 'stop',
+     *         'help' => 'stop the current instance of the server'
+     *     ),
+     *     array(
+     *         'command' => 'restart',
+     *         'help' => 'restart the current instance of the server'
+     *     )
+     * );
+     * ````
+     * 
+     * A string argument would be taken as the text for the command. An 
+     * array argument could have a combination of `command`, `help`, `class` and 
+     * `usage` keys to help provide a more detailed command description. 
+     * The `command` key stores the command text, the `help` key
+     * stores the help message (which would be displayed in cases where
+     * ClearIce's automatic help feature is used), the `usage` key specifies a 
+     * usage syntax (which would also be displayed when the automatic help feature
+     * is used) and the `class` key is the name of a class which implements the 
+     * `Command` interface. The class specified in the `class` key would 
+     * automatically be inistantiated when ClearIce is parsing the command line 
+     * arguments. The options parsed on the command line would be passed on to 
+     * the new object created.
+     * 
+     * @param string|array $command The command to be added for parsing.
+     */
+    public static function addCommands($command)
     {
-        return self::callParserMethod('addCommands', func_get_args());
+        self::callParserMethod('addCommands', func_get_args());
     }
     
-    public static function addOptions()
+    /**
+     * Add an option to be recognized by the ClearIce parser.
+     * Options added could be passed as strings or structured arrays. This method
+     * takes as many arguments as needed. Options can also be tied to 
+     * specific commands so they remain valid only when those commands
+     * are specified.
+     * 
+     * Options can be added with
+     * 
+     * ````php
+     * <?php
+     * ClearIce::addOptions('input', 'output', 'format')
+     * ````
+     * 
+     * ... or more expressively ...
+     * 
+     * ````php
+     * <?php
+     * ClearIce::addOptions(
+     *     array(
+     *         'short' => 'i',
+     *         'long' => 'input',
+     *         'has_value' => true,
+     *         'help' => "specifies where the input files for the wiki are found.",
+     *         'command' => 'generate'
+     *     ),
+     *     array(
+     *         'short' => 'o',
+     *         'long' => 'output',
+     *         'has_value' => true,
+     *         "help" => "specifies where the wiki should be written to",
+     *         'command' => 'generate'
+     *     )
+     * );
+     * ````
+     * 
+     * A string argument would be taken as the long version of the option. An
+     * array argument must either have a `short` key, a `long` key or both. The
+     * `long` key represents the long version of the option and the `short` key 
+     * would hold a single character which represents a short form of the long
+     * option. In addition to the `long` and `short` keys, you can also pass
+     * a combination of any of the `has_value`, `help`, `command` or `value`
+     * keys.
+     * 
+     * The `has_value` key tells the argument parser that the option takes
+     * a value. The `help` key is a short help message which (whoudl be displayed
+     * when the automatic help feature is used). The `command` key specifies the 
+     * name of a command to which the option should be associated. The `value`
+     * key is a short description used when generating help messages to give
+     * the user an idea of the kind of value the option takes.
+     * 
+     * @param $option The option to be added
+     */
+    public static function addOptions($option)
     {
-        return self::callParserMethod('addOptions', func_get_args());
+        self::callParserMethod('addOptions', func_get_args());
     }
     
+    /**
+     * Parse the command line arguments passed to the app.
+     * This method parses the command line argumens and returns array which 
+     * represents the options that were detected. The parse method also
+     * instantiates and executes classes for commands which have specified
+     * a `Command` class.
+     * 
+     * @return array
+     */
     public static function parse()
     {
-        return self::callParserMethod('parse', func_get_args());
+        return self::getParserInstance()->parse();
     }
     
-    public static function setUsage()
+    /**
+     * Set a usage hint for your application.
+     * The usage hint specified would be displayed when the automatic help 
+     * feature of the library is used. Either a single line string or an array
+     * of strings could be passed to this method. Usage strings passed as arrays
+     * would be properly formatted into a multi-line usage hint format.
+     * 
+     * @param string|array $usage
+     */
+    public static function setUsage($usage)
     {
-        return self::callParserMethod('setUsage', func_get_args());
+        self::getParserInstance()->setUsage($usage);
     }
     
-    public static function setDescription()
+    /**
+     * Set a description for your application.
+     * The description specified would be displayed when the automatic help
+     * feature of the library is used. This description text is described before
+     * the help message and as such can include anything from the name of the
+     * application, copyright information to ACII art graphics.
+    * 
+     * @param string $description
+     */
+    public static function setDescription($description)
     {
-        return self::callParserMethod('setDescription', func_get_args());
+        self::getParserInstance()->setDescription($description);
     }
     
+    /**
+     * 
+     * @return type
+     */
     public static function setFootnote()
     {
         return self::callParserMethod('setFootnote', func_get_args());

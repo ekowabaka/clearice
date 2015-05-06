@@ -546,7 +546,6 @@ Full Example Listing
 
 ````php
 <?php
-error_reporting(E_ALL ^ E_NOTICE);
 require_once "vendor/autoload.php";
 
 use clearice\ClearIce;

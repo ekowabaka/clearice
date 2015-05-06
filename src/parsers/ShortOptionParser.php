@@ -29,6 +29,9 @@
 
 namespace clearice\parsers;
 
+/**
+ * @internal
+ */
 class ShortOptionParser extends BaseParser
 {
     private $skippedShorts;    

@@ -35,6 +35,8 @@ namespace clearice;
  * help messages. The help messages could either be displayed automatically when 
  * the passes the --help option (on an app with the automatic help feature enabled) 
  * is passed or when the app explicitly calls the ClearIce::getHelpMessage() method.
+ * 
+ * @internal
  */
 class HelpMessage
 {

@@ -30,6 +30,7 @@ namespace clearice;
 
 /**
  * Class responsible for parsing individual arguments.
+ * @internal Composed into the static ClearIce class
  */
 class ArgumentParser
 {
@@ -367,6 +368,7 @@ class ArgumentParser
      * This method can take as many commands as possible.
      * 
      * @param String
+     * @see ClearIce::addCommands()
      */
     public function addCommands()
     {
@@ -494,7 +496,7 @@ class ArgumentParser
      * @global type $argv
      * @return string
      */
-    public function getHelpMessage($command = '') 
+    public function getHelpMessage($command) 
     {
         return (string) new HelpMessage(
             array(
