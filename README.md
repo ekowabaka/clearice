@@ -7,6 +7,7 @@ ClearIce PHP Command Line Argument Parser
 [![Latest Stable Version](https://poser.pugx.org/ekowabaka/clearice/version.svg)](https://packagist.org/packages/ekowabaka/clearice)
 [![Total Downloads](https://poser.pugx.org/ekowabaka/clearice/downloads)](https://packagist.org/packages/ekowabaka/clearice)
 
+ClearIce is a library intended to help you supercharge your PHP CLI app development.
 ClearIce helps PHP CLI applications to parse command line arguments which are 
 presented in a style similar to what you would find in most GNU applications. 
 It also allows you to perform simple I/O operations such as outputing text to standard
@@ -18,7 +19,7 @@ texts for your apps.
 Using ClearIce
 --------------
 If you manage your projects dependencies with composer then you can easily require
-[ekowabaka/composer](http://packagist.org/packages/ekowabaka/clearice) to have
+[ekowabaka/clearice](http://packagist.org/packages/ekowabaka/clearice) to have
 clearice included in your application. 
 
 To use clearice to parse command line arguments you can simply put ...
