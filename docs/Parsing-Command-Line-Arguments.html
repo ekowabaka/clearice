@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Parsing Command Line Arguments | ClearIce Documentation</title>
+        <link type='text/css' rel='stylesheet' href='../assets/css/combined_book.css' /><script type='text/javascript' src='../assets/js/wiki.js' charset='utf-8'></script><script type='text/javascript' src='../assets/js/highlight.pack.js' charset='utf-8'></script>        <script>hljs.initHighlightingOnLoad();</script>
+    </head>
+    <body>
+        <div id="header" class="header header-book">
+    <div id="header-content-wrapper"><div style="padding-left:15px;padding-right: 15px"><h1>ClearIce</h1><ul class='menu ' id="home-menu"><li  id="menu-item-..-api-index.html" class='menu-item menu-item-..-api-index.html'><a href='../api/index.html'>API</a></li>
+<li  id="menu-item-..-docs-index.html" class='menu-item menu-item-..-docs-index.html'><a href='../docs/index.html'>Documentation</a></li>
+<li  id="menu-item-http:--github.com-ekowabaka-clearice" class='menu-item menu-item-http:--github.com-ekowabaka-clearice'><a href='http://github.com/ekowabaka/clearice'>Github</a></li>
+</ul></div></div>
+</div>        <div id="body-book" class="body">
+        <div id="side">
+        <div id="book-toc-wrapper">    <ul class='menu ' id="toc-menu"><li class=""><a href="Introduction.html">Introduction</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#goals">Goals</a></li><li class=""><a href="#installation">Installation</a></li></ul>
+</li><li class=" menu-fully-matched "><a href="Parsing-Command-Line-Arguments.html">Parsing Command Line Arguments</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#option-styles">Option Styles</a></li><li class=""><a href="#command-groups">Command Groups</a></li><li class=""><a href="#automated-help">Automated Help</a></li><li class=""><a href="#adding-options">Adding Options</a></li><li class=""><a href="#parsing-options">Parsing options</a></li><li class=""><a href="#parsing-commands">Parsing Commands</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#automatically-executing-commands-(clearice-cli-framework?)">Automatically Executing Commands (ClearIce CLI Framework?)</a></li></ul>
+</li><li class=""><a href="#stand-alone-arguments">Stand Alone Arguments</a></li><li class=""><a href="#dealing-with-unknown-options-">Dealing with Unknown Options </a></li><li class=""><a href="#auto-generating-help">Auto Generating Help</a></li><li class=""><a href="#full-example-listing">Full Example Listing</a></li></ul>
+</li><li class=""><a href="Interactive-IO.html">Interactive I/O with ClearIce</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#producing-output">Producing Output</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#using-the-output-level-stack">Using the output level stack</a></li></ul>
+</li><li class=""><a href="#consuming-input">Consuming Input</a></li></ul>
+</li></ul>
+</div>
+    </div>
+        <div id="body-wrapper">
+    <h1>Parsing Command Line Arguments</h1>
+<p>ClearIce started out as a command line argument parser and it pretty much does
+quite well doing that. ClearIce allows you to define which options and commands
+are passed to your application. Option styles are quite similar to what you would
+find with most GNU style applications.</p>
+<h2>Option Styles</h2>
+<p>Long options are preceeded with a double dash <code>--</code> and short options are preceeded with a
+single dash <code>-</code>. This means we can use <code>-s</code> for a short option and <code>--long-option</code>
+for a longer option. Options can have values assigned to them. A long option may
+take a value through an assignment like this <code>--long-option=value</code> or this
+<code>--long-option value</code>, provided the specific option is configured to take values.
+A short option may also take a value through an assignment like this <code>-svalue</code>
+or this <code>-s value</code>, provided the specific option is configured to take values.
+Long options and a short options may be synonymous to each other;
+so <code>-l</code> and <code>--long</code> may resolve to the same option.</p>
+<p>It is worth noting that a group of short options may also be specified preceeded
+by a single dash. For example if <code>a</code>, <code>b</code> and <code>c</code> are all valid options which
+do not take values, passing <code>-abc</code> would be equivalent to passing <code>-a -b -c</code>.</p>
+<p>Arguments that are not preceeded by either a single dash or a double dash would
+be returned as stand alone arguments provided they do not follow options which
+accept values. In cases where stand alone arguments are not absorbed as values,
+ClearIce would return such arguments and the application would be required to
+deal with them.</p>
+<h2>Command Groups</h2>
+<p>ClearIce also has support for dealing with command groups. Command groups can
+be defined with their specific options. When parsing the command line arguments,
+the tool determines the command and parses the appropriate command options.</p>
+<h2>Automated Help</h2>
+<p>Another feature this tool has is the ability to generate a help listing for your
+application. This means its possible for your users can type <code>myapp --help</code> or
+<code>myapp -h</code> and get a help listing. For cli apps which use commands, the help
+system can also provide help messages for each command defined in the application.
+Although you'll have to provide some of the content for all the help magic to happen,
+the tool helps format and display your content in a very consistent form.</p>
+<h2>Adding Options</h2>
+<p>To add options for the parser use the <code>ClearIce::addOptions</code> method. This method
+takes as many arguments as you want with each argument representing an option you
+want to make parsable. An argument could either be a single string for a very
+simple option or a structured array for a much more elaborate option. </p>
+<pre><code class="language-php">use <a href='../api/clearice/ClearIce.html'>clearice\ClearIce</a>;
+
+ClearIce::addOptions(
+    'input',
+    array(
+        'short' =&gt; 'o',
+        'long' =&gt; 'output',
+        'has_value' =&gt; true,
+        "help" =&gt; "specifies where the wiki should be written to"
+    ),
+    array(
+        'short' =&gt; 'v',
+        'long' =&gt; 'verbose',
+        "help" =&gt; "displays detailed information about everything that happens"
+    )    
+);</code></pre>
+<p>The structured array has the following keys:</p>
+<ul>
+<li>
+<p><code>short</code> : this specifies the character to use for the short option. Note that
+short options are case sensitive.</p>
+</li>
+<li>
+<p><code>long</code> : this specifies the text to use for the long option. Note that the long
+option cannot have spaces or wild card characters in them. The parser only
+recognizes the characters 0-9, a-z and A-Z. It also recognizes the hyphen
+character <code>-</code> and the period character <code>.</code>.</p>
+</li>
+<li>
+<p><code>has_value</code> : is either true or false to specify whether the option takes a
+value or not. This option is very critical for short options which take values.
+Once a short option is specified as having a value, all other characters which
+follow the option character are parsed as the option's value even if they may
+represent valid options.</p>
+</li>
+<li>
+<p><code>help</code> : is a line of text that is rendered as part of the help text in the
+automatically generated help text.</p>
+</li>
+<li><code>multi</code> : is a boolean to specify whether this option can take multiple values.
+When <code>multi</code> is true every option which is passed multiple times on the
+command line would be returned by ClearIce in an array. If multi is false
+however, the value of the last option passed would be returned.</li>
+</ul>
+<h2>Parsing options</h2>
+<p>Option parsing can be performed by calling the <code>ClearICe::parse()</code> method. The
+parse method returns an array which contains the options that were successfully
+parsed. The array has the options as the keys and the values which were entered on
+the command line interface as the array values. If an option has both short
+and long keys then irrespective of whether a short or long key was passed
+on the CLI, the array key would be the long option. In cases where the options
+do not take values, the value associated to the key array is the boolean value true.</p>
+<p>For example the following script is intended for parsing the options of an app which
+generates a wiki. </p>
+<pre><code class="language-php">require "vendor/autoload.php";
+
+use <a href='../api/clearice/ClearIce.html'>clearice\ClearIce</a>;
+
+// Add options
+ClearIce::addOptions(
+    array(
+        'short' =&gt; 'i',
+        'long' =&gt; 'input',
+        'has_value' =&gt; true,
+        'help' =&gt; "specifies where the input files for the wiki are found."
+    ),
+    array(
+        'short' =&gt; 'o',
+        'long' =&gt; 'output',
+        'has_value' =&gt; true,
+        "help" =&gt; "specifies where the wiki should be written to"
+    ),
+    array(
+        'short' =&gt; 'v',
+        'long' =&gt; 'verbose',
+        "help" =&gt; "displays detailed information about everything that happens"
+    ),
+    array(
+        'short' =&gt; 'x',
+        'long' =&gt; 'create-default-index',
+        "help" =&gt; "creates a default index page which lists all the wiki pages in a sorted order"
+    )
+);
+
+$options = ClearIce::parse();
+print_r($options);</code></pre>
+<p>Assuming you've save this in a script <code>wiki.php</code> then when you pass any of the
+following through the command line:</p>
+<pre><code>php wiki.php --input=/myfiles/wiki-sources --output=/myfiles/wiki</code></pre>
+<p>or</p>
+<pre><code>php wiki.php -i/myfiles/wiki-sources -o/myfiles/wiki</code></pre>
+<p>or</p>
+<pre><code>php wiki.php -i/myfiles/wiki-sources --output=/myfiles/wiki</code></pre>
+<p>or</p>
+<pre><code>php wiki.php --input=/myfiles/wiki-sources -o/myfiles/wiki</code></pre>
+<p>or</p>
+<pre><code>php wiki.php --input /myfiles/wiki-sources --output /myfiles/wiki</code></pre>
+<p>or</p>
+<pre><code>php wiki.php --input /myfiles/wiki-sources -o /myfiles/wiki</code></pre>
+<p>or</p>
+<pre><code>php wiki.php --input=/myfiles/wiki-sources -o /myfiles/wiki</code></pre>
+<p>Your output would always be:</p>
+<pre><code>Array
+(
+    [input] =&gt; /myfiles/wiki-sources
+    [output] =&gt; /myfiles/wiki
+)</code></pre>
+<p>And if you take some time to look at the examples given you should realize that
+there could be several more combinations which would end in the same output.</p>
+<p>For options which do not take values like the <code>--verbose</code> option in our example</p>
+<pre><code>php wiki.php --verbose</code></pre>
+<p>or</p>
+<pre><code>php wiki.php -v</code></pre>
+<p>Your output would always be like</p>
+<pre><code>Array
+(
+    [verbose] =&gt; 1
+)</code></pre>
+<p>If you decide to mix them up like this</p>
+<pre><code>php wiki.php -i/myfiles/wiki-sources --output=/myfiles/wiki -v</code></pre>
+<p>You would get</p>
+<pre><code>Array
+(
+    [input] =&gt; /myfiles/wiki-sources
+    [output] =&gt; /myfiles/wiki
+    [verbose] =&gt; 1
+)</code></pre>
+<p>You can mix up the short options by using a single dash. So something like</p>
+<pre><code>php wiki.php -v -x</code></pre>
+<p>or</p>
+<pre><code>php wiki.php -vx</code></pre>
+<p>would both equally yield:</p>
+<pre><code>Array
+(
+    [verbose] =&gt; 1
+    [create-default-index] =&gt; 1
+)</code></pre>
+<p>For short options which take options you can try</p>
+<pre><code>php wiki.php -vxi/myfiles/wiki-sources</code></pre>
+<p>which would give you</p>
+<pre><code>Array
+(
+    [verbose] =&gt; 1
+    [create-default-index] =&gt; 1
+    [input] =&gt; /myfiles/wiki-sources
+)</code></pre>
+<h2>Parsing Commands</h2>
+<p>ClearIce supports the parsing of commands which are passed as command line arguments.
+Just as with options, commands that are to be parsed by ClearIce need to be
+explicitly specified. Once commands are specified, options which are specific
+to given commands also need to specified. Furthermore, a command can specify a class
+(which implements the <code><a href='../api/clearice/Command.html'>\clearice\Command</a></code> interface) to be instantiated and
+executed whenever that command is run.</p>
+<p>Supposing we wanted to extend our wiki script so it can act both as a wiki
+generator and a web server. We can use commands to tell the application which
+mode to run in. The most logical way to implement this in our wiki would be to
+add <code>generate</code> and <code>serve</code> as two new commands. We can add the following code
+to our existing example:</p>
+<pre><code class="language-php">
+ClearIce::addCommands(
+    array(
+        'command' =&gt; 'generate',
+        'help' =&gt; 'generate a wiki'
+    ),
+    array(
+        'command' =&gt; 'serve',
+        'help' =&gt; 'start an HTTP server to serve a wiki'
+    )
+);
+</code></pre>
+<p>Once this is done executing ...</p>
+<pre><code>php wiki.php generate</code></pre>
+<p>would give us</p>
+<pre><code>Array
+(
+    [__command__] =&gt; generate
+)</code></pre>
+<p>The next logical thing to after this would be to assign the options to the
+commands. So far our example has only been based on generating wikis and as such
+most of the options we have defined can easily be assigned to the generate command.
+We can do this by modifying our getOptions command as follows.</p>
+<pre><code class="language-php">// Add options
+ClearIce::addOptions(
+    array(
+        'short' =&gt; 'i',
+        'long' =&gt; 'input',
+        'has_value' =&gt; true,
+        'help' =&gt; "specifies where the input files for the wiki are found.",
+        'command' =&gt; 'generate'
+    ),
+    array(
+        'short' =&gt; 'o',
+        'long' =&gt; 'output',
+        'has_value' =&gt; true,
+        "help" =&gt; "specifies where the wiki should be written to",
+        'command' =&gt; 'generate'
+    ),
+    array(
+        'short' =&gt; 'v',
+        'long' =&gt; 'verbose',
+        "help" =&gt; "displays detailed information about everything that happens"
+    ),
+    array(
+        'short' =&gt; 'x',
+        'long' =&gt; 'create-default-index',
+        "help" =&gt; "creates a default index page which lists all the wiki pages in a sorted order",
+        'command' =&gt; 'generate'
+    )
+);</code></pre>
+<p>Note that we have added the <code>generate</code> command to the <code>input</code>, <code>output</code> and
+<code>create-default-index</code> option specifications. This means that these options
+would only be available when the generate command is executed. We can now go
+ahead to add a port option to the <code>serve</code> command.</p>
+<pre><code class="language-php">ClearIce::addOptions(
+    array(
+        'short' =&gt; 'p',
+        'long' =&gt; 'port',
+        'has_value' =&gt; true,
+        'help' =&gt; "specifies the port on which to run the server",
+        'command' =&gt; 'serve'
+    )
+);</code></pre>
+<h3>Automatically Executing Commands (ClearIce CLI Framework?)</h3>
+<p>ClearIce provides an interface which makes it possible to associate Classes with
+commands. With such an association, classes could be instantiated and a specific method executed
+to implement the actions of the command. This action is performed for you automatically
+by ClearIce. </p>
+<p>Let us assume we have written a cool version control system (called coolver)
+and we want to let it have an initialize command. We could write a class called
+<code>InitCommand</code> and have it implement the <code><a href='../api/clearice/Command.html'>\clearice\Command</a></code> interface.</p>
+<pre><code class="language-php">&lt;?php
+class InitCommand implements <a href='../api/clearice/Command.html'>\clearice\Command</a>
+{
+    public function run($options)
+    {
+        \\ Work some initialization magic here
+    }
+}</code></pre>
+<p>Our app's entry could be in a file called <code>coolver</code> which might look something
+close to this.</p>
+<pre><code class="language-php">#!/usr/bin/env php
+&lt;?php
+
+require 'vendor/autoload.php';
+
+use <a href='../api/clearice/ClearIce.html'>\clearice\ClearIce</a>;
+
+ClearIce::addCommands(
+    array(
+        'command' =&gt; 'init',
+        'help' =&gt; 'initialize a new coolver repository',
+        'class' =&gt; 'InitCommand'
+    );
+);
+
+ClearIce::parse();</code></pre>
+<p>Now when we execute our <code>coolver</code> app with the <code>init</code> command (<code>coolver init</code>),
+an instance of the <code>InitCommand</code> class would be created and the <code>run</code> method
+would be executed. The <code>run</code> method would receive the options parsed by ClearIce
+as the <code>$options</code> argument.</p>
+<h2>Stand Alone Arguments</h2>
+<p>Arguments that neither fit the format for options nor are commands would be returned as stand alone
+arguments. Assuming we want our little wiki script to take its input files and
+directories through the command directly we can execute:</p>
+<pre><code>php wiki.php generate /myfiles/wiki-sources -o/myfiles/wiki</code></pre>
+<p>This would then give us</p>
+<pre><code>Array
+(
+    [__command__] =&gt; generate
+    [output] =&gt; /myfiles/wiki
+    [stand_alones] =&gt; Array
+        (
+            [0] =&gt; /myfiles/wiki-sources
+        )
+
+)</code></pre>
+<p>and </p>
+<pre><code>php wiki.php generate /myfiles/wiki-sources/Home.wiki /myfiles/wiki-sources/About.wiki -o/myfiles/wiki</code></pre>
+<p>would give:</p>
+<pre><code>Array
+(
+    [__command__] =&gt; generate
+    [output] =&gt; /myfiles/wiki
+    [stand_alones] =&gt; Array
+        (
+            [0] =&gt; /myfiles/wiki-sources/Home.wiki
+            [1] =&gt; /myfiles/wiki-sources/About.wiki
+        )
+
+)</code></pre>
+<p>Realise that a new key <code>stand_alones</code> was added. This key points to an array
+of all the arguments which do not fit the format for arguments that are parsed
+by ClearIce. </p>
+<h2>Dealing with Unknown Options </h2>
+<p>Some options may be parsed but they may not be understood. In such instances the
+the class returns an <code>unknowns</code> key. Unknown options are still added to the output. </p>
+<p>This means if you should pass</p>
+<pre><code>php wiki.php generate /myfiles/wiki-sources -o/myfiles/wiki -ug --unknown-option</code></pre>
+<p>you should get</p>
+<pre><code>Array
+(
+    [__command__] =&gt; generate
+    [output] =&gt; /myfiles/wiki
+    [unknowns] =&gt; Array
+        (
+            [0] =&gt; unknown-option
+            [1] =&gt; u
+            [2] =&gt; g
+        )
+
+    [unknown-option] =&gt; 1,
+    [u] =&gt; 1,
+    [g] =&gt; 2,
+    [stand_alones] =&gt; Array
+        (
+            [0] =&gt; /myfiles/wiki-sources
+        )
+
+)</code></pre>
+<p>You can use the parser in strict mode. This can be achieved by calling
+<code>ClearIce::setStrict(true)</code> anywhere before the <code>ClearIce::parse()</code> method. The
+parser would terminate the application with a friendly message if it should
+encounter any unknown options. </p>
+<p>In a strict mode the following:</p>
+<pre><code>php wiki.php generate /myfiles/wiki-sources -o/myfiles/wiki -ug --unknown-option</code></pre>
+<p>would give the following friendly output:</p>
+<pre><code>wiki.php: invalid option -- u
+wiki.php: invalid option -- g
+wiki.php: invalid option -- unknown-option</code></pre>
+<h2>Auto Generating Help</h2>
+<p>You can automatically generate a help option by calling the <code>ClearIce::addHelp()</code>
+method. Once you have  provided help lines for all your options you pretty much
+have all you need.</p>
+<p>With our example as shown above, if you should add <code>ClearIce::addHelp()</code> before
+the <code>ClearIce::parse()</code> and execute:</p>
+<pre><code>php wiki.php --help</code></pre>
+<p>or </p>
+<pre><code>php wiki.php -h</code></pre>
+<p>you should get:</p>
+<pre><code>Commands:
+generate            generate a wiki
+serve               start an HTTP server to serve a wiki
+help                displays specific help for any of the given commands.
+                    Usage: wiki.php help [command]
+
+Options:
+  -v, --verbose              displays detailed information about everything
+                             that happens
+  -h, --help                 shows this help message</code></pre>
+<p>You can add a description, usage information and footnotes by calling;
+<code>ClearIce::setDescription</code>, <code>ClearIce::setUsage</code> and <code>ClearIce::setFootnote</code>
+respectively.</p>
+<pre><code class="language-php">ClearIce::setDescription("Simple Wiki version 1.<a href='../'>0\nA</a> sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+ClearIce::setUsage("[command] [options]..");
+ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.<a href='../'>\n\nReport</a> bugs to bugs@clearice.tld");</code></pre>
+<p>Now your help command (<code>php wiki.php -h</code> or <code>php wiki.php --help</code>) would generate </p>
+<pre><code>Simple Wiki version 1.0
+A sample or should I say dummy wiki app to help explain ClearIce. This app
+practically does nothing.
+
+Usage:
+  wiki.php [command] [options]..
+
+Commands:
+generate            generate a wiki
+serve               start an HTTP server to serve a wiki
+help                displays specific help for any of the given commands.
+                    Usage: wiki.php help [command]
+
+Options:
+  -v, --verbose              displays detailed information about everything
+                             that happens
+  -h, --help                 shows this help message
+
+Hope you had a nice time learning about ClearIce. We're pretty sure your
+cli apps would no longer be boring to work with.
+
+Report bugs to bugs@clearice.tld</code></pre>
+<h2>Full Example Listing</h2>
+<pre><code class="language-php">&lt;?php
+require_once "vendor/autoload.php";
+
+use <a href='../api/clearice/ClearIce.html'>clearice\ClearIce</a>;
+
+$cli = new ClearIce();
+
+// Add commands
+ClearIce::addCommands(
+    array(
+        'command' =&gt; 'generate',
+        'help' =&gt; 'generate a wiki'
+    ),
+    array(
+        'command' =&gt; 'serve',
+        'help' =&gt; 'start an HTTP server to serve a wiki'
+    )
+);
+
+// Add options
+ClearIce::addOptions(
+    array(
+        'short' =&gt; 'i',
+        'long' =&gt; 'input',
+        'has_value' =&gt; true,
+        'help' =&gt; "specifies where the input files for the wiki are found.",
+        'command' =&gt; 'generate'
+    ),
+    array(
+        'short' =&gt; 'o',
+        'long' =&gt; 'output',
+        'has_value' =&gt; true,
+        "help" =&gt; "specifies where the wiki should be written to",
+        'command' =&gt; 'generate'
+    ),
+    array(
+        'short' =&gt; 'v',
+        'long' =&gt; 'verbose',
+        "help" =&gt; "displays detailed information about everything that happens"
+    ),
+    array(
+        'short' =&gt; 'x',
+        'long' =&gt; 'create-default-index',
+        "help" =&gt; "creates a default index page which lists all the wiki pages in a sorted order",
+        'command' =&gt; 'generate'
+    )    
+);
+
+ClearIce::addOptions(
+    array(
+        'short' =&gt; 'p',
+        'long' =&gt; 'port',
+        'has_value' =&gt; true,
+        'help' =&gt; "specifies the port on which to run the server",
+        'command' =&gt; 'serve'
+    )
+);
+
+ClearIce::setDescription("Simple Wiki version 1.<a href='../'>0\nA</a> sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+ClearIce::setUsage("[command] [options]..");
+ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.<a href='../'>\n\nReport</a> bugs to bugs@clearice.tld");
+
+ClearIce::setStrict(true);
+ClearIce::addHelp();
+$options = ClearIce::parse();
+print_r($options);</code></pre>
+    </div>
+    <div id="footer">
+        Generated by nyansapow
+    </div>
+</div>
+    </body>
+</html>

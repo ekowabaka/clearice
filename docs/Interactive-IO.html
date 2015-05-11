@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Interactive I/O with ClearIce | ClearIce Documentation</title>
+        <link type='text/css' rel='stylesheet' href='../assets/css/combined_book.css' /><script type='text/javascript' src='../assets/js/wiki.js' charset='utf-8'></script><script type='text/javascript' src='../assets/js/highlight.pack.js' charset='utf-8'></script>        <script>hljs.initHighlightingOnLoad();</script>
+    </head>
+    <body>
+        <div id="header" class="header header-book">
+    <div id="header-content-wrapper"><div style="padding-left:15px;padding-right: 15px"><h1>ClearIce</h1><ul class='menu ' id="home-menu"><li  id="menu-item-..-api-index.html" class='menu-item menu-item-..-api-index.html'><a href='../api/index.html'>API</a></li>
+<li  id="menu-item-..-docs-index.html" class='menu-item menu-item-..-docs-index.html'><a href='../docs/index.html'>Documentation</a></li>
+<li  id="menu-item-http:--github.com-ekowabaka-clearice" class='menu-item menu-item-http:--github.com-ekowabaka-clearice'><a href='http://github.com/ekowabaka/clearice'>Github</a></li>
+</ul></div></div>
+</div>        <div id="body-book" class="body">
+        <div id="side">
+        <div id="book-toc-wrapper">    <ul class='menu ' id="toc-menu"><li class=""><a href="Introduction.html">Introduction</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#goals">Goals</a></li><li class=""><a href="#installation">Installation</a></li></ul>
+</li><li class=""><a href="Parsing-Command-Line-Arguments.html">Parsing Command Line Arguments</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#option-styles">Option Styles</a></li><li class=""><a href="#command-groups">Command Groups</a></li><li class=""><a href="#automated-help">Automated Help</a></li><li class=""><a href="#adding-options">Adding Options</a></li><li class=""><a href="#parsing-options">Parsing options</a></li><li class=""><a href="#parsing-commands">Parsing Commands</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#automatically-executing-commands-(clearice-cli-framework?)">Automatically Executing Commands (ClearIce CLI Framework?)</a></li></ul>
+</li><li class=""><a href="#stand-alone-arguments">Stand Alone Arguments</a></li><li class=""><a href="#dealing-with-unknown-options-">Dealing with Unknown Options </a></li><li class=""><a href="#auto-generating-help">Auto Generating Help</a></li><li class=""><a href="#full-example-listing">Full Example Listing</a></li></ul>
+</li><li class=" menu-fully-matched "><a href="Interactive-IO.html">Interactive I/O with ClearIce</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#producing-output">Producing Output</a>    <ul class='menu ' id="toc-menu"><li class=""><a href="#using-the-output-level-stack">Using the output level stack</a></li></ul>
+</li><li class=""><a href="#consuming-input">Consuming Input</a></li></ul>
+</li></ul>
+</div>
+    </div>
+        <div id="body-wrapper">
+    <h1>Interactive I/O with ClearIce</h1>
+<p>Most console apps require some kind of interactivity especially in cases where
+command line arguments are not passed. ClearIce contains a collection of
+methods which makes it possible to perform interactive I/O. ClearIce allows
+apps to write output to the standard output with the capability of limiting verbosity.
+ClearIce also allows reading input from users interactively with the capablity
+of validating the input.</p>
+<h2>Producing Output</h2>
+<p>Clearice provides the <code>ClearIce::output()</code> method which writes text to an output
+stream (standard output by default). For example to print the legendary &quot;Hello World&quot; to
+screen you could just write:</p>
+<pre><code class="language-php">ClearIce::output('Hello World');</code></pre>
+<p>The <code>ClearIce::output()</code> method takes a second parameter which specifies an
+output level. Output levels provide the library with a means of limiting the
+verbosity of what the application writes to output stream. The clearice library
+always has a global output level which is (<code>ClearIce::OUTPUT_LEVEL_1</code>) by default.
+Whenever the output method is called with an output level paramter, the content
+would only be written to the output stream when the output level value of the call
+is less than or equal to the global output level. The global output level can
+always be set with the <code>ClearIce::setOutputLevel</code> method. For example ...</p>
+<pre><code class="language-php">// This shouldn't produce any output
+ClearIce::output("Hello World", ClearIce::OUTPUT_LEVEL_2);
+
+ClearIce::setOutputLevel(ClearIce::OUTPUT_LEVEL_2);
+
+// This however should
+ClearIce::output("Hello World Again", ClearIce::OUTPUT_LEVEL_2);</code></pre>
+<p>The ClearIce library ships with four output level constants (<code>ClearIce::OUTPUT_LEVEL_0</code>,
+<code>ClearIce::OUTPUT_LEVEL_1</code>, <code>ClearIce::OUTPUT_LEVEL_2</code> and <code>ClearIce::OUTPUT_LEVEL_3</code>).
+By convention <code>ClearIce::OUTPUT_LEVEL_0</code> should not be assigned to any calls so
+it could be used as a mute level. This means that once the global output level
+is set to 0, no ClearIce::output() calls should write output (given that this
+convention is followed). The other three levels could be used as low, medium and
+high respectively. It is possible to define more output levels for your application
+if needed.</p>
+<p>Apart from the output stream, ClearIce also allows writing to the error stream
+through the <code>ClearIce::error()</code> method. This method behaves exactly as the output
+method except that it writes to an error stream (standard error by default).</p>
+<h3>Using the output level stack</h3>
+<p>ClearIce ships with an output level stack which allows you to manage output
+levels more effectively. The stack could be accessed through the <code>ClearIce::pushOutputLevel</code>
+and <code>ClearIce::popOutputLevel</code> methods. Anytime the <code>ClearIce::pushOutputLevel</code> method is
+called, the current output level is set to the value that was pushed unto the stack.
+When the outputLevel is popped, the output level reverts to the output level
+that existed before the last push occurred. This way the developer does not have
+to keep track of the existing output level if the need exists to temporarily
+switch output levels.</p>
+<p>It is also perfectly safe to mix the stack methods with the already existing
+<code>ClearIce::setOutputLevel</code> method. Anytime the stack is built, the current
+value set through the setOutputLevel is considered.</p>
+<h2>Consuming Input</h2>
+<p>ClearIce also provides a <code>ClearIce::input()</code> method which reads a line of text
+from an input stream (standard input by default) and returns it. For validation
+purposes, ClearIce contains the <code>ClearIce::getResponse()</code> method which reads
+the input and validates it. To ask the user a question you could use ...</p>
+<pre><code class="language-php">$name = ClearIce::getResponse('What is your name');</code></pre>
+<p>This would present the user with a prompt ...</p>
+<pre><code>What is your name []: </code></pre>
+<p>If you want to provide a default value which should be returned in case the user
+does not supply a response you could use.</p>
+<pre><code class="language-php">$name = ClearIce::getResponse('What is your name', array('default' =&gt; 'No Name'));</code></pre>
+<p>Which would then produce the prompt ...</p>
+<pre><code>What is your name [No Name]: </code></pre>
+<p>Supposing we want a follow up question which would find out where the user wants
+to go we could use ...</p>
+<pre><code class="language-php">$name = ClearIce::getResponse('What is your name', array('default' =&gt; 'No Name'));
+$direction = ClearIce::getResponse("Okay $name, where do you want to go", array('required' =&gt; true));</code></pre>
+<p>Note that the second call to <code>getResponse</code> adds a <code>required</code> parameter. Assuming
+we just hit the enter key twice when we execute the above script, we should end
+up with an output which lools like ...</p>
+<pre><code>What is your name [No Name]: 
+Okay No Name, where do you want to go []: 
+A value is required.
+Okay No Name, where do you want to go []: </code></pre>
+<p>In cases where we want to give the user options to select from, we could go
+ahead and use ...</p>
+<pre><code class="language-php">$name = ClearIce::getResponse('What is your name', array('default' =&gt; 'No Name'));
+$direction = ClearIce::getResponse("Okay $name, where do you want to go", 
+    array(
+        'required' =&gt; true,
+        'answers' =&gt; array('north', 'south', 'east', 'west')
+    )
+);</code></pre>
+<p>Executing this and hitting enter twice while typing an invalid answer the third
+time would give the following output</p>
+<pre><code>What is your name [No Name]: 
+Okay No Name, where do you want to go (north/south/east/west) []: 
+A value is required.
+Okay No Name, where do you want to go (north/south/east/west) []: home
+Please provide a valid answer.
+Okay No Name, where do you want to go (north/south/east/west) []: </code></pre>
+    </div>
+    <div id="footer">
+        Generated by nyansapow
+    </div>
+</div>
+    </body>
+</html>

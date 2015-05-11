@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>ClearIce | ClearIce API</title>
+        <link type='text/css' rel='stylesheet' href='../../assets/css/combined_api.css' /><script type='text/javascript' src='../../assets/js/api.js' charset='utf-8'></script><script type='text/javascript' src='../../assets/js/highlight.pack.js' charset='utf-8'></script>        <script>hljs.initHighlightingOnLoad();</script>
+    </head>
+    <body>
+        <div id="header" class="header header-api">
+    <div id="header-content-wrapper"><div style="padding-left:15px;padding-right: 15px"><h1>ClearIce</h1><ul class='menu ' id="home-menu"><li  id="menu-item-..-..-api-index.html" class='menu-item menu-item-..-..-api-index.html'><a href='../../api/index.html'>API</a></li>
+<li  id="menu-item-..-..-docs-index.html" class='menu-item menu-item-..-..-docs-index.html'><a href='../../docs/index.html'>Documentation</a></li>
+<li  id="menu-item-http:--github.com-ekowabaka-clearice" class='menu-item menu-item-http:--github.com-ekowabaka-clearice'><a href='http://github.com/ekowabaka/clearice'>Github</a></li>
+</ul></div></div>
+</div>        <div id="side">
+    <div id="namespaces-list">
+            <ul class='menu ' id="home-menu"><li  id="clearice" class='menu-item menu-selected clearice menu-fully-matched '><a href='../clearice/index.html'>clearice</a></li>
+</ul>
+    </div>
+    <div id="namespace-items-list">
+            <span class="section-head">Classes</span>
+            <ul class='menu ' id="home-menu"><li  id="clearice-ClearIce" class='menu-item menu-selected clearice-ClearIce menu-fully-matched '><a href='../clearice/ClearIce.html'>ClearIce</a></li>
+<li  id="clearice-ClearIceException" class='menu-item clearice-ClearIceException'><a href='../clearice/ClearIceException.html'>ClearIceException</a></li>
+</ul>
+            <span class="section-head">Interfaces</span>
+            <ul class='menu ' id="home-menu"><li  id="clearice-Command" class='menu-item clearice-Command'><a href='../clearice/Command.html'>Command</a></li>
+</ul>
+    </div>
+</div><div id="body" class="body">
+    <div id="body-wrapper"><span class="type">class</span><h2>ClearIce</h2>
+<p> <p>All operations of the library are done through this class. Being static,
+the class contains sigleton objects with which it performs all its operations.</p>
+</p>
+
+<h3>Summary</h3>
+<h4>Constants</h4>
+<table>
+    <tr>
+        <td class="type-information">&nbsp;<a href="http://php.net/integer">integer</a></td>                <td><a href="#constant_OUTPUT_LEVEL_0">OUTPUT_LEVEL_0</a> </td>
+        <td>Least output level.</td>            </tr> 
+    <tr>
+        <td class="type-information">&nbsp;<a href="http://php.net/integer">integer</a></td>                <td><a href="#constant_OUTPUT_LEVEL_1">OUTPUT_LEVEL_1</a> </td>
+        <td>Output level 1</td>            </tr> 
+    <tr>
+        <td class="type-information">&nbsp;<a href="http://php.net/integer">integer</a></td>                <td><a href="#constant_OUTPUT_LEVEL_2">OUTPUT_LEVEL_2</a> </td>
+        <td>Output level 2</td>            </tr> 
+    <tr>
+        <td class="type-information">&nbsp;<a href="http://php.net/integer">integer</a></td>                <td><a href="#constant_OUTPUT_LEVEL_3">OUTPUT_LEVEL_3</a> </td>
+        <td>Output level 3.</td>            </tr> 
+</table>
+<h4>Methods</h4>
+<table>
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_addCommands">addCommands</a> (<a href="http://php.net/string">string</a>|<a href="http://php.net/array">array</a> $command)<div>Adds commands which are to be recognized during argument parsing.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_addHelp">addHelp</a> ()<div>Add the automatic help options.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_addOptions">addOptions</a> ($option)<div>Add an option to be recognized by the ClearIce parser.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_error">error</a> (<a href="http://php.net/string">string</a> $string,&nbsp;$outputLevel)<div>Write a string to the error stream.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;<a href="http://php.net/string">string</a></td>                <td><a href="#method_getHelpMessage">getHelpMessage</a> (<a href="http://php.net/string">string</a> $command)<div>Generate and return a help message.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;<a href="http://php.net/integer">integer</a></td>                <td><a href="#method_getOutputLevel">getOutputLevel</a> ()<div>Returns the current output level of the CliearIce library.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;<a href="http://php.net/string">string</a></td>                <td><a href="#method_getResponse">getResponse</a> (<a href="http://php.net/string">string</a> $question,&nbsp;<a href="http://php.net/array">array</a> $params)<div>A function for getting answers to questions from users interractively.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;<a href="http://php.net/string">string</a></td>                <td><a href="#method_input">input</a> ()<div>Reads a line of string from the input stream.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_output">output</a> (<a href="http://php.net/string">string</a> $string,&nbsp;$outputLevel,&nbsp;$stream)<div>Write a string to the output stream.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;<a href="http://php.net/array">array</a></td>                <td><a href="#method_parse">parse</a> ()<div>Parse the command line arguments passed to the app.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_popOutputLevel">popOutputLevel</a> ()<div>Pop the last output level which was pushed unto the output level stack.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_pushOutputLevel">pushOutputLevel</a> (<a href="http://php.net/integer">integer</a> $outputLevel)<div>Push an output level unto the output level stack.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_reset">reset</a> ()<div>Reset the library. Deletes all singletons and provides you with a fresh
+class .</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_resetOutputLevel">resetOutputLevel</a> ()<div>Resets the output level stack.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_setDescription">setDescription</a> (<a href="http://php.net/string">string</a> $description)<div>Set a description for your application.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_setFootnote">setFootnote</a> (<a href="http://php.net/string">string</a> $footnote)<div>Set a foonote for the help message of your application.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_setOutputLevel">setOutputLevel</a> (<a href="http://php.net/integer">integer</a> $outputLevel)<div>Set the output level of the ClearIce output streams (including the error)
+stream.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_setStreamUrl">setStreamUrl</a> (<a href="http://php.net/string">string</a> $type,&nbsp;<a href="http://php.net/string">string</a> $url)<div>Set the URL of any of the streams used by ClearIce.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_setStrict">setStrict</a> (<a href="http://php.net/boolean">boolean</a> $strict)<div>Sets the parser into strict mode.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_setUsage">setUsage</a> (<a href="http://php.net/string">string</a>|<a href="http://php.net/array">array</a> $usage)<div>Set a usage hint for your application.</div></td>
+            </tr> 
+    <tr>
+        <td class="type-information">public&nbsp;static&nbsp;</td>                <td><a href="#method_terminate">terminate</a> ()<div>Safely EXIT the app.</div></td>
+            </tr> 
+</table>
+
+<h3>Constants</h3>
+<div class="prototype">
+    <a name="constant_OUTPUT_LEVEL_0" class="prototype-anchor"></a>
+    &nbsp;<a href="http://php.net/integer">integer</a> <span class="item-name">OUTPUT_LEVEL_0</span>  <code> = 0</code></div>
+<div class="prototype-description">
+<p>Least output level. <p>At this level clearice is expected to be mute. Nothing would be outputted
+to any of the streams.</p>
+</p>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="constant_OUTPUT_LEVEL_1" class="prototype-anchor"></a>
+    &nbsp;<a href="http://php.net/integer">integer</a> <span class="item-name">OUTPUT_LEVEL_1</span>  <code> = 1</code></div>
+<div class="prototype-description">
+<p>Output level 1 
+</p>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="constant_OUTPUT_LEVEL_2" class="prototype-anchor"></a>
+    &nbsp;<a href="http://php.net/integer">integer</a> <span class="item-name">OUTPUT_LEVEL_2</span>  <code> = 2</code></div>
+<div class="prototype-description">
+<p>Output level 2 
+</p>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="constant_OUTPUT_LEVEL_3" class="prototype-anchor"></a>
+    &nbsp;<a href="http://php.net/integer">integer</a> <span class="item-name">OUTPUT_LEVEL_3</span>  <code> = 3</code></div>
+<div class="prototype-description">
+<p>Output level 3. <p>At this level clearice is expected not to filter any output. Everything
+that is sent to ClearIce would be outputted to the streams.</p>
+</p>
+    
+        
+        
+        
+</div>
+<h3>Methods</h3>
+<div class="prototype">
+    <a name="method_addCommands" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">addCommands</span> (<a href="http://php.net/string">string</a>|<a href="http://php.net/array">array</a> $command) </div>
+<div class="prototype-description">
+<p>Adds commands which are to be recognized during argument parsing. <p>Commands to be added could be passed as strings or structured arrays.
+This method takes as many arguments as possible.</p>
+<p>For example you could add commands with ...</p>
+<pre><code class="language-php">&lt;?php
+ClearIce::addCommands('start', 'stop', 'restart');</code></pre>
+<p>... or more expressively ...</p>
+<pre><code class="language-php">&lt;?php
+ClearIce::addCommands(
+    array(
+        'command' =&gt; 'start',
+        'help' =&gt; 'start a new instance of the server'
+    ),
+    array(
+        'command' =&gt; 'stop',
+        'help' =&gt; 'stop the current instance of the server'
+    ),
+    array(
+        'command' =&gt; 'restart',
+        'help' =&gt; 'restart the current instance of the server'
+    )
+);</code></pre>
+<p>A string argument would be taken as the text for the command. An
+array argument could have a combination of <code>command</code>, <code>help</code>, <code>class</code> and
+<code>usage</code> keys to help provide a more detailed command description.
+The <code>command</code> key stores the command text, the <code>help</code> key
+stores the help message (which would be displayed in cases where
+ClearIce's automatic help feature is used), the <code>usage</code> key specifies a
+usage syntax (which would also be displayed when the automatic help feature
+is used) and the <code>class</code> key is the name of a class which implements the
+<code>Command</code> interface. The class specified in the <code>class</code> key would
+automatically be inistantiated when ClearIce is parsing the command line
+arguments. The options parsed on the command line would be passed on to
+the new object created.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a>|<a href="http://php.net/array">array</a> $command</td>
+            <td>The command to be added for parsing.</td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_addHelp" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">addHelp</span> () </div>
+<div class="prototype-description">
+<p>Add the automatic help options. <p>This would add the <code>-h</code> and <code>--help</code> options to your application. When
+these options are passed, the library would automatically display a help
+message to the user. The help options are also added to commands so
+users can get help which are specific to commands.</p>
+</p>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_addOptions" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">addOptions</span> ($option) </div>
+<div class="prototype-description">
+<p>Add an option to be recognized by the ClearIce parser. <p>Options added could be passed as strings or structured arrays. This method
+takes as many arguments as needed. Options can also be tied to
+specific commands so they remain valid only when those commands
+are specified.</p>
+<p>Options can be added with</p>
+<pre><code class="language-php">&lt;?php
+ClearIce::addOptions('input', 'output', 'format')</code></pre>
+<p>... or more expressively ...</p>
+<pre><code class="language-php">&lt;?php
+ClearIce::addOptions(
+    array(
+        'short' =&gt; 'i',
+        'long' =&gt; 'input',
+        'has_value' =&gt; true,
+        'help' =&gt; "specifies where the input files for the wiki are found.",
+        'command' =&gt; 'generate'
+    ),
+    array(
+        'short' =&gt; 'o',
+        'long' =&gt; 'output',
+        'has_value' =&gt; true,
+        "help" =&gt; "specifies where the wiki should be written to",
+        'command' =&gt; 'generate'
+    )
+);</code></pre>
+<p>A string argument would be taken as the long version of the option. An
+array argument must either have a <code>short</code> key, a <code>long</code> key or both. The
+<code>long</code> key represents the long version of the option and the <code>short</code> key
+would hold a single character which represents a short form of the long
+option. In addition to the <code>long</code> and <code>short</code> keys, you can also pass
+a combination of any of the <code>has_value</code>, <code>help</code>, <code>command</code> or <code>value</code>
+keys.</p>
+<p>The <code>has_value</code> key tells the argument parser that the option takes
+a value. The <code>help</code> key is a short help message which (whoudl be displayed
+when the automatic help feature is used). The <code>command</code> key specifies the
+name of a command to which the option should be associated. The <code>value</code>
+key is a short description used when generating help messages to give
+the user an idea of the kind of value the option takes.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td> $option</td>
+            <td>The option to be added</td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_error" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">error</span> (<a href="http://php.net/string">string</a> $string,&nbsp;$outputLevel) </div>
+<div class="prototype-description">
+<p>Write a string to the error stream. <p>If an error stream is not defined this method writes to the standard
+error (the console) by default.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> $string</td>
+            <td></td>        </tr>
+                <tr>
+            <td> $outputLevel</td>
+                    </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_getHelpMessage" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp;<a href="http://php.net/string">string</a> <span class="item-name">getHelpMessage</span> (<a href="http://php.net/string">string</a> $command) </div>
+<div class="prototype-description">
+<p>Generate and return a help message. <p>This method generates and returns a help message based on the various
+options and commands passed to the library. This method is used internally
+to generate and display the automatic help message. Note however that this
+message would still be active even when the automatic help message has
+not been activated.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> $command</td>
+            <td>Generate the help message for the command specified
+    or null to generate help for the application.</td>        </tr>
+            </table>
+    
+    <div class="subheader">Returns</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> </td>
+            <td></td>        </tr>
+            </table>
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_getOutputLevel" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp;<a href="http://php.net/integer">integer</a> <span class="item-name">getOutputLevel</span> () </div>
+<div class="prototype-description">
+<p>Returns the current output level of the CliearIce library. 
+</p>
+    
+    <div class="subheader">Returns</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/integer">integer</a> </td>
+            <td></td>        </tr>
+            </table>
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_getResponse" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp;<a href="http://php.net/string">string</a> <span class="item-name">getResponse</span> (<a href="http://php.net/string">string</a> $question,&nbsp;<a href="http://php.net/array">array</a> $params) </div>
+<div class="prototype-description">
+<p>A function for getting answers to questions from users interractively. <p>This function takes the question and an optional array of parameters.
+The question is a regular string and the array provides extra information
+about the question being asked.</p>
+<p>The array takes the following parameters</p>
+<p><strong>answers</strong>
+An array of posible answers to the question. Once this array is available
+the user would be expected to provide an answer which is specifically in
+the list. Any other answer would be rejected. The library would print
+out all the possible answers so the user is aware of which answers
+are valid.</p>
+<p><strong>default</strong>
+A default answer which should be used in case the user does not supply an
+answer. The library would make the user aware of this default by placing
+it in square brackets after the question.</p>
+<p><strong>required</strong>
+If this flag is set, the user would be required to provide an answer. A
+blank answer would be rejected.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> $question</td>
+            <td>The question you want to ask</td>        </tr>
+                <tr>
+            <td><a href="http://php.net/array">array</a> $params</td>
+            <td>An array of options that this function takes.</td>        </tr>
+            </table>
+    
+    <div class="subheader">Returns</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> </td>
+            <td>The response provided by the user to the prompt.</td>        </tr>
+            </table>
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_input" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp;<a href="http://php.net/string">string</a> <span class="item-name">input</span> () </div>
+<div class="prototype-description">
+<p>Reads a line of string from the input stream. <p>If an input stream is not defined this method reads an input from the
+standard input (usually a keyboard) by default.</p>
+</p>
+    
+    <div class="subheader">Returns</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> </td>
+            <td></td>        </tr>
+            </table>
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_output" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">output</span> (<a href="http://php.net/string">string</a> $string,&nbsp;$outputLevel,&nbsp;$stream) </div>
+<div class="prototype-description">
+<p>Write a string to the output stream. <p>If an output stream is not defined this method writes to the standard
+output (the console) by default.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> $string</td>
+            <td></td>        </tr>
+                <tr>
+            <td> $outputLevel</td>
+                    </tr>
+                <tr>
+            <td> $stream</td>
+                    </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_parse" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp;<a href="http://php.net/array">array</a> <span class="item-name">parse</span> () </div>
+<div class="prototype-description">
+<p>Parse the command line arguments passed to the app. <p>This method parses the command line argumens and returns array which
+represents the options that were detected. The parse method also
+instantiates and executes classes for commands which have specified
+a <code>Command</code> class.</p>
+</p>
+    
+    <div class="subheader">Returns</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/array">array</a> </td>
+            <td>A structured array which contains options as keys and the
+      values assigned to the options as array values. Options which do not
+      accept value would have true assigned.</td>        </tr>
+            </table>
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_popOutputLevel" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">popOutputLevel</span> () </div>
+<div class="prototype-description">
+<p>Pop the last output level which was pushed unto the output level stack. <p>This restores the previous output level which was active before the last
+call to the ClearIce::pushOutputLevel() method. Using the output
+level stack gives you a convenient way to change the output level
+temporarily without having to keep a record of the previous output level.</p>
+</p>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_pushOutputLevel" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">pushOutputLevel</span> (<a href="http://php.net/integer">integer</a> $outputLevel) </div>
+<div class="prototype-description">
+<p>Push an output level unto the output level stack. <p>The output level pushed becomes the new output level with which ClearIce
+would work. The previous level pushed would be automatically restored
+when the ClearIce::popOutputLevel() method is called. Using the output
+level stack gives you a convenient way to change the output level
+temporarily without having to keep a record of the previous output level.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/integer">integer</a> $outputLevel</td>
+            <td></td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_reset" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">reset</span> () </div>
+<div class="prototype-description">
+<p>Reset the library. Deletes all singletons and provides you with a fresh
+class . <p>.. sort of! This method is primarily used during testing to
+refresh the class in between tests.</p>
+</p>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_resetOutputLevel" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">resetOutputLevel</span> () </div>
+<div class="prototype-description">
+<p>Resets the output level stack. <p>This method clears all items off the output level stack leaving only the
+current output level.</p>
+</p>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_setDescription" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">setDescription</span> (<a href="http://php.net/string">string</a> $description) </div>
+<div class="prototype-description">
+<p>Set a description for your application. <p>The description specified would be displayed when the automatic help
+feature of the library is used. This description text is described before
+the help message and as such can include anything from the name of the
+application, copyright information to ACII art graphics.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> $description</td>
+            <td>Text for the description message.</td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_setFootnote" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">setFootnote</span> (<a href="http://php.net/string">string</a> $footnote) </div>
+<div class="prototype-description">
+<p>Set a foonote for the help message of your application. <p>The footnote specified would be displayed at the bottom of the automatic
+help message generated. This text could contain information about where
+to find more help, how to report bugs or you could also put some awesome
+ASCII art here.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> $footnote</td>
+            <td>Text for the footnote message</td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_setOutputLevel" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">setOutputLevel</span> (<a href="http://php.net/integer">integer</a> $outputLevel) </div>
+<div class="prototype-description">
+<p>Set the output level of the ClearIce output streams (including the error)
+stream. 
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/integer">integer</a> $outputLevel</td>
+            <td></td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_setStreamUrl" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">setStreamUrl</span> (<a href="http://php.net/string">string</a> $type,&nbsp;<a href="http://php.net/string">string</a> $url) </div>
+<div class="prototype-description">
+<p>Set the URL of any of the streams used by ClearIce. <p>ClearIce maintains three different streams for its I/O operations. The
+<code>output</code> stream is used for output, the <code>error</code> stream is used for errors
+and the <code>input</code> stream is used for input. The <code>output</code> and <code>error</code> streams
+are represented by the standard output and standard error streams
+respectively. The <code>input</code> stream on the other hand is represented by the
+standard input stream by default.</p>
+<p>Streams could be any valid PHP stream URL.
+Example to write all output to a file you could set.</p>
+<pre><code class="language-php">&lt;?php
+ClearIce::setStreamUrl('output', '/path/to/file');
+ClearIce::setStreamUrl('error', '/path/to/file');</code></pre>
+<p>Once a new URL is set, any old streams are closed and the new one is
+opened in its place immediately the stream is accessed.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a> $type</td>
+            <td>The type of stream to set a URL for. The value of this
+                could either be 'error', 'input' or 'output'.</td>        </tr>
+                <tr>
+            <td><a href="http://php.net/string">string</a> $url</td>
+            <td>The URL of the stream. Based on the type of stream
+                    being requested, the right kind of permissions must
+                    be set. For instance</td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_setStrict" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">setStrict</span> (<a href="http://php.net/boolean">boolean</a> $strict) </div>
+<div class="prototype-description">
+<p>Sets the parser into strict mode. <p>A strict parser would terminate the application if it doesn't understand
+any options. A not-strict parser would just return the unknown options it
+encountered and expect the application to deal with it appropriately.
+When a parser is in strict mode, ClearIce prints a descriptive help
+message which advises the user about the unknown options. In cases where
+the help feature has been enabled, ClearIce would go ahead to advice the
+user to request for help.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/boolean">boolean</a> $strict</td>
+            <td></td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_setUsage" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">setUsage</span> (<a href="http://php.net/string">string</a>|<a href="http://php.net/array">array</a> $usage) </div>
+<div class="prototype-description">
+<p>Set a usage hint for your application. <p>The usage hint specified would be displayed when the automatic help
+feature of the library is used. Either a single line string or an array
+of strings could be passed to this method. Usage strings passed as arrays
+would be properly formatted into a multi-line usage hint format.</p>
+</p>
+    <div class="subheader">Parameters</div>
+    <table class="subheader-table">
+                <tr>
+            <td><a href="http://php.net/string">string</a>|<a href="http://php.net/array">array</a> $usage</td>
+            <td>A short usage hint for the application.</td>        </tr>
+            </table>
+    
+        
+        
+        
+</div>
+<div class="prototype">
+    <a name="method_terminate" class="prototype-anchor"></a>
+    public&nbsp;static&nbsp; <span class="item-name">terminate</span> () </div>
+<div class="prototype-description">
+<p>Safely EXIT the app. <p>Usefull if testing so that the termination doesn't kill the test
+environment.</p>
+</p>
+    
+        
+        
+        
+</div>
+</div>
+</div>
+<div id="footer">
+    Generated by <b>Nyansapow</b> with Sources parsed by <b>PHPDocumentator</b>
+</div>    </body>
+</html>
