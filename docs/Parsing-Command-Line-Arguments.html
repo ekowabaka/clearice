@@ -21,12 +21,14 @@
 </div>
     </div>
         <div id="body-wrapper">
-    <h1>Parsing Command Line Arguments</h1>
+    
+<h1>Parsing Command Line Arguments</h1>
 <p>ClearIce started out as a command line argument parser and it pretty much does
 quite well doing that. ClearIce allows you to define which options and commands
 are passed to your application. Option styles are quite similar to what you would
 find with most GNU style applications.</p>
-<h2>Option Styles</h2>
+<h2>Option Styles<a name="option-styles" class="title-anchor"></a>
+</h2>
 <p>Long options are preceeded with a double dash <code>--</code> and short options are preceeded with a
 single dash <code>-</code>. This means we can use <code>-s</code> for a short option and <code>--long-option</code>
 for a longer option. Options can have values assigned to them. A long option may
@@ -44,18 +46,21 @@ be returned as stand alone arguments provided they do not follow options which
 accept values. In cases where stand alone arguments are not absorbed as values,
 ClearIce would return such arguments and the application would be required to
 deal with them.</p>
-<h2>Command Groups</h2>
+<h2>Command Groups<a name="command-groups" class="title-anchor"></a>
+</h2>
 <p>ClearIce also has support for dealing with command groups. Command groups can
 be defined with their specific options. When parsing the command line arguments,
 the tool determines the command and parses the appropriate command options.</p>
-<h2>Automated Help</h2>
+<h2>Automated Help<a name="automated-help" class="title-anchor"></a>
+</h2>
 <p>Another feature this tool has is the ability to generate a help listing for your
 application. This means its possible for your users can type <code>myapp --help</code> or
 <code>myapp -h</code> and get a help listing. For cli apps which use commands, the help
 system can also provide help messages for each command defined in the application.
 Although you'll have to provide some of the content for all the help magic to happen,
 the tool helps format and display your content in a very consistent form.</p>
-<h2>Adding Options</h2>
+<h2>Adding Options<a name="adding-options" class="title-anchor"></a>
+</h2>
 <p>To add options for the parser use the <code>ClearIce::addOptions</code> method. This method
 takes as many arguments as you want with each argument representing an option you
 want to make parsable. An argument could either be a single string for a very
@@ -99,12 +104,14 @@ represent valid options.</p>
 <p><code>help</code> : is a line of text that is rendered as part of the help text in the
 automatically generated help text.</p>
 </li>
-<li><code>multi</code> : is a boolean to specify whether this option can take multiple values.
+<li>
+<code>multi</code> : is a boolean to specify whether this option can take multiple values.
 When <code>multi</code> is true every option which is passed multiple times on the
 command line would be returned by ClearIce in an array. If multi is false
 however, the value of the last option passed would be returned.</li>
 </ul>
-<h2>Parsing options</h2>
+<h2>Parsing options<a name="parsing-options" class="title-anchor"></a>
+</h2>
 <p>Option parsing can be performed by calling the <code>ClearICe::parse()</code> method. The
 parse method returns an array which contains the options that were successfully
 parsed. The array has the options as the keys and the values which were entered on
@@ -206,7 +213,8 @@ there could be several more combinations which would end in the same output.</p>
     [create-default-index] =&gt; 1
     [input] =&gt; /myfiles/wiki-sources
 )</code></pre>
-<h2>Parsing Commands</h2>
+<h2>Parsing Commands<a name="parsing-commands" class="title-anchor"></a>
+</h2>
 <p>ClearIce supports the parsing of commands which are passed as command line arguments.
 Just as with options, commands that are to be parsed by ClearIce need to be
 explicitly specified. Once commands are specified, options which are specific
@@ -282,7 +290,8 @@ ahead to add a port option to the <code>serve</code> command.</p>
         'command' =&gt; 'serve'
     )
 );</code></pre>
-<h3>Automatically Executing Commands (ClearIce CLI Framework?)</h3>
+<h3>Automatically Executing Commands (ClearIce CLI Framework?)<a name="automatically-executing-commands-(clearice-cli-framework?)" class="title-anchor"></a>
+</h3>
 <p>ClearIce provides an interface which makes it possible to associate Classes with
 commands. With such an association, classes could be instantiated and a specific method executed
 to implement the actions of the command. This action is performed for you automatically
@@ -320,7 +329,8 @@ ClearIce::parse();</code></pre>
 an instance of the <code>InitCommand</code> class would be created and the <code>run</code> method
 would be executed. The <code>run</code> method would receive the options parsed by ClearIce
 as the <code>$options</code> argument.</p>
-<h2>Stand Alone Arguments</h2>
+<h2>Stand Alone Arguments<a name="stand-alone-arguments" class="title-anchor"></a>
+</h2>
 <p>Arguments that neither fit the format for options nor are commands would be returned as stand alone
 arguments. Assuming we want our little wiki script to take its input files and
 directories through the command directly we can execute:</p>
@@ -353,7 +363,8 @@ directories through the command directly we can execute:</p>
 <p>Realise that a new key <code>stand_alones</code> was added. This key points to an array
 of all the arguments which do not fit the format for arguments that are parsed
 by ClearIce. </p>
-<h2>Dealing with Unknown Options </h2>
+<h2>Dealing with Unknown Options <a name="dealing-with-unknown-options-" class="title-anchor"></a>
+</h2>
 <p>Some options may be parsed but they may not be understood. In such instances the
 the class returns an <code>unknowns</code> key. Unknown options are still added to the output. </p>
 <p>This means if you should pass</p>
@@ -389,7 +400,8 @@ encounter any unknown options. </p>
 <pre><code>wiki.php: invalid option -- u
 wiki.php: invalid option -- g
 wiki.php: invalid option -- unknown-option</code></pre>
-<h2>Auto Generating Help</h2>
+<h2>Auto Generating Help<a name="auto-generating-help" class="title-anchor"></a>
+</h2>
 <p>You can automatically generate a help option by calling the <code>ClearIce::addHelp()</code>
 method. Once you have  provided help lines for all your options you pretty much
 have all you need.</p>
@@ -438,7 +450,8 @@ Hope you had a nice time learning about ClearIce. We're pretty sure your
 cli apps would no longer be boring to work with.
 
 Report bugs to bugs@clearice.tld</code></pre>
-<h2>Full Example Listing</h2>
+<h2>Full Example Listing<a name="full-example-listing" class="title-anchor"></a>
+</h2>
 <pre><code class="language-php">&lt;?php
 require_once "vendor/autoload.php";
 
@@ -505,6 +518,7 @@ ClearIce::setStrict(true);
 ClearIce::addHelp();
 $options = ClearIce::parse();
 print_r($options);</code></pre>
+
     </div>
     <div id="footer">
         Generated by nyansapow

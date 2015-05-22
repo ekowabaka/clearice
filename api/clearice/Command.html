@@ -33,22 +33,25 @@
 <h4>Methods</h4>
 <table>
     <tr>
-        <td class="type-information">public&nbsp;</td>                <td><a href="#method_run">run</a> ($options)<div></div></td>
+        <td class="type-information">public&nbsp;</td>                <td><a href="#method_run">run</a> (<a href="http://php.net/array">array</a> $options)<div>The run method is called by clearice when the command to which a
+particular implementation is assigned is executed.</div></td>
             </tr> 
 </table>
 
 <h3>Methods</h3>
 <div class="prototype">
     <a name="method_run" class="prototype-anchor"></a>
-    public&nbsp; <span class="item-name">run</span> ($options) </div>
+    public&nbsp; <span class="item-name">run</span> (<a href="http://php.net/array">array</a> $options) </div>
 <div class="prototype-description">
-<p> 
+<p>The run method is called by clearice when the command to which a
+particular implementation is assigned is executed. <p>This method receives all the options that clearice parsed through its
+$options parameter.</p>
 </p>
     <div class="subheader">Parameters</div>
     <table class="subheader-table">
                 <tr>
-            <td> $options</td>
-                    </tr>
+            <td><a href="http://php.net/array">array</a> $options</td>
+            <td>The options that were parsed by clearice.</td>        </tr>
             </table>
     
         
