@@ -271,7 +271,11 @@ class ArgumentParser
     {
         if(isset($this->parsedOptions['help']))
         {
-            ClearIce::output($this->getHelpMessage($this->parsedOptions['__command__']));
+            ClearIce::output($this->getHelpMessage(
+                    isset($this->parsedOptions['__command__']) ? 
+                        $this->parsedOptions['__command__'] : null
+                )
+            );
             ClearIce::terminate();
         } 
         if($this->command == 'help')
@@ -327,7 +331,7 @@ class ArgumentParser
     private function getCommand()
     {
         $commands = array_keys($this->commands);
-        if(count($commands) > 0)
+        if(count($commands) > 0 && count($this->arguments) > 0)
         {
             $command = array_search($this->arguments[0], $commands);
             if($command === false)
@@ -369,11 +373,11 @@ class ArgumentParser
         {
             if(is_string($command))
             {
-                $this->commands[$command] = $this->stringCommandToArray($command);
+                $this->commands[$command] = $this->fillCommand($this->stringCommandToArray($command));
             }
             else
             {
-                $this->commands[$command['command']] = $command;
+                $this->commands[$command['command']] = $this->fillCommand($command);
             }
         }
     }
@@ -407,6 +411,7 @@ class ArgumentParser
             {
                 $option = $this->stringOptionToArray($option);
             }
+            $option = $this->fillOption($option);
             $this->options[] = $option;
             $command = isset($option['command']) ? $option['command'] : '__default__';
             if(isset($option['short'])) $this->optionsMap[$command][$option['short']] = $option;
@@ -501,6 +506,17 @@ class ArgumentParser
                 'command' => $command
             )
         );
-    }    
+    }   
+    
+    private function fillCommand($command) {
+        return $command;
+    }
+    
+    private function fillOption($option) {
+        $option['has_value'] = isset($option['has_value']) ? $option['has_value'] : false;
+        $option['command'] = isset($option['command']) ? $option['command'] : null;
+        $option['multi'] = isset($option['multi']) ? $option['multi'] : null;
+        return $option;
+    }
 }
 
