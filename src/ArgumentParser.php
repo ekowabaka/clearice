@@ -444,7 +444,7 @@ class ArgumentParser
             array(
                 'short' => 'h',
                 'long' => 'help',
-                'help' => 'shows this help message'
+                'help' => 'Shows this help message'
             )
         );
         
@@ -453,7 +453,7 @@ class ArgumentParser
             $this->addCommands(
                 array(
                     'command' => 'help',
-                    'help' => "displays specific help for any of the given commands.\nUsage: {$argv[0]} help [command]"
+                    'help' => "Displays specific help for any of the given commands.\nusage: {$argv[0]} help [command]"
                 )
             );
         }

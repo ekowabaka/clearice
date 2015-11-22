@@ -56,27 +56,13 @@ class HelpMessage
      */
     public function __construct($params)
     {
-        $optionHelp = $this->getOptionsHelp($params['options']);
+        $sections = [];
         
         // Build up sections and use them as the basis for the help message
-        $sections['description'] = array(wordwrap($params['description']));
-        $sections['usage'] = $this->getUsageMessage($params);
-        
-        if(count($params['commands']) > 0 && $params['command'] == '') 
-        {
-            $sections['commands'] = $this->getCommandsHelp($params['commands']); 
-        }
-        else if($params['command'] != '')
-        {
-            $sections['command_options'] = $this->getOptionsHelp(
-                $params['options'], 
-                $params['command'], 
-                "Options for {$params['command']} command:"
-            );
-        }
-        
-        $sections['options'] = $optionHelp;
-        $sections['footnote'] = array(wordwrap($params['footnote']), '');
+        $this->getDescriptionMessage($params, $sections, 'description');
+        $this->getUsageMessage($params, $sections);
+        $this->getOptionsMessage($params, $sections);
+        $this->getDescriptionMessage($params, $sections, 'footnote');
         
         // Glue up all sections with newline characters to build the help
         // message
@@ -244,18 +230,45 @@ class HelpMessage
         return $commandHelp;
     }
     
+    private function getDescriptionMessage(array $params, array &$sections, $section)
+    {
+        if(isset($params[$section])) {
+            $sections[$section] = [wordwrap($params[$section]), ''];
+        }
+    }
+    
+    private function getOptionsMessage(array $params, array &$sections)
+    {
+        $optionHelp = $this->getOptionsHelp($params['options']);
+        if(count($params['commands']) > 0 && $params['command'] == '') 
+        {
+            $sections['commands'] = $this->getCommandsHelp($params['commands']); 
+        }
+        else if($params['command'] != '')
+        {
+            $sections['command_options'] = $this->getOptionsHelp(
+                $params['options'], 
+                $params['command'], 
+                "Options for {$params['command']} command:"
+            );
+        }
+        
+        $sections['options'] = $optionHelp;        
+    }
+
+
     /**
      * Returns the usage message for either the command or the main script
      * depending on the state in which the HelpMessage class currently is.
      * 
      * @global array $argv The arguments passed to the 
      * @param array $params A copy of the parameters passed to the HelpMessage class
-     * @return string
      */
-    private function getUsageMessage($params)
+    private function getUsageMessage(array $params, array &$sections)
     {
         global $argv;
-        $usageMessage = array('');
+        $usageMessage = [];
+        $usageSet = false;
         
         if($params['command'] != '')
         {
@@ -276,6 +289,7 @@ class HelpMessage
         if(is_string($usage))
         {
             $usageMessage[] = "Usage:\n  {$argv[0]} " . $usage;
+            $usageSet = true;
         }
         elseif (is_array($usage)) 
         {
@@ -284,10 +298,12 @@ class HelpMessage
             {
                 $usageMessage[] = "  {$argv[0]} {$usage}";
             }
+            $usageSet = true;
         }
-        $usageMessage[] = "";
-        
-        return $usageMessage;
+        if($usageSet){
+            $usageMessage[] = "";
+            $sections['usage'] = $usageMessage;
+        }
     }    
     
     /**
