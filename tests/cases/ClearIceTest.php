@@ -1,9 +1,5 @@
 <?php
 
-error_reporting(E_ALL ^ E_NOTICE);
-
-require "vendor/autoload.php";
-
 use clearice\ClearIce;
 use org\bovigo\vfs\vfsStream;
 

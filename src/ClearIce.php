@@ -1,7 +1,7 @@
 <?php
 /*
  * ClearIce CLI Argument Parser
- * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
+ * Copyright (c) 2012-2015 James Ekow Abaka Ainooson
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -137,12 +137,10 @@ class ClearIce
      */
     public static function getResponse($question, $params = array())
     {
+        self::cleanResponseParams($params);
         $prompt = $question;
-        if(is_array($params['answers']))
-        {
-            if(count($params['answers']) > 0) {
-                $prompt .= " (" . implode("/", $params['answers']) . ")";
-            }
+        if(count($params['answers']) > 0) {
+            $prompt .= " (" . implode("/", $params['answers']) . ")";
         }
 
         self::output($prompt . " [{$params['default']}]: ");
@@ -593,6 +591,13 @@ class ClearIce
     public static function reset()
     {
         self::$parser = null;
+    }
+    
+    private static function cleanResponseParams(&$params)
+    {
+        $params['answers'] = isset($params['answers']) ? $params['answers'] : [];
+        $params['default'] = isset($params['default']) ? $params['default'] : '';
+        $params['required'] = isset($params['required']) ? $params['required'] : false;
     }
 }
 
