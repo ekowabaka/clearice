@@ -599,5 +599,10 @@ class ClearIce
         $params['default'] = isset($params['default']) ? $params['default'] : '';
         $params['required'] = isset($params['required']) ? $params['required'] : false;
     }
+    
+    public static function addGroups()
+    {
+        
+    }
 }
 

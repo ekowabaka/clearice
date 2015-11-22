@@ -35,7 +35,7 @@ build:
     tests:
         override:
             -
-                command: 'phpunit --coverage-clover test.out tests'
+                command: 'phpunit --coverage-clover test.out tests/cases'
                 coverage:
                     file: 'test.out'
                     format: 'php-clover'

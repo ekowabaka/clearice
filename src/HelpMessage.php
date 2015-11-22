@@ -239,6 +239,11 @@ class HelpMessage
     
     private function getOptionsMessage(array $params, array &$sections)
     {
+        /*$groups = [];
+        foreach($params['options'] as $option) {
+            $groups[] = $option['group'];
+        }
+        array_multisort($groups, SORT_ASC, $params['options']);*/
         $optionHelp = $this->getOptionsHelp($params['options']);
         if(count($params['commands']) > 0 && $params['command'] == '') 
         {
