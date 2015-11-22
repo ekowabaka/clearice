@@ -19,7 +19,7 @@ Options:
                              see if the wrapping of help lines actually works.
   -s                         a short option only
   --lone-long-option         a long option only
-  -h, --help                 shows this help message
+  -h, --help                 Shows this help message
 
 Hope you had a nice time learning about ClearIce. We're pretty sure your
 cli apps would no longer be boring to work with.

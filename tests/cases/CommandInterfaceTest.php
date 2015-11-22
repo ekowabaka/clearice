@@ -6,7 +6,7 @@ class CommandInterfaceTest extends PHPUnit_Framework_TestCase
 {
     public function testCommandInterface()
     {
-        require 'code/ArbitraryCommand.php';
+        require __DIR__ . '/../code/ArbitraryCommand.php';
         
         global $argv;
         $argv = array("test", "arbitrary", "--daemon");        

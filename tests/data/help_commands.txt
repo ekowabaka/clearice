@@ -10,12 +10,12 @@ init                initialize a directory with the source files of the wiki
 generate            generate the data for a given directory and store it
                     somewhere cool
 export              
-help                displays specific help for any of the given commands.
-                    Usage: test help [command]
+help                Displays specific help for any of the given commands.
+                    usage: test help [command]
 
 Options:
   -v, --verbose              display more information
-  -h, --help                 shows this help message
+  -h, --help                 Shows this help message
 
 Hope you had a nice time learning about ClearIce. We're pretty sure your
 cli apps would no longer be boring to work with.

@@ -121,7 +121,7 @@ class ClearIceCommandsTest extends PHPUnit_Framework_TestCase
         ClearIce::addHelp();
         ClearIce::parse();
         
-        $this->assertFileEquals('tests/fixtures/help_commands.txt', vfsStream::url('std/output'));
+        $this->assertFileEquals('tests/data/help_commands.txt', vfsStream::url('std/output'));
     }
     
     function testHelpForCommand()    
@@ -142,7 +142,7 @@ class ClearIceCommandsTest extends PHPUnit_Framework_TestCase
         ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         ClearIce::addHelp();        
         ClearIce::parse();
-        $this->assertFileEquals('tests/fixtures/help_for_command.txt', vfsStream::url('std/output'));
+        $this->assertFileEquals('tests/data/help_for_command.txt', vfsStream::url('std/output'));
     }
     
     function testHelpCommand()    
@@ -163,7 +163,7 @@ class ClearIceCommandsTest extends PHPUnit_Framework_TestCase
         ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         ClearIce::addHelp();        
         ClearIce::parse();
-        $this->assertFileEquals('tests/fixtures/help_for_command.txt', vfsStream::url('std/output'));
+        $this->assertFileEquals('tests/data/help_for_command.txt', vfsStream::url('std/output'));
     }    
     
     function testHelpCommandUsage()    
@@ -184,6 +184,6 @@ class ClearIceCommandsTest extends PHPUnit_Framework_TestCase
         ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         ClearIce::addHelp();        
         ClearIce::parse();
-        $this->assertFileEquals('tests/fixtures/help_for_command_usage.txt', vfsStream::url('std/output'));
+        $this->assertFileEquals('tests/data/help_for_command_usage.txt', vfsStream::url('std/output'));
     }
 }

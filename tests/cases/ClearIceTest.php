@@ -239,8 +239,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         ClearIce::addHelp();
         
         $helpMessage = ClearIce::getHelpMessage();
-        
-        $this->assertEquals(file_get_contents('tests/fixtures/help.txt'), $helpMessage);
+        $this->assertEquals(file_get_contents('tests/data/help.txt'), $helpMessage);
         
     }
     
@@ -262,7 +261,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         ClearIce::addHelp();
         ClearIce::parse();
         
-        $this->assertFileEquals('tests/fixtures/help.txt', vfsStream::url('std/output'));
+        $this->assertFileEquals('tests/data/help.txt', vfsStream::url('std/output'));
     }
     
     public function testStrict()
@@ -329,7 +328,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         
         $helpMessage = ClearIce::getHelpMessage();
         
-        $this->assertEquals(file_get_contents('tests/fixtures/help_multi_usage.txt'), $helpMessage);
+        $this->assertEquals(file_get_contents('tests/data/help_multi_usage.txt'), $helpMessage);
     }
     
     public function testMultiOptions()
