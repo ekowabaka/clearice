@@ -90,6 +90,8 @@ class ArgumentParser
      * @var array
      */
     private $commands = [];
+    
+    private $groups = [];
 
     /**
      * The current command being run.
@@ -359,6 +361,14 @@ class ArgumentParser
         $options = func_get_args();
         $this->options->add($options);
     }
+    
+    public function addGroups()
+    {
+        $groups = func_get_args();
+        foreach($groups as $group) {
+            $this->groups[$group['group']] = $group;
+        }
+    }
 
     /**
      * Sets whether the parser should be strict or not. A strict parser would 
@@ -442,7 +452,8 @@ class ArgumentParser
             'usage' => $this->usage,
             'commands' => $this->commands,
             'footnote' => $this->footnote,
-            'command' => $command
+            'command' => $command,
+            'groups' => $this->groups
         ]);
     }
 

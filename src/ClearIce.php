@@ -445,9 +445,8 @@ class ClearIce
      * key is a short description used when generating help messages to give
      * the user an idea of the kind of value the option takes.
      * 
-     * @param $option The option to be added
      */
-    public static function addOptions($option)
+    public static function addOptions()
     {
         self::callParserMethod('addOptions', func_get_args());
     }
@@ -602,7 +601,7 @@ class ClearIce
     
     public static function addGroups()
     {
-        
+        self::callParserMethod('addGroups', func_get_args());
     }
 }
 

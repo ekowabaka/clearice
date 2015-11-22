@@ -98,19 +98,28 @@ class HelpMessage
      * of text to be used as the help message each option.
      * 
      * @param array $options    An array of associative arrays with infomation 
-        *                       about all options configured into ClearIce.
+     *                          about all options configured into ClearIce.
      * @param string $command   All options returned would belong to the command 
      *                          stated in this argument.
      * @param string $title     A descriptive title for the header of this set 
      *                          of options.
      * @return array
      */    
-    private function getOptionsHelp($options, $command = '', $title = 'Options:')
+    private function getOptionsHelp($options, $groups, $command = '', $title = 'Options:')
     {
+        
+        $prevGroup = null;
         $optionHelp = array($title);
         foreach ($options as $option)
         {
-            if($option['command'] != $command) continue;
+            if($option['command'] != $command) {
+                continue;
+            }
+            if($prevGroup != $option['group']) {
+                $optionHelp[] = '';
+                $optionHelp[] = "{$groups[$option['group']]['help']}:";
+                $prevGroup = $option['group'];
+            }
             $optionHelp[] = implode("\n", $this->formatOptionHelp($option));
         }      
         $optionHelp[] = '';
@@ -239,12 +248,15 @@ class HelpMessage
     
     private function getOptionsMessage(array $params, array &$sections)
     {
-        /*$groups = [];
-        foreach($params['options'] as $option) {
-            $groups[] = $option['group'];
-        }
-        array_multisort($groups, SORT_ASC, $params['options']);*/
-        $optionHelp = $this->getOptionsHelp($params['options']);
+        $options = $params['options']->getArray();
+        if(count($params['groups'])) {
+            $groups = [];
+            foreach($options as $option) {
+                $groups[] = $option['group'];
+            }
+            array_multisort($groups, SORT_ASC, $options);
+        }        
+        $optionHelp = $this->getOptionsHelp($options, $params['groups']);
         if(count($params['commands']) > 0 && $params['command'] == '') 
         {
             $sections['commands'] = $this->getCommandsHelp($params['commands']); 
@@ -252,7 +264,8 @@ class HelpMessage
         else if($params['command'] != '')
         {
             $sections['command_options'] = $this->getOptionsHelp(
-                $params['options'], 
+                $options, 
+                $params['groups'],
                 $params['command'], 
                 "Options for {$params['command']} command:"
             );

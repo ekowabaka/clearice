@@ -2,7 +2,7 @@
 
 namespace clearice;
 
-class Options implements \ArrayAccess, \Iterator
+class Options //implements \ArrayAccess, \Iterator
 {
     private $options = [];
     private $index = 0;
@@ -18,26 +18,6 @@ class Options implements \ArrayAccess, \Iterator
      * @var array
      */    
     private $map;
-    
-    public function offsetExists($offset)
-    {
-        return exists($this->options[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->options[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        $this->options[$offset] = $value;
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->options[$offset]);
-    }
     
     public function add($options)
     {
@@ -82,30 +62,10 @@ class Options implements \ArrayAccess, \Iterator
         }
         return $newOption;
     }
-
-    public function current()
+    
+    public function getArray()
     {
-        return $this->options[$this->index];
-    }
-
-    public function key()
-    {
-        return $this->index;
-    }
-
-    public function next()
-    {
-        $this->index++;
-    }
-
-    public function rewind()
-    {
-        $this->index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->options[$this->index]);
+        return $this->options;
     }
 
 }
