@@ -435,21 +435,39 @@ class ClearIce
      * `long` key represents the long version of the option and the `short` key 
      * would hold a single character which represents a short form of the long
      * option. In addition to the `long` and `short` keys, you can also pass
-     * a combination of any of the `has_value`, `help`, `command` or `value`
+     * a combination of any of the `has_value`, `help`, `command`, 'group' or `value`
      * keys.
      * 
      * The `has_value` key tells the argument parser that the option takes
      * a value. The `help` key is a short help message which (whoudl be displayed
      * when the automatic help feature is used). The `command` key specifies the 
      * name of a command to which the option should be associated. The `value`
-     * key is a short description used when generating help messages to give
-     * the user an idea of the kind of value the option takes.
+     * key is a short description used, when generating help messages to give
+     * the user an idea of the kind of value a given option takes. It is also
+     * possible to group options on the automatic help page by passing a group 
+     * name through the `group` key on the array.
+     * 
+     * @see ClearIce::addGroups
+     * @see ClearIce::addCommands
      * 
      */
     public static function addOptions()
     {
         self::callParserMethod('addOptions', func_get_args());
     }
+    
+    /**
+     * Add a group under which various options can be put.
+     * Groups provide a nice way of grouping options when generating automatic
+     * help messages. Groups are passed as arguments to this method as 
+     * strutured arrays. The array has two keys: `group` and `help`. The `group`
+     * key holds a unique key that identifies the group. The `help` key holds a 
+     * description that will be displayed on the help message.
+     */
+    public static function addGroups()
+    {
+        self::callParserMethod('addGroups', func_get_args());
+    }    
     
     /**
      * Parse the command line arguments passed to the app.
@@ -597,11 +615,6 @@ class ClearIce
         $params['answers'] = isset($params['answers']) ? $params['answers'] : [];
         $params['default'] = isset($params['default']) ? $params['default'] : '';
         $params['required'] = isset($params['required']) ? $params['required'] : false;
-    }
-    
-    public static function addGroups()
-    {
-        self::callParserMethod('addGroups', func_get_args());
     }
 }
 
