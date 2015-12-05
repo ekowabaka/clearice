@@ -5,7 +5,6 @@ namespace clearice;
 class Options //implements \ArrayAccess, \Iterator
 {
     private $options = [];
-    private $index = 0;
     
     /**
      * A map of all the options the parser recognises. 
@@ -67,6 +66,16 @@ class Options //implements \ArrayAccess, \Iterator
     {
         return $this->options;
     }
-
+    
+    public function getDefaults()
+    {
+        $defaults = [];
+        foreach($this->options as $option) {
+            if(array_key_exists('default', $option)) {
+                $defaults[$option['long']] = $option['default'];
+            }
+        }
+        return $defaults;
+    }
 }
 
