@@ -3,11 +3,11 @@ php:
  - "5.5"
  - "5.4"
  - "hhvm"
- - "nightly"
+ - "7"
 sudo: false
 matrix:
   allow_failures:
-    - php: "nightly"
+    - php: "7"
     - php: "hhvm"
   include:
     - php: "5.6"
