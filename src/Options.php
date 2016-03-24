@@ -43,7 +43,6 @@ class Options //implements \ArrayAccess, \Iterator
         $option['command'] = isset($option['command']) ? $option['command'] : null;
         $option['multi'] = isset($option['multi']) ? $option['multi'] : null;
         $option['group'] = isset($option['group']) ? $option['group'] : null;
-        $option['help'] = isset($option['help']) ? $option['help'] : null;        
         return $option;
     }
     

@@ -327,15 +327,30 @@ class ArgumentParser
 
     private function stringCommandToArray($command)
     {
+        if(class_exists($command)) {
+            try{
+                $method = new \ReflectionMethod($command, 'getCommandOptions');
+                $command = $method->invoke(null);
+                if(is_array($command['options'])) {
+                    foreach($command['options'] as $option) {
+                        $option['command'] = $command['command'];
+                        ClearIce::addOptions($option);
+                    }
+                }
+                return $command;
+            } catch (\ReflectionException $e) {
+                // Do nothing
+            }
+        } 
         return [
             'help' => '',
             'command' => $command
-        ];
+        ];                   
     }
 
     /**
      * Add commands for parsing. 
-     * This method can take as many commands as possible.
+     * This method takes many arguments with each representing a unique command. 
      * 
      * @param String
      * @see ClearIce::addCommands()
@@ -344,18 +359,17 @@ class ArgumentParser
     {
         foreach (func_get_args() as $command) {
             if (is_string($command)) {
-                $this->commands[$command] = $this->fillCommand($this->stringCommandToArray($command));
+                $this->commands[$command] = $this->stringCommandToArray($command);
             } else {
-                $this->commands[$command['command']] = $this->fillCommand($command);
+                $this->commands[$command['command']] = $command;
             }
         }
     }
 
     /**
      * Add options to be recognized. 
-     * Options could either be strings or
-     * structured arrays. Strings only define simple options. Structured arrays
-     * describe options in deeper details.
+     * Options could either be strings or structured arrays. Strings define 
+     * simple options. Structured arrays describe options in deeper details.
      */
     public function addOptions()
     {
