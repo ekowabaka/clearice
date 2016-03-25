@@ -67,6 +67,10 @@ class Options //implements \ArrayAccess, \Iterator
         return $this->options;
     }
     
+    /**
+     * Return the default values that are specified for certain options.
+     * @return array
+     */
     public function getDefaults()
     {
         $defaults = [];

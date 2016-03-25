@@ -234,12 +234,14 @@ class ArgumentParser
 
     private function parseArgument($argument)
     {
-        $success = FALSE;
+        $success = false;
+        // Try to parse the argument for a command
         if ($this->parsedOptions['__command__'] != '__default__') {
             parsers\BaseParser::setLogUnknowns(false);
             $success = $this->getArgumentWithCommand($argument, $this->parsedOptions['__command__']);
         }
 
+        // If not succesful get argument for the __default__ command.
         if ($success === false) {
             parsers\BaseParser::setLogUnknowns(true);
             $this->getArgumentWithCommand($argument, '__default__');
@@ -293,14 +295,11 @@ class ArgumentParser
     {
         $return = true;
         if (preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches)) {
-            $parser = $this->longOptionParser;
-            $return = $parser->parse($matches['option'], $matches['value'], $command);
+            $return = $this->longOptionParser->parse($matches['option'], $matches['value'], $command);
         } else if (preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)/i', $argument, $matches)) {
-            $parser = $this->longOptionParser;
-            $return = $parser->parse($matches['option'], true, $command);
+            $return = $this->longOptionParser->parse($matches['option'], true, $command);
         } else if (preg_match('/^(-)(?<option>[a-zA-z0-9](.*))/i', $argument, $matches)) {
-            $parser = $this->shortOptionParser;
-            $parser->parse($matches['option'], $command);
+            $this->shortOptionParser->parse($matches['option'], $command);
             $return = true;
         } else {
             $this->standAlones[] = $argument;

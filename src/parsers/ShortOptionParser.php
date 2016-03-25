@@ -45,7 +45,7 @@ class ShortOptionParser extends BaseParser
     private function getValueFromRemainder($remainder)
     {
         $remainder = substr($remainder, 1);
-        return $remainder === false ? true : $remainder;
+        return $remainder === "" || $remainder === false ? true : $remainder;
     }
     
     /**
@@ -53,7 +53,7 @@ class ShortOptionParser extends BaseParser
      */
     private function parseShortOptions($shortOptionsString, $command)
     {
-        if($shortOptionsString === true) return;
+        if($shortOptionsString === true || $shortOptionsString == "") return;
         $shortOption = $shortOptionsString[0];
         $value = $this->getValueFromRemainder($shortOptionsString);
             
