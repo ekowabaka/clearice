@@ -358,10 +358,9 @@ class ArgumentParser
     {
         foreach (func_get_args() as $command) {
             if (is_string($command)) {
-                $this->commands[$command] = $this->stringCommandToArray($command);
-            } else {
-                $this->commands[$command['command']] = $command;
-            }
+                $command = $this->stringCommandToArray($command);
+            } 
+            $this->commands[$command['command']] = $command;
         }
     }
 
