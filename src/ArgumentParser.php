@@ -328,8 +328,10 @@ class ArgumentParser
     {
         if(class_exists($command)) {
             try{
-                $method = new \ReflectionMethod($command, 'getCommandOptions');
+                $className = $command;
+                $method = new \ReflectionMethod($className, 'getCommandOptions');
                 $command = $method->invoke(null);
+                $command['class'] = $className;
                 if(is_array($command['options'])) {
                     foreach($command['options'] as $option) {
                         $option['command'] = $command['command'];

@@ -26,5 +26,21 @@ class CommandInterfaceTest extends PHPUnit_Framework_TestCase
         
         $this->assertStringEqualsFile(vfsStream::url('std/output'), '{"daemon":true}');
     }
+    
+    public function testOptionedCommandInterface()
+    {
+        require __DIR__ . '/../code/OptionedCommand.php';
+        global $argv;
+        $argv = ['test', 'optioned', '--input', '/some/path', '--output', '/some/other/path'];
+        vfsStream::setup('std');
+        ClearIce::reset();
+        ClearIce::setStreamUrl('output', vfsStream::url('std/output'));
+        ClearIce::addCommands('OptionedCommand');
+        ClearIce::parse();
+        $this->assertStringEqualsFile(
+            vfsStream::url('std/output'), 
+            '{"input":"\/some\/path","output":"\/some\/other\/path"}'
+        );
+    }
 }
 
