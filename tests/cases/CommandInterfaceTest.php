@@ -42,5 +42,16 @@ class CommandInterfaceTest extends PHPUnit_Framework_TestCase
             '{"input":"\/some\/path","output":"\/some\/other\/path"}'
         );
     }
+    
+    public function testStringCommandDeclaration()
+    {
+        global $argv;
+        $argv = ['test', 'mycommand'];
+        ClearIce::reset();
+        ClearIce::setStreamUrl('output', vfsStream::url('std/output'));
+        ClearIce::addCommands('mycommand');
+        $options = ClearIce::parse();
+        $this->assertEquals('mycommand', $options['__command__']);
+    }
 }
 

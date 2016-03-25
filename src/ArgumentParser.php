@@ -471,9 +471,4 @@ class ArgumentParser
             'groups' => $this->groups
         ]);
     }
-
-    private function fillCommand($command)
-    {
-        return $command;
-    }
 }
