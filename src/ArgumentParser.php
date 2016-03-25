@@ -42,7 +42,7 @@ class ArgumentParser
      * and their parameters. Any option added through the ArgumentParser::addOptions()
      * parameter is just appended to this array.
      * 
-     * @var array
+     * @var \clearice\Options
      */
     private $options = [];
 
@@ -198,7 +198,8 @@ class ArgumentParser
         $this->longOptionParser = new parsers\LongOptionParser($this, $this->options->getMap());
         $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->options->getMap());
 
-        for ($this->argumentPointer = 0; $this->argumentPointer < count($this->arguments); $this->argumentPointer++) {
+        $numArguments = count($this->arguments);
+        for ($this->argumentPointer = 0; $this->argumentPointer < $numArguments; $this->argumentPointer++) {
             $this->parseArgument($this->arguments[$this->argumentPointer]);
         }
 
