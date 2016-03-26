@@ -227,8 +227,9 @@ class ArgumentParser
         } else {
             $class = $this->commands[$command]['class'];
             $object = new $class();
-            unset($options['__command__']);
-            $object->run($options);
+            $parameters = $options;
+            unset($parameters['__command__']);
+            $object->run($parameters);
             return $options;
         }
     }
