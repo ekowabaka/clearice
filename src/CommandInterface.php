@@ -5,7 +5,7 @@ namespace clearice;
  * An interface to be implemented by classes which are to be auto instantiated
  * by Clearice.
  */
-interface Command
+interface CommandInterface
 {
     /**
      * The run method is called by clearice when the command to which a

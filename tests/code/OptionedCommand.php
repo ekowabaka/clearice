@@ -1,6 +1,6 @@
 <?php
 
-class OptionedCommand implements \clearice\Command
+class OptionedCommand implements \clearice\CommandInterface
 {
     public static function getCommandOptions()
     {

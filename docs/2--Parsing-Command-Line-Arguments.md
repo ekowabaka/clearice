@@ -3,7 +3,15 @@ Parsing Command Line Arguments
 ClearIce started out as a command line argument parser and it pretty much does
 quite well doing that. ClearIce allows you to define which options and commands 
 are passed to your application. Option styles are quite similar to what you would
-find with most GNU style applications.
+find with most GNU style applications. As stated earlier, there are two ways
+of handling command line parsing. This section gives a general overview of the
+library and provides further information on how to use the library by setting it
+up with command options and receiving parser results as an array. This approach
+provides an easy entry into clearice for pre-existing applications that want to
+take advantage of clearice without much change to internal code base. For 
+projects which want to use clearice from scratch, using the CommandInterface is
+highly recommended. Reading this section provides great information on
+how clearice works in general and is highly recommended. 
 
 Option Styles
 -------------
