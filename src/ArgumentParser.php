@@ -193,7 +193,7 @@ class ArgumentParser
         $executed = array_shift($this->arguments);
         $this->command = $this->getCommand();
 
-        $this->parsedOptions = $this->options->getDefaults();
+        $this->parsedOptions = $this->options->getDefaults($this->command);
         $this->parsedOptions['__command__'] = $this->command;
         $this->longOptionParser = new parsers\LongOptionParser($this, $this->options->getMap());
         $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->options->getMap());
