@@ -2,7 +2,7 @@
 
 namespace clearice;
 
-class Options //implements \ArrayAccess, \Iterator
+class Options
 {
     private $options = [];
     
@@ -71,11 +71,12 @@ class Options //implements \ArrayAccess, \Iterator
      * Return the default values that are specified for certain options.
      * @return array
      */
-    public function getDefaults()
+    public function getDefaults($command)
     {
         $defaults = [];
+        $command = $command == '__default__' ? NULL : $command;
         foreach($this->options as $option) {
-            if(array_key_exists('default', $option)) {
+            if(array_key_exists('default', $option) && $option['command'] == $command) {
                 $defaults[$option['long']] = $option['default'];
             }
         }
