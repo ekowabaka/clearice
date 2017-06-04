@@ -36,6 +36,7 @@ namespace clearice;
  */
 class ArgumentParser
 {
+
     /**
      * An array of all the options that are available to the parser. Unlike the
      * ClearIce::$optionsMap parameter, this paramter just lists all the options
@@ -90,7 +91,6 @@ class ArgumentParser
      * @var array
      */
     private $commands = [];
-    
     private $groups = [];
 
     /**
@@ -139,10 +139,14 @@ class ArgumentParser
      */
     private $arguments = [];
     private $argumentPointer;
-    
-    public function __construct()
-    {
+    private $container;
+
+    public function __construct() {
         $this->options = new Options();
+    }
+    
+    public function setContainer($container) {
+        $this->container = $container;
     }
 
     /**
@@ -151,8 +155,7 @@ class ArgumentParser
      * 
      * @param string $unknown
      */
-    public function addUnknownOption($unknown)
-    {
+    public function addUnknownOption($unknown) {
         $this->unknownOptions[] = $unknown;
     }
 
@@ -162,8 +165,7 @@ class ArgumentParser
      * @param string $key The option.
      * @param string $value The value asigned to the option.
      */
-    public function addParsedOption($key, $value)
-    {
+    public function addParsedOption($key, $value) {
         $this->parsedOptions[$key] = $value;
     }
 
@@ -172,8 +174,7 @@ class ArgumentParser
      * @param string $key The option.
      * @param string $value The value to be appended to the list.
      */
-    public function addParsedMultiOption($key, $value)
-    {
+    public function addParsedMultiOption($key, $value) {
         $this->parsedOptions[$key][] = $value;
     }
 
@@ -186,8 +187,7 @@ class ArgumentParser
      * @global type $argv
      * @return array
      */
-    public function parse()
-    {
+    public function parse() {
         global $argv;
         $this->arguments = $argv;
         $executed = array_shift($this->arguments);
@@ -210,23 +210,20 @@ class ArgumentParser
         return $this->executeCommand($this->command, $this->parsedOptions);
     }
 
-    public function getLookAheadArgument()
-    {
+    public function getLookAheadArgument() {
         return $this->arguments[$this->argumentPointer + 1];
     }
 
-    public function moveToNextArgument()
-    {
+    public function moveToNextArgument() {
         $this->argumentPointer++;
     }
 
-    private function executeCommand($command, $options)
-    {
+    private function executeCommand($command, $options) {
         if ($command === '__default__' || !isset($this->commands[$command]['class'])) {
             return $options;
         } else {
             $class = $this->commands[$command]['class'];
-            $object = new $class();
+            $object = $this->container ? $this->container->resolve($class) : new $class();
             $parameters = $options;
             unset($parameters['__command__']);
             $object->run($parameters);
@@ -234,8 +231,7 @@ class ArgumentParser
         }
     }
 
-    private function parseArgument($argument)
-    {
+    private function parseArgument($argument) {
         $success = false;
         // Try to parse the argument for a command
         if ($this->parsedOptions['__command__'] != '__default__') {
@@ -250,8 +246,7 @@ class ArgumentParser
         }
     }
 
-    private function aggregateOptions()
-    {
+    private function aggregateOptions() {
         if (count($this->standAlones))
             $this->parsedOptions['stand_alones'] = $this->standAlones;
         if (count($this->unknownOptions))
@@ -263,8 +258,7 @@ class ArgumentParser
         }
     }
 
-    private function showHelp()
-    {
+    private function showHelp() {
         if (isset($this->parsedOptions['help'])) {
             ClearIce::output($this->getHelpMessage(
                             isset($this->parsedOptions['__command__']) ?
@@ -279,8 +273,7 @@ class ArgumentParser
         }
     }
 
-    private function showStrictErrors($executed)
-    {
+    private function showStrictErrors($executed) {
         if ($this->strict && count($this->unknownOptions) > 0) {
             foreach ($this->unknownOptions as $unknown) {
                 ClearIce::error("$executed: invalid option -- {$unknown}\n");
@@ -293,8 +286,7 @@ class ArgumentParser
         }
     }
 
-    private function getArgumentWithCommand($argument, $command)
-    {
+    private function getArgumentWithCommand($argument, $command) {
         $return = true;
         if (preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches)) {
             $return = $this->longOptionParser->parse($matches['option'], $matches['value'], $command);
@@ -309,8 +301,7 @@ class ArgumentParser
         return $return;
     }
 
-    private function getCommand()
-    {
+    private function getCommand() {
         $commands = array_keys($this->commands);
         if (count($commands) > 0 && count($this->arguments) > 0) {
             $command = array_search($this->arguments[0], $commands);
@@ -326,29 +317,26 @@ class ArgumentParser
         return $command;
     }
 
-    private function stringCommandToArray($command)
-    {
-        if(class_exists($command)) {
-            try{
+    private function stringCommandToArray($command) {
+        if (class_exists($command)) {
+            try {
                 $className = $command;
                 $method = new \ReflectionMethod($className, 'getCommandOptions');
                 $command = $method->invoke(null);
                 $command['class'] = $className;
-                if(is_array($command['options'])) {
-                    foreach($command['options'] as $option) {
-                        $option['command'] = $command['command'];
-                        ClearIce::addOptions($option);
-                    }
+                foreach ($command['options'] ?? [] as $option) {
+                    $option['command'] = $command['command'];
+                    ClearIce::addOptions($option);
                 }
                 return $command;
             } catch (\ReflectionException $e) {
                 // Do nothing
             }
-        } 
+        }
         return [
             'help' => '',
             'command' => $command
-        ];                   
+        ];
     }
 
     /**
@@ -358,12 +346,11 @@ class ArgumentParser
      * @param String
      * @see ClearIce::addCommands()
      */
-    public function addCommands()
-    {
+    public function addCommands() {
         foreach (func_get_args() as $command) {
             if (is_string($command)) {
                 $command = $this->stringCommandToArray($command);
-            } 
+            }
             $this->commands[$command['command']] = $command;
         }
     }
@@ -373,16 +360,14 @@ class ArgumentParser
      * Options could either be strings or structured arrays. Strings define 
      * simple options. Structured arrays describe options in deeper details.
      */
-    public function addOptions()
-    {
+    public function addOptions() {
         $options = func_get_args();
         $this->options->add($options);
     }
-    
-    public function addGroups()
-    {
+
+    public function addGroups() {
         $groups = func_get_args();
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $this->groups[$group['group']] = $group;
         }
     }
@@ -395,8 +380,7 @@ class ArgumentParser
      * 
      * @param boolean $strict A boolean value for the strictness state
      */
-    public function setStrict($strict)
-    {
+    public function setStrict($strict) {
         $this->strict = $strict;
     }
 
@@ -404,8 +388,7 @@ class ArgumentParser
      * Adds the two automatic help options. A long one represented by --help and
      * a short one represented by -h.
      */
-    public function addHelp()
-    {
+    public function addHelp() {
         global $argv;
 
         $this->addOptions(
@@ -432,8 +415,7 @@ class ArgumentParser
      * Set the usage text which forms part of the help text.
      * @param string|array $usage
      */
-    public function setUsage($usage)
-    {
+    public function setUsage($usage) {
         $this->usage = $usage;
     }
 
@@ -441,8 +423,7 @@ class ArgumentParser
      * Set the description text shown on top of the help text.
      * @param string $description
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
     }
 
@@ -450,8 +431,7 @@ class ArgumentParser
      * Set the footnote text shown at the bottom of the help text.
      * @param string $footnote
      */
-    public function setFootnote($footnote)
-    {
+    public function setFootnote($footnote) {
         $this->footnote = $footnote;
     }
 
@@ -461,8 +441,7 @@ class ArgumentParser
      * @global type $argv
      * @return string
      */
-    public function getHelpMessage($command)
-    {
+    public function getHelpMessage($command) {
         return (string) new HelpMessage([
             'options' => $this->options,
             'description' => $this->description,
@@ -473,4 +452,5 @@ class ArgumentParser
             'groups' => $this->groups
         ]);
     }
+
 }

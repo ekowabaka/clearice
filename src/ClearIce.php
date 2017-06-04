@@ -1,4 +1,5 @@
 <?php
+
 /*
  * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2015 James Ekow Abaka Ainooson
@@ -36,6 +37,7 @@ namespace clearice;
  */
 class ClearIce
 {
+
     /**
      * Least output level.
      * At this level clearice is expected to be mute. Nothing would be outputted
@@ -43,19 +45,19 @@ class ClearIce
      * @var int
      */
     const OUTPUT_LEVEL_0 = 0;
-    
+
     /**
      * Output level 1
      * @var int
      */
     const OUTPUT_LEVEL_1 = 1;
-    
+
     /**
      * Output level 2
      * @var int
      */
     const OUTPUT_LEVEL_2 = 2;
-    
+
     /**
      * Output level 3.
      * At this level clearice is expected not to filter any output. Everything
@@ -63,19 +65,19 @@ class ClearIce
      * @var int
      */
     const OUTPUT_LEVEL_3 = 3;
-    
+
     /**
      * The default output level of the ClearIce library.
      * @var int
      */
     private static $defaultOutputLevel = self::OUTPUT_LEVEL_1;
-    
+
     /**
      * An array to hold the output level stack.
      * @var array
      */
     private static $outputLevelStack = array();
-    
+
     /**
      * An array of the three streams used primarily for I/O. These are the
      * standard output stream, the standard input stream and the error stream.
@@ -85,7 +87,7 @@ class ClearIce
      * @var array
      */
     private static $streams = array();
-    
+
     /**
      * The URLs of the various streams used for I/O. This variable stores these
      * URLs under the input, output and error streams respectively. 
@@ -98,7 +100,7 @@ class ClearIce
         'output' => 'php://stdout',
         'error' => 'php://stderr'
     );
-    
+
     /**
      * An instance of the ArgumentParser class which is maintained as a singleton
      * for the purposes of parsing command line arguments.
@@ -106,7 +108,7 @@ class ClearIce
      * @var \clearice\ArgumentParser
      */
     private static $parser = null;
-    
+
     /**
      * A function for getting answers to questions from users interractively.
      * This function takes the question and an optional array of parameters. 
@@ -135,48 +137,37 @@ class ClearIce
      * @param array  $params   An array of options that this function takes.
      * @return string The response provided by the user to the prompt.
      */
-    public static function getResponse($question, $params = array())
-    {
+    public static function getResponse($question, $params = array()) {
         self::cleanResponseParams($params);
         $prompt = $question;
-        if(count($params['answers']) > 0) {
+        if (count($params['answers']) > 0) {
             $prompt .= " (" . implode("/", $params['answers']) . ")";
         }
 
         self::output($prompt . " [{$params['default']}]: ");
-        $response = str_replace(array("\n", "\r"),array("",""), self::input());
+        $response = str_replace(array("\n", "\r"), array("", ""), self::input());
 
-        if($response == "" && $params['required'] === true && $params['default'] == '')
-        {
+        if ($response == "" && $params['required'] === true && $params['default'] == '') {
             self::error("A value is required.\n");
             return self::getResponse($question, $params);
-        }
-        else if($response == "" && $params['required'] === true && $params['default'] != '')
-        {
+        } else if ($response == "" && $params['required'] === true && $params['default'] != '') {
             return $params['default'];
-        }
-        else if($response == "")
-        {
+        } else if ($response == "") {
             return $params['default'];
-        }
-        else
-        {
-            if(count($params['answers']) == 0)
-            {
+        } else {
+            if (count($params['answers']) == 0) {
                 return $response;
             }
-            foreach($params['answers'] as $answer)
-            {
-                if(strtolower($answer) == strtolower($response))
-                {
+            foreach ($params['answers'] as $answer) {
+                if (strtolower($answer) == strtolower($response)) {
                     return strtolower($answer);
                 }
             }
             self::error("Please provide a valid answer.\n");
             return self::getResponse($question, $params);
         }
-    } 
-    
+    }
+
     /**
      * Set the URL of any of the streams used by ClearIce.
      * ClearIce maintains three different streams for its I/O operations. The
@@ -205,22 +196,21 @@ class ClearIce
      *                     being requested, the right kind of permissions must
      *                     be set. For instance 
      */
-    public static function setStreamUrl($type, $url)
-    {
+    public static function setStreamUrl($type, $url) {
         self::$streamUrls[$type] = $url;
         unset(self::$streams[$type]);
     }
-    
+
     /**
      * Safely EXIT the app. 
      * Usefull if testing so that the termination doesn't kill the test 
      * environment. 
      */
-    public static function terminate()
-    {
-        if(!defined('TESTING')) die();
+    public static function terminate() {
+        if (!defined('TESTING'))
+            die();
     }
-    
+
     /**
      * Write a string to the output stream. 
      * If an output stream is not defined this method writes to the standard 
@@ -228,46 +218,41 @@ class ClearIce
      * 
      * @param string $string
      */
-    public static function output($string, $outputLevel = self::OUTPUT_LEVEL_1, $stream = 'output')
-    {
-        if($outputLevel <= self::$defaultOutputLevel)
-        {
+    public static function output($string, $outputLevel = self::OUTPUT_LEVEL_1, $stream = 'output') {
+        if ($outputLevel <= self::$defaultOutputLevel) {
             fputs(self::getStream($stream), $string);
         }
     }
-    
+
     /**
      * Write a string to the error stream. 
      * If an error stream is not defined this method writes to the standard 
      * error (the console) by default.
      * 
      * @param string $string
-     */    
-    public static function error($string, $outputLevel = self::OUTPUT_LEVEL_1)
-    {
+     */
+    public static function error($string, $outputLevel = self::OUTPUT_LEVEL_1) {
         self::output($string, $outputLevel, 'error');
-    }    
-    
+    }
+
     /**
      * Set the output level of the ClearIce output streams (including the error)
      * stream. 
      * 
      * @param int $outputLevel
      */
-    public static function setOutputLevel($outputLevel)
-    {
+    public static function setOutputLevel($outputLevel) {
         self::$defaultOutputLevel = $outputLevel;
     }
-    
+
     /**
      * Returns the current output level of the CliearIce library.
      * @return int
      */
-    public static function getOutputLevel()
-    {
+    public static function getOutputLevel() {
         return self::$defaultOutputLevel;
     }
-    
+
     /**
      * Push an output level unto the output level stack.
      * The output level pushed becomes the new output level with which ClearIce
@@ -278,12 +263,11 @@ class ClearIce
      * 
      * @param int $outputLevel
      */
-    public static function pushOutputLevel($outputLevel)
-    {
+    public static function pushOutputLevel($outputLevel) {
         self::$outputLevelStack[] = self::getOutputLevel();
         self::setOutputLevel($outputLevel);
     }
-    
+
     /**
      * Pop the last output level which was pushed unto the output level stack.
      * This restores the previous output level which was active before the last
@@ -292,20 +276,17 @@ class ClearIce
      * temporarily without having to keep a record of the previous output level.
      * 
      */
-    public static function popOutputLevel()
-    {
+    public static function popOutputLevel() {
         self::setOutputLevel(array_pop(self::$outputLevelStack));
     }
-    
+
     /**
      * Resets the output level stack.
      * This method clears all items off the output level stack leaving only the
      * current output level.
      */
-    public static function resetOutputLevel()
-    {
-        if(count(self::$outputLevelStack) > 0)
-        {
+    public static function resetOutputLevel() {
+        if (count(self::$outputLevelStack) > 0) {
             self::setOutputLevel(reset(self::$outputLevelStack));
             self::$outputLevelStack = array();
         }
@@ -319,11 +300,10 @@ class ClearIce
      * @todo look into using readline for this in cases where it's available
      * @return string
      */
-    public static function input()
-    {
+    public static function input() {
         return fgets(self::getStream('input'));
     }
-    
+
     /**
      * Returns a stream resource for a given stream type. 
      * If the stream has not been opened this method opens the stream before 
@@ -333,15 +313,13 @@ class ClearIce
      * @param string $type
      * @return resource
      */
-    private static function getStream($type)
-    {
-        if(!isset(self::$streams[$type]))
-        {
+    private static function getStream($type) {
+        if (!isset(self::$streams[$type])) {
             self::$streams[$type] = fopen(self::$streamUrls[$type], $type == 'input' ? 'r' : 'w');
         }
         return self::$streams[$type];
     }
-    
+
     /**
      * Adds commands which are to be recognized during argument parsing.
      * Commands to be added could be passed as strings or structured arrays. 
@@ -389,11 +367,10 @@ class ClearIce
      * 
      * @param string|array $command The command to be added for parsing.
      */
-    public static function addCommands($command)
-    {
+    public static function addCommands($command) {
         self::callParserMethod('addCommands', func_get_args());
     }
-    
+
     /**
      * Add an option to be recognized by the ClearIce parser.
      * Options added could be passed as strings or structured arrays. This method
@@ -451,11 +428,10 @@ class ClearIce
      * @see ClearIce::addCommands
      * 
      */
-    public static function addOptions()
-    {
+    public static function addOptions() {
         self::callParserMethod('addOptions', func_get_args());
     }
-    
+
     /**
      * Add a group under which various options can be put.
      * Groups provide a nice way of grouping options when generating automatic
@@ -464,11 +440,10 @@ class ClearIce
      * key holds a unique key that identifies the group. The `help` key holds a 
      * description that will be displayed on the help message.
      */
-    public static function addGroups()
-    {
+    public static function addGroups() {
         self::callParserMethod('addGroups', func_get_args());
-    }    
-    
+    }
+
     /**
      * Parse the command line arguments passed to the app.
      * This method parses the command line argumens and returns array which 
@@ -480,11 +455,10 @@ class ClearIce
      *       values assigned to the options as array values. Options which do not 
      *       accept value would have true assigned.
      */
-    public static function parse()
-    {
+    public static function parse() {
         return self::getParserInstance()->parse();
     }
-    
+
     /**
      * Set a usage hint for your application.
      * The usage hint specified would be displayed when the automatic help 
@@ -494,25 +468,23 @@ class ClearIce
      * 
      * @param string|array $usage A short usage hint for the application.
      */
-    public static function setUsage($usage)
-    {
+    public static function setUsage($usage) {
         self::getParserInstance()->setUsage($usage);
     }
-    
+
     /**
      * Set a description for your application.
      * The description specified would be displayed when the automatic help
      * feature of the library is used. This description text is described before
      * the help message and as such can include anything from the name of the
      * application, copyright information to ACII art graphics.
-    * 
+     * 
      * @param string $description Text for the description message.
      */
-    public static function setDescription($description)
-    {
+    public static function setDescription($description) {
         self::getParserInstance()->setDescription($description);
     }
-    
+
     /**
      * Set a foonote for the help message of your application.
      * The footnote specified would be displayed at the bottom of the automatic
@@ -522,11 +494,10 @@ class ClearIce
      * 
      * @param string $footnote Text for the footnote message
      */
-    public static function setFootnote($footnote)
-    {
+    public static function setFootnote($footnote) {
         self::getParserInstance()->setFootnote($footnote);
     }
-    
+
     /**
      * Add the automatic help options.
      * This would add the `-h` and `--help` options to your application. When
@@ -534,11 +505,10 @@ class ClearIce
      * message to the user. The help options are also added to commands so
      * users can get help which are specific to commands.
      */
-    public static function addHelp()
-    {
+    public static function addHelp() {
         self::getParserInstance()->addHelp();
     }
-    
+
     /**
      * Generate and return a help message.
      * This method generates and returns a help message based on the various
@@ -551,11 +521,10 @@ class ClearIce
      *     or null to generate help for the application.
      * @return string
      */
-    public static function getHelpMessage($command = '')
-    {
+    public static function getHelpMessage($command = '') {
         return self::getParserInstance()->getHelpMessage($command);
     }
-    
+
     /**
      * Sets the parser into strict mode.
      * A strict parser would terminate the application if it doesn't understand 
@@ -568,53 +537,51 @@ class ClearIce
      * 
      * @param bool $strict
      */
-    public static function setStrict($strict)
-    {
+    public static function setStrict($strict) {
         self::getParserInstance()->setStrict($strict);
     }
-    
+
     /**
      * Returns a singleton instance of the argument parser.
      * 
      * @return \clearice\ArgumentParser
      */
-    private static function getParserInstance()
-    {
-        if(self::$parser === null)
-        {
+    private static function getParserInstance() {
+        if (self::$parser === null) {
             self::$parser = new ArgumentParser();
         }
         return self::$parser;
     }
-    
+
     /**
      * @param string $name The name of the method called
      * @param array $arguments An array of arguments passed to the method
      * @return mixed
      * @throws \Exception
      */
-    private static function callParserMethod($name, $arguments)
-    {
+    private static function callParserMethod($name, $arguments) {
         $parser = self::getParserInstance();
         $method = new \ReflectionMethod($parser, $name);
-        return $method->invokeArgs($parser, $arguments);            
+        return $method->invokeArgs($parser, $arguments);
     }
-    
+
     /**
      * Reset the library. Deletes all singletons and provides you with a fresh
      * class ... sort of! This method is primarily used during testing to 
      * refresh the class in between tests.
      */
-    public static function reset()
-    {
+    public static function reset() {
         self::$parser = null;
     }
-    
-    private static function cleanResponseParams(&$params)
-    {
+
+    private static function cleanResponseParams(&$params) {
         $params['answers'] = isset($params['answers']) ? $params['answers'] : [];
         $params['default'] = isset($params['default']) ? $params['default'] : '';
         $params['required'] = isset($params['required']) ? $params['required'] : false;
     }
-}
+    
+    public static function setContainer($container) {
+        self::getParserInstance()->setContainer($container);
+    }
 
+}
