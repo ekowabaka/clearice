@@ -3,9 +3,6 @@
     "type" : "library",
     "description": "A tool to help in the building of CLI apps. Provides command line parsing and simple console I/O interfaces.",
     "license" : "MIT",
-    "require": {
-        "php": ">=5.4.0"
-    },
     "require-dev": {
         "mikey179/vfsStream" : "1.*",
         "phpunit/phpunit" : "4.*"
