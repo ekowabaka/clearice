@@ -139,14 +139,12 @@ class ArgumentParser
      */
     private $arguments = [];
     private $argumentPointer;
-    private $container;
+    private $io;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->options = new Options();
-    }
-    
-    public function setContainer($container) {
-        $this->container = $container;
+        $this->io = new ConsoleIO();
     }
 
     /**
@@ -155,7 +153,8 @@ class ArgumentParser
      * 
      * @param string $unknown
      */
-    public function addUnknownOption($unknown) {
+    public function addUnknownOption($unknown)
+    {
         $this->unknownOptions[] = $unknown;
     }
 
@@ -165,7 +164,8 @@ class ArgumentParser
      * @param string $key The option.
      * @param string $value The value asigned to the option.
      */
-    public function addParsedOption($key, $value) {
+    public function addParsedOption($key, $value)
+    {
         $this->parsedOptions[$key] = $value;
     }
 
@@ -174,7 +174,8 @@ class ArgumentParser
      * @param string $key The option.
      * @param string $value The value to be appended to the list.
      */
-    public function addParsedMultiOption($key, $value) {
+    public function addParsedMultiOption($key, $value)
+    {
         $this->parsedOptions[$key][] = $value;
     }
 
@@ -187,7 +188,8 @@ class ArgumentParser
      * @global type $argv
      * @return array
      */
-    public function parse() {
+    public function parse()
+    {
         global $argv;
         $this->arguments = $argv;
         $executed = array_shift($this->arguments);
@@ -195,6 +197,7 @@ class ArgumentParser
 
         $this->parsedOptions = $this->options->getDefaults($this->command);
         $this->parsedOptions['__command__'] = $this->command;
+        $this->parsedOptions['data'] = $this->commands[$this->command]['data'] ?? null;
         $this->longOptionParser = new parsers\LongOptionParser($this, $this->options->getMap());
         $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->options->getMap());
 
@@ -207,31 +210,21 @@ class ArgumentParser
         $this->aggregateOptions();
         $this->showHelp();
 
-        return $this->executeCommand($this->command, $this->parsedOptions);
+        return $this->parsedOptions;
     }
 
-    public function getLookAheadArgument() {
+    public function getLookAheadArgument()
+    {
         return $this->arguments[$this->argumentPointer + 1];
     }
 
-    public function moveToNextArgument() {
+    public function moveToNextArgument()
+    {
         $this->argumentPointer++;
     }
 
-    private function executeCommand($command, $options) {
-        if ($command === '__default__' || !isset($this->commands[$command]['class'])) {
-            return $options;
-        } else {
-            $class = $this->commands[$command]['class'];
-            $object = $this->container ? $this->container->resolve($class) : new $class();
-            $parameters = $options;
-            unset($parameters['__command__']);
-            $object->run($parameters);
-            return $options;
-        }
-    }
-
-    private function parseArgument($argument) {
+    private function parseArgument($argument)
+    {
         $success = false;
         // Try to parse the argument for a command
         if ($this->parsedOptions['__command__'] != '__default__') {
@@ -246,11 +239,14 @@ class ArgumentParser
         }
     }
 
-    private function aggregateOptions() {
-        if (count($this->standAlones))
+    private function aggregateOptions()
+    {
+        if (count($this->standAlones)) {
             $this->parsedOptions['stand_alones'] = $this->standAlones;
-        if (count($this->unknownOptions))
+        }
+        if (count($this->unknownOptions)) {
             $this->parsedOptions['unknowns'] = $this->unknownOptions;
+        }
 
         // Hide the __default__ command from the outside world
         if ($this->parsedOptions['__command__'] == '__default__') {
@@ -258,35 +254,34 @@ class ArgumentParser
         }
     }
 
-    private function showHelp() {
+    private function showHelp()
+    {
         if (isset($this->parsedOptions['help'])) {
-            ClearIce::output($this->getHelpMessage(
-                            isset($this->parsedOptions['__command__']) ?
-                                    $this->parsedOptions['__command__'] : null
-                    )
+            $this->io->output($this->getHelpMessage(
+                    isset($this->parsedOptions['__command__']) ?
+                        $this->parsedOptions['__command__'] : null
+                )
             );
-            ClearIce::terminate();
         }
         if ($this->command == 'help') {
-            ClearIce::output($this->getHelpMessage($this->standAlones[0]));
-            ClearIce::terminate();
+            $this->io->output($this->getHelpMessage($this->standAlones[0]));
         }
     }
 
-    private function showStrictErrors($executed) {
+    private function showStrictErrors($executed)
+    {
         if ($this->strict && count($this->unknownOptions) > 0) {
             foreach ($this->unknownOptions as $unknown) {
-                ClearIce::error("$executed: invalid option -- {$unknown}\n");
+                $this->io->error("$executed: invalid option -- {$unknown}\n");
             }
-
             if ($this->hasHelp) {
-                ClearIce::error("Try `$executed --help` for more information\n");
+                $this->io->error("Try `$executed --help` for more information\n");
             }
-            ClearIce::terminate();
         }
     }
 
-    private function getArgumentWithCommand($argument, $command) {
+    private function getArgumentWithCommand($argument, $command)
+    {
         $return = true;
         if (preg_match('/^(--)(?<option>[a-zA-z][0-9a-zA-Z-_\.]*)(=)(?<value>.*)/i', $argument, $matches)) {
             $return = $this->longOptionParser->parse($matches['option'], $matches['value'], $command);
@@ -301,7 +296,8 @@ class ArgumentParser
         return $return;
     }
 
-    private function getCommand() {
+    private function getCommand()
+    {
         $commands = array_keys($this->commands);
         if (count($commands) > 0 && count($this->arguments) > 0) {
             $command = array_search($this->arguments[0], $commands);
@@ -317,26 +313,9 @@ class ArgumentParser
         return $command;
     }
 
-    private function stringCommandToArray($command) {
-        if (class_exists($command)) {
-            try {
-                $className = $command;
-                $method = new \ReflectionMethod($className, 'getCommandOptions');
-                $command = $method->invoke(null);
-                $command['class'] = $className;
-                foreach ($command['options'] ?? [] as $option) {
-                    $option['command'] = $command['command'];
-                    ClearIce::addOptions($option);
-                }
-                return $command;
-            } catch (\ReflectionException $e) {
-                // Do nothing
-            }
-        }
-        return [
-            'help' => '',
-            'command' => $command
-        ];
+    private function stringCommandToArray($command)
+    {
+        return ['help' => '', 'command' => $command];
     }
 
     /**
@@ -346,8 +325,9 @@ class ArgumentParser
      * @param String
      * @see ClearIce::addCommands()
      */
-    public function addCommands() {
-        foreach (func_get_args() as $command) {
+    public function addCommands($commands)
+    {
+        foreach ($commands as $command) {
             if (is_string($command)) {
                 $command = $this->stringCommandToArray($command);
             }
@@ -360,13 +340,13 @@ class ArgumentParser
      * Options could either be strings or structured arrays. Strings define 
      * simple options. Structured arrays describe options in deeper details.
      */
-    public function addOptions() {
-        $options = func_get_args();
+    public function addOptions($options)
+    {
         $this->options->add($options);
     }
 
-    public function addGroups() {
-        $groups = func_get_args();
+    public function addGroups($groups)
+    {
         foreach ($groups as $group) {
             $this->groups[$group['group']] = $group;
         }
@@ -380,7 +360,8 @@ class ArgumentParser
      * 
      * @param boolean $strict A boolean value for the strictness state
      */
-    public function setStrict($strict) {
+    public function setStrict($strict)
+    {
         $this->strict = $strict;
     }
 
@@ -388,24 +369,17 @@ class ArgumentParser
      * Adds the two automatic help options. A long one represented by --help and
      * a short one represented by -h.
      */
-    public function addHelp() {
+    public function addHelp()
+    {
         global $argv;
 
-        $this->addOptions(
-                array(
-                    'short' => 'h',
-                    'long' => 'help',
-                    'help' => 'Shows this help message'
-                )
-        );
+        $this->addOptions([['short' => 'h', 'long' => 'help', 'help' => 'Shows this help message']]);
 
         if (count($this->commands) > 0) {
-            $this->addCommands(
-                    array(
-                        'command' => 'help',
-                        'help' => "Displays specific help for any of the given commands.\nusage: {$argv[0]} help [command]"
-                    )
-            );
+            $this->addCommands([[
+                'command' => 'help',
+                'help' => "Displays specific help for any of the given commands.\nusage: {$argv[0]} help [command]"  
+            ]]);
         }
 
         $this->hasHelp = true;
@@ -415,7 +389,8 @@ class ArgumentParser
      * Set the usage text which forms part of the help text.
      * @param string|array $usage
      */
-    public function setUsage($usage) {
+    public function setUsage($usage)
+    {
         $this->usage = $usage;
     }
 
@@ -423,7 +398,8 @@ class ArgumentParser
      * Set the description text shown on top of the help text.
      * @param string $description
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
     }
 
@@ -431,7 +407,8 @@ class ArgumentParser
      * Set the footnote text shown at the bottom of the help text.
      * @param string $footnote
      */
-    public function setFootnote($footnote) {
+    public function setFootnote($footnote)
+    {
         $this->footnote = $footnote;
     }
 
@@ -441,7 +418,8 @@ class ArgumentParser
      * @global type $argv
      * @return string
      */
-    public function getHelpMessage($command) {
+    public function getHelpMessage($command = null)
+    {
         return (string) new HelpMessage([
             'options' => $this->options,
             'description' => $this->description,
