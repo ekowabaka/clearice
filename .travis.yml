@@ -2,17 +2,12 @@ language: php
 sudo: false
 dist: trusty
 php:
- - "hhvm"
- - "7.0"
+ - "7.1"
 sudo: false
-matrix:
-  include:
-    - php: "7.1"
-      env: COVERAGE=yes
  
 before_script:
  - composer install
 
 script: vendor/bin/phpunit --coverage-clover coverage.clover tests/cases 
-after_script: if [ "$COVERAGE" == "yes" ]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+after_script: wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
