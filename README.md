@@ -27,7 +27,10 @@ To use clearice to parse command line arguments you can simply put ...
 ````php
 <?php
 require "vendor/autoload.php";
-$options = \clearice\ClearIce::parse();
+
+$io = new \clearice\ConsoleIO();
+$parser = new \clearice\ArgumentParser($io);
+$options = $parser->parse($argv);
 print_r($options);
 ````
 
