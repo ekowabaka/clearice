@@ -64,16 +64,13 @@ class CommandsTest extends TestCase
     
     public function testCommands()
     {
-        global $argv;
-        $argv = array(
+        $options = $this->argumentParser->parse(array(
             "test",
             "init",
             "--directory=./",
             '-v',
             '--export'
-        );
-        
-        $options = $this->argumentParser->parse();
+        ));
         $this->assertEquals(
             array(
                 '__command__' => 'init',
@@ -90,13 +87,10 @@ class CommandsTest extends TestCase
     
     public function testDefaultCommand()
     {
-        global $argv;
-        $argv = array(
+        $options = $this->argumentParser->parse(array(
             "test",
             '-v'
-        );
-        
-        $options = $this->argumentParser->parse();
+        ));
         $this->assertEquals(
             array(
                 'verbose' => true,

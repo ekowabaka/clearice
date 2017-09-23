@@ -10,7 +10,6 @@ class GetResponseTest extends TestCase
     private $stdin;
     private $stderr;
     private $stdout;
-    private $argumentParser;
     private $io;
 
     public function setup()
@@ -25,8 +24,6 @@ class GetResponseTest extends TestCase
         $this->io->setStreamUrl('input', $this->stdin);
         $this->io->setStreamUrl('output', $this->stdout);
         $this->io->setStreamUrl('error', $this->stderr);        
-        
-        //$this->argumentParser = new ArgumentParser($io);
     }
     
     public function testStreams()

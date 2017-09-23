@@ -65,7 +65,7 @@ class OptionGroupsTest extends TestCase
             )
         ]);        
         
-        $helpMessage = $this->argumentParser->getHelpMessage();
+        $helpMessage = $this->argumentParser->getHelpMessage('');
         $this->assertEquals(file_get_contents('tests/data/help_groups.txt'), $helpMessage);
     }
 }

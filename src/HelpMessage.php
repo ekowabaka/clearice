@@ -45,6 +45,7 @@ class HelpMessage
      * @var string
      */
     private $message = '';
+    private $called;
     
     /**
      * The constructor for the HelpMessage class. This constructor does the work
@@ -54,9 +55,10 @@ class HelpMessage
      * @param array $params An associative array which contains the details needed
      *                      to help generate the help message.s
      */
-    public function __construct($params)
+    public function __construct($called, $params)
     {
         $sections = [];
+        $this->called = $called;
         
         // Build up sections and use them as the basis for the help message
         $this->getDescriptionMessage($params, $sections, 'description');
@@ -279,12 +281,10 @@ class HelpMessage
      * Returns the usage message for either the command or the main script
      * depending on the state in which the HelpMessage class currently is.
      * 
-     * @global array $argv The arguments passed to the 
      * @param array $params A copy of the parameters passed to the HelpMessage class
      */
     private function getUsageMessage(array $params, array &$sections)
     {
-        global $argv;
         $usageMessage = [];
         $usageSet = false;
         
@@ -306,7 +306,7 @@ class HelpMessage
         
         if(is_string($usage))
         {
-            $usageMessage[] = "Usage:\n  {$argv[0]} " . $usage;
+            $usageMessage[] = "Usage:\n  {$this->called} " . $usage;
             $usageSet = true;
         }
         elseif (is_array($usage)) 
@@ -314,7 +314,7 @@ class HelpMessage
             $usageMessage[] = "Usage:";
             foreach($usage as $usage)
             {
-                $usageMessage[] = "  {$argv[0]} {$usage}";
+                $usageMessage[] = "  {$this->called} {$usage}";
             }
             $usageSet = true;
         }

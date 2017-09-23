@@ -185,13 +185,12 @@ class ArgumentParser
      * returned has the following structure.
      * 
      * 
-     * @global type $argv
+     * @param array $arguments
      * @return array
      */
-    public function parse()
+    public function parse(array $arguments) : array
     {
-        global $argv;
-        $this->arguments = $argv;
+        $this->arguments = $arguments;
         $executed = array_shift($this->arguments);
         $this->command = $this->getCommand();
 
@@ -210,7 +209,7 @@ class ArgumentParser
 
         $this->showStrictErrors($executed);
         $this->aggregateOptions();
-        $this->showHelp();
+        $this->showHelp($arguments[0]);
 
         return $this->parsedOptions;
     }
@@ -256,17 +255,13 @@ class ArgumentParser
         }
     }
 
-    private function showHelp()
+    private function showHelp($called)
     {
         if (isset($this->parsedOptions['help'])) {
-            $this->io->output($this->getHelpMessage(
-                    isset($this->parsedOptions['__command__']) ?
-                        $this->parsedOptions['__command__'] : null
-                )
-            );
+            $this->io->output($this->getHelpMessage($called, $this->parsedOptions['__command__'] ?? null));
         }
         if ($this->command == 'help') {
-            $this->io->output($this->getHelpMessage($this->standAlones[0]));
+            $this->io->output($this->getHelpMessage($called, $this->standAlones[0]));
         }
     }
 
@@ -371,16 +366,14 @@ class ArgumentParser
      * Adds the two automatic help options. A long one represented by --help and
      * a short one represented by -h.
      */
-    public function addHelp()
+    public function addHelp($called = '')
     {
-        global $argv;
-
         $this->addOptions([['short' => 'h', 'long' => 'help', 'help' => 'Shows this help message']]);
 
         if (count($this->commands) > 0) {
             $this->addCommands([[
                 'command' => 'help',
-                'help' => "Displays specific help for any of the given commands.\nusage: {$argv[0]} help [command]"  
+                'help' => "Displays specific help for any of the given commands.\nusage: {$called} help [command]"  
             ]]);
         }
 
@@ -417,20 +410,18 @@ class ArgumentParser
     /**
      * Returns the help message as a string.
      * 
-     * @global type $argv
      * @return string
      */
-    public function getHelpMessage($command = null)
+    public function getHelpMessage($called, $command = null)
     {
-        return (string) new HelpMessage([
-            'options' => $this->options,
-            'description' => $this->description,
-            'usage' => $this->usage,
-            'commands' => $this->commands,
-            'footnote' => $this->footnote,
-            'command' => $command,
-            'groups' => $this->groups
-        ]);
+        return (string) new HelpMessage(
+            $called,
+            [
+                'options' => $this->options, 'description' => $this->description, 'usage' => $this->usage,
+                'commands' => $this->commands, 'footnote' => $this->footnote, 'command' => $command,
+                'groups' => $this->groups
+            ]
+        );
     }
     
     public function getIO() : ConsoleIO

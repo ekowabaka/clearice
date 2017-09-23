@@ -59,21 +59,18 @@ class ClearIceTest extends TestCase
     
     public function testParsingLongOptions()
     {
-        global $argv;
         $this->argumentParser->addOptions([         
             's',
             'some-long-option'
         ]);        
-                
-        $argv = array(
+        
+        $options = $this->argumentParser->parse(array(
             "test",
             "--input=/myfiles/wiki-sources",
             "--output=/myfiles/wiki",
             "--some-long-option",
             "--verbose"
-        );
-        
-        $options = $this->argumentParser->parse();
+        ));
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -88,17 +85,14 @@ class ClearIceTest extends TestCase
     }
     
     public function testParsingShortOptions()
-    {   
-        global $argv;
+    { 
         
-        $argv = array(
+        $options  = $this->argumentParser->parse(array(
             "test",
             "-i/myfiles/wiki-sources",
             "-o/myfiles/wiki",
             "-v"
-        );
-        
-        $options  = $this->argumentParser->parse();
+        ));
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -113,15 +107,11 @@ class ClearIceTest extends TestCase
     
     public function testParsingMixedOptions()
     {
-        global $argv;
-        
-        $argv = array(
+        $options  = $this->argumentParser->parse(array(
             "test",
             "--input=/myfiles/wiki-sources",
             "-o/myfiles/wiki",
-        );
-        
-        $options  = $this->argumentParser->parse();
+        ));
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -135,27 +125,23 @@ class ClearIceTest extends TestCase
         
     public function testParsingGroupedShortsAndStandAlone()
     {
-        global $argv;
-        $argv = array(
+        $options  = $this->argumentParser->parse(array(
             "test",
             "-vxs",
             "stand_alone"
-        );        
-        $options  = $this->argumentParser->parse();
+        ));
         
         $this->assertArrayHasKey("verbose", $options);
         $this->assertArrayHasKey("create-default-index", $options);
     }
     
     public function testParsingGroupedShortsAndStandAloneReversed()
-    {
-        global $argv;
-        $argv = array(
+    {        
+        $options  = $this->argumentParser->parse(array(
             "test",
             "-sxv",
             "stand_alone"
-        );        
-        $options  = $this->argumentParser->parse();
+        ));
         
         $this->assertEquals(
             array(
@@ -172,15 +158,13 @@ class ClearIceTest extends TestCase
         
     public function testParsingMixedAndStandAlones()
     {
-        global $argv;
-        $argv = array(
+        $options  = $this->argumentParser->parse(array(
             "test",
             "--input=/myfiles/wiki-sources",
             "-o/myfiles/wiki",
             "stand_alone_1",
             "stand_alone_2"
-        );        
-        $options  = $this->argumentParser->parse();
+        ));
         $this->assertArrayHasKey("stand_alones", $options);
         $this->assertEquals(
             array(
@@ -197,15 +181,12 @@ class ClearIceTest extends TestCase
     
     public function testParsingUnknowns()
     {
-        global $argv;
-        
-        $argv = array(
+        $options = $this->argumentParser->parse(array(
             "test",
             "-ug",
             "--unknown-option",
             "--another-unknown=something"
-        );
-        $options = $this->argumentParser->parse();        
+        ));        
         $this->assertArrayHasKey("unknowns", $options);
         $this->assertEquals(
             array(
@@ -225,12 +206,7 @@ class ClearIceTest extends TestCase
     }
     
     public function testMultipleUsage()
-    {
-        global $argv;
-        $argv = array(
-            "test.php"
-        );
-        
+    {   
         $this->argumentParser->setUsage(
             array(
                 "[input] [options]..",
@@ -241,20 +217,13 @@ class ClearIceTest extends TestCase
         $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         $this->argumentParser->addHelp();
         
-        $helpMessage = $this->argumentParser->getHelpMessage();
+        $helpMessage = $this->argumentParser->getHelpMessage('test.php');
         
         $this->assertEquals(file_get_contents('tests/data/help_multi_usage.txt'), $helpMessage);
     }
     
     public function testMultiOptions()
     {
-        global $argv;
-        $argv = array(
-            "test.php",
-            "--some-multi-option=one",
-            "--some-multi-option=two",
-            "-mthree"
-        );
         
         $this->argumentParser->addOptions([array(
             'long' => 'some-multi-option',
@@ -269,7 +238,12 @@ class ClearIceTest extends TestCase
                     'one', 'two', 'three'
                 )
             ),
-            $this->argumentParser->parse()
+            $this->argumentParser->parse(array(
+            "test.php",
+            "--some-multi-option=one",
+            "--some-multi-option=two",
+            "-mthree"
+        ))
         );
     }
 }

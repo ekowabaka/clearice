@@ -57,118 +57,100 @@ class NoEqualSignAssignmentTest extends TestCase
     
     public function testNoEqualsAssignment()
     {
-        global $argv;
-        $argv = array(
-            'wiki',
-            '--output',
-            '/var/www/wiki',
-            '--input',
-            '/var/input'
-        );
-        
         $this->assertEquals(
             array(
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            $this->argumentParser->parse()
+            $this->argumentParser->parse(array(
+                'wiki',
+                '--output',
+                '/var/www/wiki',
+                '--input',
+                '/var/input'
+            ))
         );        
     }
 
     public function testShortNoEqualsAssignment()
     {
-        global $argv;
-        $argv = array(
-            'wiki',
-            '-o',
-            '/var/www/wiki',
-            '-i',
-            '/var/input'
-        );
-        
         $this->assertEquals(
             array(
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            $this->argumentParser->parse()
+            $this->argumentParser->parse(array(
+                'wiki',
+                '-o',
+                '/var/www/wiki',
+                '-i',
+                '/var/input'
+            ))
         );
     }        
     
     public function testMixedAssignment()
     {
-        global $argv;
-        $argv = array(
-            'wiki',
-            '--output',
-            '/var/www/wiki',
-            '-i',
-            '/var/input'
-        );
-        
         $this->assertEquals(
             array(
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            $this->argumentParser->parse()
+            $this->argumentParser->parse(array(
+                'wiki',
+                '--output',
+                '/var/www/wiki',
+                '-i',
+                '/var/input'
+            ))
         );
     }     
     
     public function testMixedAssignment2()
     {
-        global $argv;
-        $argv = array(
-            'wiki',
-            '--output=/var/www/wiki',
-            '-i',
-            '/var/input'
-        );
-        
         $this->assertEquals(
             array(
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            $this->argumentParser->parse()
+            $this->argumentParser->parse(array(
+                'wiki',
+                '--output=/var/www/wiki',
+                '-i',
+                '/var/input'
+            ))
         );
     }        
     
     public function testSkipping()
     {
-        global $argv;
-        $argv = array(
-            'wiki',
-            '--output',
-            '--input',
-            '/var/input'
-        );
-        
         $this->assertEquals(
             array(
                 'output' => true,
                 'input' => '/var/input'
             ),
-            $this->argumentParser->parse()
+            $this->argumentParser->parse(array(
+                'wiki',
+                '--output',
+                '--input',
+                '/var/input'
+            ))
         );
     }         
     
     public function testSkipping2()
     {
-        global $argv;
-        $argv = array(
-            'wiki',
-            '--output',
-            '-i',
-            '/var/input'
-        );
-        
         $this->assertEquals(
             array(
                 'output' => true,
                 'input' => '/var/input'
             ),
-            $this->argumentParser->parse()
+            $this->argumentParser->parse(array(
+                'wiki',
+                '--output',
+                '-i',
+                '/var/input'
+            ))
         );
     }         
 }

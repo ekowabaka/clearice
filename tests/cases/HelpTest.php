@@ -58,30 +58,19 @@ class HelpTest extends TestCase
     }
     
     public function testHelp()
-    {
-        global $argv;
-        $argv = array(
-            "test.php"
-        );
-        
+    {   
         $this->argumentParser->setUsage("[input] [options]..");
         $this->argumentParser->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
         $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         $this->argumentParser->addHelp();
         
-        $helpMessage = $this->argumentParser->getHelpMessage();
+        $helpMessage = $this->argumentParser->getHelpMessage("test.php");
         $this->assertEquals(file_get_contents('tests/data/help.txt'), $helpMessage);
         
     }
     
     public function testHelpOption()
     {
-        global $argv;
-        $argv = array(
-            "test.php",
-            "--help"
-        );  
-        
         vfsStream::setup('std');
         $stdout = vfsStream::url('std/output');        
         
@@ -90,26 +79,26 @@ class HelpTest extends TestCase
         $this->argumentParser->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
         $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         $this->argumentParser->addHelp();
-        $this->argumentParser->parse();
+        $this->argumentParser->parse(array(
+            "test.php",
+            "--help"
+        ));
         
         $this->assertFileEquals('tests/data/help.txt', vfsStream::url('std/output'));
     }
     
     public function testStrict()
     {
-        global $argv;
-        $argv = array(
-            "test.php",
-            '--an-unknown'
-        );
-        
         vfsStream::setup('std');
         $stderr = vfsStream::url('std/error');
         
         $this->argumentParser->addOptions(['a-known']);
         $this->argumentParser->setStrict(true);
         $this->argumentParser->getIO()->setStreamUrl('error', $stderr);
-        $this->argumentParser->parse(); 
+        $this->argumentParser->parse(array(
+            "test.php",
+            '--an-unknown'
+        )); 
         
         $this->assertStringEqualsFile(
             $stderr, 
@@ -119,12 +108,6 @@ class HelpTest extends TestCase
     
     public function testStrictWithHelp()
     {
-        global $argv;
-        $argv = array(
-            "test.php",
-            '--an-unknown'
-        );
-
         vfsStream::setup('std');
         $stderr = vfsStream::url('std/error');
         
@@ -132,7 +115,10 @@ class HelpTest extends TestCase
         $this->argumentParser->setStrict(true);
         $this->argumentParser->getIO()->setStreamUrl('error', $stderr);
         $this->argumentParser->addHelp();
-        $this->argumentParser->parse();
+        $this->argumentParser->parse(array(
+            "test.php",
+            '--an-unknown'
+        ));
                 
         $this->assertStringEqualsFile(
             $stderr, 

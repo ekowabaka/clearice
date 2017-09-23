@@ -31,13 +31,9 @@ class DefaultValuesTest extends TestCase
         
     public function testDefaultValues()
     {
-        global $argv;
-        
-        $argv = array(
+        $values = $this->argumentParser->parse(array(
             "test"
-        );        
-        
-        $values = $this->argumentParser->parse();
+        ));
         $this->assertEquals(
             ['has-default' => 'def', 'another-default' => 'def2'],
             $values

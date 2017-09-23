@@ -68,69 +68,59 @@ class CommandsHelpTest extends TestCase
     
     public function testCommandHelp()
     {
-        global $argv;
-        $argv = array(
-            'test',
-            '--help'
-        );
                 
         $this->argumentParser->setUsage("[input] [options]..");
         $this->argumentParser->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
         $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        $this->argumentParser->addHelp();
-        $this->argumentParser->parse();
+        $this->argumentParser->addHelp('test');
+        $this->argumentParser->parse(array(
+            'test',
+            '--help'
+        ));
         
         $this->assertFileEquals('tests/data/help_commands.txt', vfsStream::url('std/output'));
     }
     
     public function testHelpForCommand()    
-    {
-        global $argv;
-        $argv = array(
-            'test',
-            'init',
-            '--help'
-        );         
+    {    
         
         $this->argumentParser->setUsage("[input] [options]..");
         $this->argumentParser->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
         $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        $this->argumentParser->addHelp();        
-        $this->argumentParser->parse();
+        $this->argumentParser->addHelp('test');        
+        $this->argumentParser->parse(array(
+            'test',
+            'init',
+            '--help'
+        ));
         $this->assertFileEquals('tests/data/help_for_command.txt', vfsStream::url('std/output'));
     }
     
     public function testHelpCommand()    
     {
-        global $argv;
-        $argv = array(
-            'test',
-            'help',
-            'init'
-        );         
-        
         $this->argumentParser->setUsage("[input] [options]..");
         $this->argumentParser->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
         $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         $this->argumentParser->addHelp();        
-        $this->argumentParser->parse();
+        $this->argumentParser->parse(array(
+            'test',
+            'help',
+            'init'
+        ));
         $this->assertFileEquals('tests/data/help_for_command.txt', vfsStream::url('std/output'));
     }    
     
     public function testHelpCommandUsage()    
-    {
-        global $argv;
-        $argv = array(
-            'test',
-            'help',
-            'generate'
-        );         
-        
+    {              
         $this->argumentParser->setUsage("[input] [options]..");
         $this->argumentParser->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
         $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
         $this->argumentParser->addHelp();        
-        $this->argumentParser->parse();
+        $this->argumentParser->parse(array(
+            'test',
+            'help',
+            'generate'
+        ));
         $this->assertFileEquals('tests/data/help_for_command_usage.txt', vfsStream::url('std/output'));
     }
 }
