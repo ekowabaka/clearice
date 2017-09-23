@@ -1,17 +1,19 @@
 <?php
 
-use clearice\ClearIce;
-use org\bovigo\vfs\vfsStream;
+use clearice\ArgumentParser;
+use PHPUnit\Framework\TestCase;
+use clearice\ConsoleIO;
 
-define('TESTING', 'yes');
-
-class ClearIceTest extends PHPUnit_Framework_TestCase
+class ClearIceTest extends TestCase
 {
+    
+    private $argumentParser;
     
     public function setup()
     {
-        ClearIce::reset();
-        ClearIce::addOptions(
+        $io = new ConsoleIO();
+        $this->argumentParser = new ArgumentParser($io);
+        $this->argumentParser->addOptions([
             array(
                 'short' => 'i',
                 'long' => 'input',
@@ -52,16 +54,16 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
                 'has_value' => false,
                 "help" => "a long option only"
             )
-        );        
+        ]);        
     }
     
     public function testParsingLongOptions()
     {
         global $argv;
-        ClearIce::addOptions(            
+        $this->argumentParser->addOptions([         
             's',
             'some-long-option'
-        );        
+        ]);        
                 
         $argv = array(
             "test",
@@ -71,7 +73,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "--verbose"
         );
         
-        $options = ClearIce::parse();
+        $options = $this->argumentParser->parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -96,7 +98,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-v"
         );
         
-        $options  = ClearIce::parse();
+        $options  = $this->argumentParser->parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -119,7 +121,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-o/myfiles/wiki",
         );
         
-        $options  = ClearIce::parse();
+        $options  = $this->argumentParser->parse();
         $this->assertArrayHasKey("input", $options);
         $this->assertArrayHasKey("output", $options);
         $this->assertEquals(
@@ -139,7 +141,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-vxs",
             "stand_alone"
         );        
-        $options  = ClearIce::parse();
+        $options  = $this->argumentParser->parse();
         
         $this->assertArrayHasKey("verbose", $options);
         $this->assertArrayHasKey("create-default-index", $options);
@@ -153,7 +155,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-sxv",
             "stand_alone"
         );        
-        $options  = ClearIce::parse();
+        $options  = $this->argumentParser->parse();
         
         $this->assertEquals(
             array(
@@ -178,7 +180,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "stand_alone_1",
             "stand_alone_2"
         );        
-        $options  = ClearIce::parse();
+        $options  = $this->argumentParser->parse();
         $this->assertArrayHasKey("stand_alones", $options);
         $this->assertEquals(
             array(
@@ -203,7 +205,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "--unknown-option",
             "--another-unknown=something"
         );
-        $options = ClearIce::parse();        
+        $options = $this->argumentParser->parse();        
         $this->assertArrayHasKey("unknowns", $options);
         $this->assertEquals(
             array(
@@ -222,89 +224,6 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
         );            
     }
     
-    public function testHelp()
-    {
-        global $argv;
-        $argv = array(
-            "test.php"
-        );
-        
-        ClearIce::setUsage("[input] [options]..");
-        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
-        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        ClearIce::addHelp();
-        
-        $helpMessage = ClearIce::getHelpMessage();
-        $this->assertEquals(file_get_contents('tests/data/help.txt'), $helpMessage);
-        
-    }
-    
-    public function testHelpOption()
-    {
-        global $argv;
-        $argv = array(
-            "test.php",
-            "--help"
-        );  
-        
-        vfsStream::setup('std');
-        $stdout = vfsStream::url('std/output');        
-        
-        ClearIce::setUsage("[input] [options]..");
-        ClearIce::setStreamUrl('output', $stdout);
-        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
-        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        ClearIce::addHelp();
-        ClearIce::parse();
-        
-        $this->assertFileEquals('tests/data/help.txt', vfsStream::url('std/output'));
-    }
-    
-    public function testStrict()
-    {
-        global $argv;
-        $argv = array(
-            "test.php",
-            '--an-unknown'
-        );
-        
-        vfsStream::setup('std');
-        $stderr = vfsStream::url('std/error');
-        
-        ClearIce::addOptions('a-known');
-        ClearIce::setStrict(true);
-        ClearIce::setStreamUrl('error', $stderr);
-        ClearIce::parse(); 
-        
-        $this->assertStringEqualsFile(
-            $stderr, 
-            "test.php: invalid option -- an-unknown\n"
-        );
-    }
-    
-    public function testStrictWithHelp()
-    {
-        global $argv;
-        $argv = array(
-            "test.php",
-            '--an-unknown'
-        );
-
-        vfsStream::setup('std');
-        $stderr = vfsStream::url('std/error');
-        
-        ClearIce::addOptions('a-known');
-        ClearIce::setStrict(true);
-        ClearIce::setStreamUrl('error', $stderr);
-        ClearIce::addHelp();
-        ClearIce::parse();
-                
-        $this->assertStringEqualsFile(
-            $stderr, 
-            "test.php: invalid option -- an-unknown\nTry `test.php --help` for more information\n"
-        );
-    }
-    
     public function testMultipleUsage()
     {
         global $argv;
@@ -312,17 +231,17 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "test.php"
         );
         
-        ClearIce::setUsage(
+        $this->argumentParser->setUsage(
             array(
                 "[input] [options]..",
                 "[output] [options].."
             )
         );
-        ClearIce::setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
-        ClearIce::setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
-        ClearIce::addHelp();
+        $this->argumentParser->setDescription("Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.");
+        $this->argumentParser->setFootnote("Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld");
+        $this->argumentParser->addHelp();
         
-        $helpMessage = ClearIce::getHelpMessage();
+        $helpMessage = $this->argumentParser->getHelpMessage();
         
         $this->assertEquals(file_get_contents('tests/data/help_multi_usage.txt'), $helpMessage);
     }
@@ -337,12 +256,12 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
             "-mthree"
         );
         
-        ClearIce::addOptions(array(
+        $this->argumentParser->addOptions([array(
             'long' => 'some-multi-option',
             'short' => 'm',
             'multi' => true,
             'has_value' => true
-        ));
+        )]);
         
         $this->assertEquals(
             array(
@@ -350,7 +269,7 @@ class ClearIceTest extends PHPUnit_Framework_TestCase
                     'one', 'two', 'three'
                 )
             ),
-            ClearIce::parse()
+            $this->argumentParser->parse()
         );
     }
 }

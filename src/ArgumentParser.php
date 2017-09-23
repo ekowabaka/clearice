@@ -141,10 +141,10 @@ class ArgumentParser
     private $argumentPointer;
     private $io;
 
-    public function __construct()
+    public function __construct(ConsoleIO $io)
     {
         $this->options = new Options();
-        $this->io = new ConsoleIO();
+        $this->io = $io;
     }
 
     /**
@@ -197,7 +197,9 @@ class ArgumentParser
 
         $this->parsedOptions = $this->options->getDefaults($this->command);
         $this->parsedOptions['__command__'] = $this->command;
-        $this->parsedOptions['data'] = $this->commands[$this->command]['data'] ?? null;
+        if(isset($this->commands[$this->command]['data'])) {
+            $this->parsedOptions['data'] = $this->commands[$this->command]['data'];
+        }
         $this->longOptionParser = new parsers\LongOptionParser($this, $this->options->getMap());
         $this->shortOptionParser = new parsers\ShortOptionParser($this, $this->options->getMap());
 
@@ -429,6 +431,11 @@ class ArgumentParser
             'command' => $command,
             'groups' => $this->groups
         ]);
+    }
+    
+    public function getIO() : ConsoleIO
+    {
+        return $this->io;
     }
 
 }

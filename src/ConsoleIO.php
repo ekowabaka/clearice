@@ -131,27 +131,31 @@ class ConsoleIO
      */
     public function getResponse($question, $params = array())
     {
-        $this->cleanResponseParams($params);
         $prompt = $question;
-        if (count($params['answers']) > 0) {
-            $prompt .= " (" . implode("/", $params['answers']) . ")";
+        
+        $answers = $params['answers'] ?? [];
+        $default = $params['default'] ?? '';
+        $required = $params['required'] ?? false;
+        
+        if (count($answers ?? []) > 0) {
+            $prompt .= " (" . implode("/", $answers) . ")";
         }
 
-        $this->output($prompt . " [{$params['default']}]: ");
+        $this->output($prompt . " [{$default}]: ");
         $response = str_replace(array("\n", "\r"), array("", ""), $this->input());
 
-        if ($response == "" && $params['required'] === true && $params['default'] == '') {
+        if ($response == "" && $required === true && $default == '') {
             $this->error("A value is required.\n");
             return $this->getResponse($question, $params);
-        } else if ($response == "" && $params['required'] === true && $params['default'] != '') {
-            return $params['default'];
+        } else if ($response == "" && $required === true && $default != '') {
+            return $default;
         } else if ($response == "") {
-            return $params['default'];
+            return $default;
         } else {
-            if (count($params['answers']) == 0) {
+            if (count($answers) == 0) {
                 return $response;
             }
-            foreach ($params['answers'] as $answer) {
+            foreach ($answers as $answer) {
                 if (strtolower($answer) == strtolower($response)) {
                     return strtolower($answer);
                 }

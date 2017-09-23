@@ -1,20 +1,23 @@
 <?php
-use clearice\ClearIce;
+use clearice\ArgumentParser;
+use clearice\ConsoleIO;
+use PHPUnit\Framework\TestCase;
 
-class OptionGroupsTest extends PHPUnit_Framework_TestCase
+class OptionGroupsTest extends TestCase
 {
+    private $argumentParser;
+    
     public function setUp()
     {
-        parent::setUp();
-        ClearIce::reset();
+        $this->argumentParser = new ArgumentParser(new ConsoleIO());
     }
     
     public function testOptionGroups(){
-        ClearIce::addGroups(
+        $this->argumentParser->addGroups([
             ['group' => 'location', 'help' => 'Location options'],
             ['group' => 'testing', 'help' => 'Some testing options']
-        );
-        ClearIce::addOptions(
+        ]);
+        $this->argumentParser->addOptions([
             array(
                 'short' => 'i',
                 'long' => 'input',
@@ -60,9 +63,9 @@ class OptionGroupsTest extends PHPUnit_Framework_TestCase
                 'group' => 'testing',
                 "help" => "a long option only"
             )
-        );        
+        ]);        
         
-        $helpMessage = ClearIce::getHelpMessage();
+        $helpMessage = $this->argumentParser->getHelpMessage();
         $this->assertEquals(file_get_contents('tests/data/help_groups.txt'), $helpMessage);
     }
 }

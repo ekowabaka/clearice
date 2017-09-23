@@ -1,13 +1,17 @@
 <?php
 
-use clearice\ClearIce;
+use clearice\ArgumentParser;
+use clearice\ConsoleIO;
+use PHPUnit\Framework\TestCase;
 
-class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
+class NoEqualSignAssignmentTest extends TestCase
 {
+    private $argumentParser;
+    
     public function setup()
     {
-        ClearIce::reset();
-        ClearIce::addOptions(
+        $this->argumentParser = new ArgumentParser(new ConsoleIO());
+        $this->argumentParser->addOptions([
             array(
                 'short' => 'i',
                 'long' => 'input',
@@ -48,7 +52,7 @@ class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
                 'has_value' => false,
                 "help" => "a long option only"
             )
-        );        
+        ]);        
     }
     
     public function testNoEqualsAssignment()
@@ -67,7 +71,7 @@ class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            ClearIce::parse()
+            $this->argumentParser->parse()
         );        
     }
 
@@ -87,7 +91,7 @@ class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            ClearIce::parse()
+            $this->argumentParser->parse()
         );
     }        
     
@@ -107,7 +111,7 @@ class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            ClearIce::parse()
+            $this->argumentParser->parse()
         );
     }     
     
@@ -126,7 +130,7 @@ class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
                 'output' => '/var/www/wiki',
                 'input' => '/var/input'
             ),
-            ClearIce::parse()
+            $this->argumentParser->parse()
         );
     }        
     
@@ -145,7 +149,7 @@ class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
                 'output' => true,
                 'input' => '/var/input'
             ),
-            ClearIce::parse()
+            $this->argumentParser->parse()
         );
     }         
     
@@ -164,7 +168,7 @@ class NoEqualSignAssignmentTest extends PHPUnit_Framework_TestCase
                 'output' => true,
                 'input' => '/var/input'
             ),
-            ClearIce::parse()
+            $this->argumentParser->parse()
         );
     }         
 }

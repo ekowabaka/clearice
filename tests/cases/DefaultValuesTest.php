@@ -1,11 +1,18 @@
 <?php
 
-class DefaultValuesTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+use clearice\ArgumentParser;
+use clearice\ConsoleIO;
+
+class DefaultValuesTest extends TestCase
 {
+    private $argumentParser;
+    
     public function setUp()
     {
-        parent::setUp();
-        \clearice\ClearIce::addOptions(
+        $io = new ConsoleIO();
+        $this->argumentParser = new ArgumentParser($io);
+        $this->argumentParser->addOptions([
             [
                 'long' => 'has-default',
                 'default' => 'def',
@@ -19,15 +26,9 @@ class DefaultValuesTest extends \PHPUnit_Framework_TestCase
             [
                 'long' => 'no-default'
             ]
-        );
+        ]);
     }
-    
-    public function tearDown()
-    {
-        parent::tearDown();
-        \clearice\ClearIce::reset();
-    }
-    
+        
     public function testDefaultValues()
     {
         global $argv;
@@ -36,7 +37,7 @@ class DefaultValuesTest extends \PHPUnit_Framework_TestCase
             "test"
         );        
         
-        $values = \clearice\ClearIce::parse();
+        $values = $this->argumentParser->parse();
         $this->assertEquals(
             ['has-default' => 'def', 'another-default' => 'def2'],
             $values

@@ -1,13 +1,15 @@
 <?php
 
-use clearice\ClearIce;
+use clearice\ConsoleIO;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 
-class OutputLevelsTest extends PHPUnit_Framework_TestCase
+class OutputLevelsTest extends TestCase
 {
     private $stdin;
     private $stderr;
     private $stdout;
+    private $io;
 
     public function setup()
     {
@@ -16,30 +18,31 @@ class OutputLevelsTest extends PHPUnit_Framework_TestCase
         $this->stdout = vfsStream::url('std/output');
         $this->stderr = vfsStream::url('std/error');
         
-        ClearIce::setStreamUrl('input', $this->stdin);
-        ClearIce::setStreamUrl('output', $this->stdout);
-        ClearIce::setStreamUrl('error', $this->stderr);        
+        $this->io = new \clearice\ConsoleIO();
+        $this->io->setStreamUrl('input', $this->stdin);
+        $this->io->setStreamUrl('output', $this->stdout);
+        $this->io->setStreamUrl('error', $this->stderr);        
     }
     
     public function testSetGetLevels()
     {
-        ClearIce::setOutputLevel(ClearIce::OUTPUT_LEVEL_0);
-        $this->assertEquals(ClearIce::OUTPUT_LEVEL_0, ClearIce::getOutputLevel());
-        ClearIce::setOutputLevel(ClearIce::OUTPUT_LEVEL_1);
-        $this->assertEquals(ClearIce::OUTPUT_LEVEL_1, ClearIce::getOutputLevel());
-        ClearIce::setOutputLevel(ClearIce::OUTPUT_LEVEL_2);
-        $this->assertEquals(ClearIce::OUTPUT_LEVEL_2, ClearIce::getOutputLevel());
-        ClearIce::setOutputLevel(ClearIce::OUTPUT_LEVEL_3);
-        $this->assertEquals(ClearIce::OUTPUT_LEVEL_3, ClearIce::getOutputLevel());
+        $this->io->setOutputLevel(ConsoleIO::OUTPUT_LEVEL_0);
+        $this->assertEquals(ConsoleIO::OUTPUT_LEVEL_0, $this->io->getOutputLevel());
+        $this->io->setOutputLevel(ConsoleIO::OUTPUT_LEVEL_1);
+        $this->assertEquals(ConsoleIO::OUTPUT_LEVEL_1, $this->io->getOutputLevel());
+        $this->io->setOutputLevel(ConsoleIO::OUTPUT_LEVEL_2);
+        $this->assertEquals(ConsoleIO::OUTPUT_LEVEL_2, $this->io->getOutputLevel());
+        $this->io->setOutputLevel(ConsoleIO::OUTPUT_LEVEL_3);
+        $this->assertEquals(ConsoleIO::OUTPUT_LEVEL_3, $this->io->getOutputLevel());
     }
     
     public function testLevelThreshold()
     {
-        ClearIce::setOutputLevel(ClearIce::OUTPUT_LEVEL_0);
-        ClearIce::output("Hello");
+        $this->io->setOutputLevel(ConsoleIO::OUTPUT_LEVEL_0);
+        $this->io->output("Hello");
         $this->assertFileNotExists($this->stdout);
-        ClearIce::setOutputLevel(ClearIce::OUTPUT_LEVEL_1);
-        ClearIce::output("Hello\n");
+        $this->io->setOutputLevel(ConsoleIO::OUTPUT_LEVEL_1);
+        $this->io->output("Hello\n");
         $this->assertStringEqualsFile($this->stdout, "Hello\n");
     }
 }
