@@ -28,7 +28,7 @@ class GetResponseTest extends TestCase
     
     public function testStreams()
     {
-        file_put_contents($this->stdin, "Hello World\nNot Valid");        
+        file_put_contents($this->stdin, "Hello World\nFailed\nvalue\n");        
         $this->assertEquals('Hello World', $this->io->getResponse('Heck'));
         $this->assertStringEqualsFile($this->stdout, 'Heck []: ');
         $this->io->getResponse('Flag an error', array('answers' => array('value')));
@@ -110,12 +110,5 @@ class GetResponseTest extends TestCase
         $this->assertEquals('something', $this->io->getResponse('Fails first', array('required' => true)));  
         $this->assertStringEqualsFile($this->stdout, 'Fails first []: Fails first []: ');  
         $this->assertStringEqualsFile($this->stderr, "A value is required.\n");          
-    }
-    
-    public function testRequiredDefault()
-    {
-        file_put_contents($this->stdin, "\n");       
-        $this->assertEquals('def', $this->io->getResponse('Fails first', array('required' => true, 'default' => 'def')));
-        $this->assertStringEqualsFile($this->stdout, 'Fails first [def]: ');          
     }
 }

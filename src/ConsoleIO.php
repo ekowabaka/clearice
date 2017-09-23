@@ -100,6 +100,42 @@ class ConsoleIO
         'output' => 'php://stdout',
         'error' => 'php://stderr'
     );
+    
+    private function cleanParamsAndPrintPrompt($question, $params)
+    {
+        $prompt = $question;
+        
+        $params = ['answers' => $params['answers'] ?? [], 'default' => $params['default'] ?? '', 'required' => $params['required'] ?? false];
+        
+        if (count($params['answers']) > 0) {
+            $prompt .= " (" . implode("/", $params['answers']) . ")";
+        }
+
+        $this->output($prompt . " [{$params['default']}]: ");
+        return $params;
+    }
+    
+    private function validateResponse($response, $question, $params)
+    {
+        if ($response == "" && $params['required'] === true) {
+            $this->error("A value is required.\n");
+            return $this->getResponse($question, $params);
+        } else if ($response == "" && $params['default'] != '') {
+            return $params['default'];
+        } else {
+            if (count($params['answers']) == 0) {
+                return $response;
+            }
+            foreach ($params['answers'] as $answer) {
+                if (strtolower($answer) == strtolower($response)) {
+                    return $answer;
+                }
+            }
+            $this->error("Please provide a valid answer.\n");
+            return $this->getResponse($question, $params);
+        }
+        
+    }
 
     /**
      * A function for getting answers to questions from users interractively.
@@ -131,38 +167,9 @@ class ConsoleIO
      */
     public function getResponse($question, $params = array())
     {
-        $prompt = $question;
-        
-        $answers = $params['answers'] ?? [];
-        $default = $params['default'] ?? '';
-        $required = $params['required'] ?? false;
-        
-        if (count($answers ?? []) > 0) {
-            $prompt .= " (" . implode("/", $answers) . ")";
-        }
-
-        $this->output($prompt . " [{$default}]: ");
+        $params = $this->cleanParamsAndPrintPrompt($question, $params);
         $response = str_replace(array("\n", "\r"), array("", ""), $this->input());
-
-        if ($response == "" && $required === true && $default == '') {
-            $this->error("A value is required.\n");
-            return $this->getResponse($question, $params);
-        } else if ($response == "" && $required === true && $default != '') {
-            return $default;
-        } else if ($response == "") {
-            return $default;
-        } else {
-            if (count($answers) == 0) {
-                return $response;
-            }
-            foreach ($answers as $answer) {
-                if (strtolower($answer) == strtolower($response)) {
-                    return strtolower($answer);
-                }
-            }
-            $this->error("Please provide a valid answer.\n");
-            return $this->getResponse($question, $params);
-        }
+        return $this->validateResponse($response, $question, $params);
     }
 
     /**
