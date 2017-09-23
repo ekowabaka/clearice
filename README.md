@@ -83,7 +83,7 @@ What I hope to see in ClearIce some time in the future:
 
 License
 -------
-Copyright (c) 2012-2014 James Ekow Abaka Ainooson
+Copyright (c) 2012-2017 James Ekow Abaka Ainooson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
