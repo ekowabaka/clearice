@@ -1,4 +1,5 @@
 <?php
+
 /*
  * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2014 James Ekow Abaka Ainooson
@@ -34,63 +35,59 @@ namespace clearice\parsers;
  */
 class ShortOptionParser extends BaseParser
 {
-    private $skippedShorts;    
-    
+
+    private $skippedShorts;
+
     private function getShortOptionLongKey($command, $shortOption)
     {
-        return isset($this->optionsMap[$command][$shortOption]['long']) ? 
-            $this->optionsMap[$command][$shortOption]['long'] : $shortOption;        
+        return isset($this->optionsMap[$command][$shortOption]['long']) ?
+            $this->optionsMap[$command][$shortOption]['long'] : $shortOption;
     }
-    
+
     private function getValueFromRemainder($remainder)
     {
         $remainder = substr($remainder, 1);
         return $remainder === "" || $remainder === false ? true : $remainder;
     }
-    
+
     /**
      * @param string|boolean $shortOptionsString
      */
     private function parseShortOptions($shortOptionsString, $command)
     {
-        if($shortOptionsString === true || $shortOptionsString == "") return;
+        if ($shortOptionsString === true || $shortOptionsString == "") {
+            return;
+        }
         $shortOption = $shortOptionsString[0];
         $value = $this->getValueFromRemainder($shortOptionsString);
-            
-        if(isset($this->optionsMap[$command][$shortOption]))
-        {
+
+        if (isset($this->optionsMap[$command][$shortOption])) {
             $key = $this->getShortOptionLongKey($command, $shortOption);
-            if($this->optionsMap[$command][$shortOption]['has_value'] === true)
-            {
+            if ($this->optionsMap[$command][$shortOption]['has_value'] === true) {
                 $this->setValue($command, $key, $this->parseStandAloneValue($key, $value, $command));
-            }
-            else
-            {
+            } else {
                 $this->parser->addParsedOption($key, true);
                 $this->parseShortOptions($value, $command);
             }
-        }
-        else
-        {
-            if(self::$logUnknowns) 
-            {
+        } else {
+            if (self::$logUnknowns) {
                 $this->parser->addUnknownOption($shortOption);
                 $this->parser->addParsedOption($shortOption, true);
             }
-            
+
             $this->skippedShorts .= $shortOption;
             $this->parseShortOptions($value, $command);
         }
     }
-    
+
     public function parse($argument, $command)
     {
         $this->skippedShorts = '';
         $this->parseShortOptions($argument, $command);
-        if($this->skippedShorts != '' && $command != '__default__')
-        {
-            self::$logUnknowns = true;                
+        if ($this->skippedShorts != '' && $command != '__default__') {
+            self::$logUnknowns = true;
             $this->parseShortOptions($this->skippedShorts, '__default__');
         }
-    }    
+    }
+
 }
