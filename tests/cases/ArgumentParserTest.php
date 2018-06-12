@@ -10,6 +10,7 @@ namespace cases;
 
 
 use clearice\argparser\ArgumentParser;
+use clearice\argparser\OptionExistsException;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentParserTest extends TestCase
@@ -19,31 +20,6 @@ class ArgumentParserTest extends TestCase
     public function setup()
     {
         $this->argumentParser = new ArgumentParser();
-
-//            array(
-//                'short' => 'x',
-//                'long' => 'create-default-index',
-//                'has_value' => false,
-//                "help" => "creates a default index page which lists all the wiki pages in a sorted order"
-//            ),
-//
-//            array(
-//                'short' => 'd',
-//                'long' => 'some-very-long-option-indeed',
-//                'has_value' => false,
-//                "help" => "an uneccesarily long option which is meant to to see if the wrapping of help lines actually works."
-//            ),
-//            array(
-//                'short' => 's',
-//                'has_value' => false,
-//                "help" => "a short option only"
-//            ),
-//            array(
-//                'long' => 'lone-long-option',
-//                'has_value' => false,
-//                "help" => "a long option only"
-//            )
-//        ]);
     }
 
     public function testParse()
@@ -68,9 +44,50 @@ class ArgumentParserTest extends TestCase
             "help" => "displays detailed information about everything that happens"
         ]);
 
-        $arguments = $this->argumentParser->parse(["app", "--input", "good"]);
-        $this->assertEquals(['input' => 'good'], $arguments);
-        $arguments = $this->argumentParser->parse(["app", "--verbose"]);
-        $this->assertEquals(['verbose' => true], $arguments);
+        $this->assertEquals(['input' => 'good'], $this->argumentParser->parse(["app", "--input", "good"]));
+        $this->assertEquals(['verbose' => true], $this->argumentParser->parse(["app", "--verbose"]));
+        $this->assertEquals(['output' => 'good'], $this->argumentParser->parse(["app", "--output=good"]));
+        $this->assertEquals(['__args' => ['other', 'arguments']], $this->argumentParser->parse(["app", "other", "arguments"]));
+    }
+
+    /**
+     * @expectedException \clearice\argparser\OptionExistsException
+     * @expectedExceptionMessage An argument option with short_name i already exists.
+     */
+    public function testShortOptionExistsException()
+    {
+        $this->argumentParser->addOption([
+            'short_name' => 'i',
+            'name' => 'input',
+        ]);
+        $this->argumentParser->addOption([
+            'short_name' => 'i',
+            'name' => 'index',
+        ]);
+    }
+
+    /**
+     * @expectedException \clearice\argparser\OptionExistsException
+     * @expectedExceptionMessage An argument option with name input already exists.
+     */
+    public function testLongOptionExistsException()
+    {
+        $this->argumentParser->addOption([
+            'short_name' => 'i',
+            'name' => 'input',
+        ]);
+        $this->argumentParser->addOption([
+            'name' => 'input',
+        ]);
+    }
+
+    /**
+     * @expectedException \clearice\argparser\InvalidArgumentDescriptionException
+     */
+    public function testNoNameException()
+    {
+        $this->argumentParser->addOption([
+           'help' => 'Does not have a valid name'
+        ]);
     }
 }

@@ -29,7 +29,7 @@ class ArgumentParser
         if(isset($value[$key]) && !isset($this->options[$value[$key]])) {
             $this->options[$value[$key]] = $value;
         } else if(isset($value[$key])) {
-            throw new OptionExistsException("An argument option with name {$value['name']} already exists.");
+            throw new OptionExistsException("An argument option with $key {$value[$key]} already exists.");
         }
     }
 
@@ -39,7 +39,8 @@ class ArgumentParser
      *
      *  name: The name of the option prefixed with a double dash --
      *  short_name: A shorter single character option prefixed with a single dash -
-     *  type: Required for all options that take values. An option specified without a type is considered to be a boolean flag.
+     *  type: Required for all options that take values. An option specified without a type is considered to be a
+     *        boolean flag.
      *  help: A help message for the option
      *
      * @param $option
@@ -56,6 +57,8 @@ class ArgumentParser
     }
 
     /**
+     * Parse a long argument that is prefixed with a double dash "--"
+     *
      * @param $arguments
      * @param $argPointer
      * @return array
@@ -63,16 +66,16 @@ class ArgumentParser
      */
     private function parseLongArgument($arguments, &$argPointer)
     {
-        $name = substr($arguments[$argPointer], 2);
+        $string = substr($arguments[$argPointer], 2);
+        preg_match("/(?<name>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $string, $matches);
+        $name = $matches['name'];
         $option = $this->options[$name];
-        preg_match("/(?<option>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $name, $matches);
 
         if(isset($option['type'])) {
-            $nextArgument = $arguments[$argPointer + 1];
             if($matches['equal'] === '=') {
                 $value = $matches['value'];
-            } else if ($nextArgument[0] != '-') {
-                $value = $nextArgument;
+            } else if (isset($arguments[$argPointer + 1]) && $arguments[$argPointer + 1][0] != '-') {
+                $value = $arguments[$argPointer + 1];
                 $argPointer++;
             } else {
                 throw new InvalidValueException("A value must be passed along with argument $name.");
@@ -105,7 +108,7 @@ class ArgumentParser
             } else if ($arg[0] == '-') {
                 $output = array_merge($output, $this->parseShortArgument($arguments, $argPointer));
             } else {
-                $output['__args'] = isset($output['__args']) ? $output['__args'] + [$arg] : [$arg];
+                $output['__args'] = isset($output['__args']) ? array_merge($output['__args'], [$arg]) : [$arg];
             }
         }
 
