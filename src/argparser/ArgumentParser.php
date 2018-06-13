@@ -61,7 +61,7 @@ class ArgumentParser
     {
         if (isset($arguments[$argPointer + 1]) && $arguments[$argPointer + 1][0] != '-') {
             $argPointer++;
-            return $arguments[$argPointer + 1];
+            return $arguments[$argPointer];
         } else {
             throw new InvalidValueException("A value must be passed along with argument $name.");
         }
@@ -113,7 +113,7 @@ class ArgumentParser
             if(substr($argument, 2) != "") {
                 $value = substr($argument, 2);
             } else {
-                $this->getNextValueOrFail($arguments, $argPointer)
+                $value = $this->getNextValueOrFail($arguments, $argPointer);
             }
         }
 
