@@ -47,6 +47,11 @@ class ArgumentParserTest extends TestCase
         $this->assertEquals(['input' => 'good'], $this->argumentParser->parse(["app", "--input", "good"]));
         $this->assertEquals(['verbose' => true], $this->argumentParser->parse(["app", "--verbose"]));
         $this->assertEquals(['output' => 'good'], $this->argumentParser->parse(["app", "--output=good"]));
+
+        $this->assertEquals(['input' => 'good'], $this->argumentParser->parse(["app", "-i", "good"]));
+        $this->assertEquals(['verbose' => true], $this->argumentParser->parse(["app", "-v"]));
+        $this->assertEquals(['output' => 'good'], $this->argumentParser->parse(["app", "-ogood"]));
+
         $this->assertEquals(['__args' => ['other', 'arguments']], $this->argumentParser->parse(["app", "other", "arguments"]));
     }
 

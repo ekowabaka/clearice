@@ -20,6 +20,7 @@ class ArgumentParser
     }
 
     /**
+     * Add a value to the available possible options for later parsing.
      * @param $key
      * @param $value
      * @throws OptionExistsException
@@ -85,6 +86,36 @@ class ArgumentParser
         }
 
         return [$name => $value];
+    }
+
+    /**
+     * Parse a short argument that is prefixed with a single dash '-'
+     *
+     * @param $arguments
+     * @param $argPointer
+     * @return array
+     * @throws InvalidValueException
+     */
+    public function parseShortArgument($arguments, &$argPointer)
+    {
+        $argument = $arguments[$argPointer];
+        $key = substr($argument, 1, 1);
+        $option = $this->options[$key];
+
+        if(isset($option['type'])) {
+            if(substr($argument, 2) != "") {
+                $value = substr($argument, 2);
+            } else if(isset($arguments[$argPointer + 1]) && $arguments[$argPointer + 1][0] != '-') {
+                $value = $arguments[$argPointer + 1];
+                $argPointer++;
+            } else {
+                throw new InvalidValueException("A value must be passed along with argument ${option['name']}");
+            }
+        } else {
+            $value = true;
+        }
+
+        return [$option['name'] => $value];
     }
 
     /**
