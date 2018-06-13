@@ -152,19 +152,14 @@ class ArgumentParser
     }
 
     /**
-     * Parses command line arguments and return a structured array of options and their associated values.
-     *
-     * @param array $arguments An optional array of arguments that would be parsed instead of those passed to the CLI.
+     * @param $arguments
      * @return array
      * @throws InvalidValueException
      */
-    public function parse($arguments = null)
+    private function parseArgumentArray($arguments)
     {
-        global $argv;
-        $arguments = $arguments ?? $argv;
         $numArguments = count($arguments);
         $output = [];
-
         for($argPointer = 1; $argPointer < $numArguments; $argPointer++) {
             $arg = $arguments[$argPointer];
             if(substr($arg, 0, 2) == "--") {
@@ -177,11 +172,29 @@ class ArgumentParser
                 $output['__args'] = isset($output['__args']) ? array_merge($output['__args'], [$arg]) : [$arg];
             }
         }
+        return $output;
+    }
 
+    private function maybeShowHelp($name, $output)
+    {
         if(isset($output['help']) && $output['help']) {
-            $this->helpGenerator->generate($arguments[0], $this->optionsCache, $this->description, $this->footer);
+            $this->helpGenerator->generate($name, $this->optionsCache, $this->description, $this->footer);
         }
+    }
 
+    /**
+     * Parses command line arguments and return a structured array of options and their associated values.
+     *
+     * @param array $arguments An optional array of arguments that would be parsed instead of those passed to the CLI.
+     * @return array
+     * @throws InvalidValueException
+     */
+    public function parse($arguments = null)
+    {
+        global $argv;
+        $arguments = $arguments ?? $argv;
+        $output = $this->parseArgumentArray($arguments);
+        $this->maybeShowHelp($arguments[0], $output);
         return $output;
     }
 
