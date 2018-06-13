@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 
 class ArgumentParserTest extends TestCase
 {
+    /**
+     * @var ArgumentParser
+     */
     private $argumentParser;
 
     public function setup()
@@ -61,14 +64,8 @@ class ArgumentParserTest extends TestCase
      */
     public function testShortOptionExistsException()
     {
-        $this->argumentParser->addOption([
-            'short_name' => 'i',
-            'name' => 'input',
-        ]);
-        $this->argumentParser->addOption([
-            'short_name' => 'i',
-            'name' => 'index',
-        ]);
+        $this->argumentParser->addOption(['short_name' => 'i', 'name' => 'input']);
+        $this->argumentParser->addOption(['short_name' => 'i', 'name' => 'index']);
     }
 
     /**
@@ -77,13 +74,8 @@ class ArgumentParserTest extends TestCase
      */
     public function testLongOptionExistsException()
     {
-        $this->argumentParser->addOption([
-            'short_name' => 'i',
-            'name' => 'input',
-        ]);
-        $this->argumentParser->addOption([
-            'name' => 'input',
-        ]);
+        $this->argumentParser->addOption(['short_name' => 'i', 'name' => 'input']);
+        $this->argumentParser->addOption(['name' => 'input']);
     }
 
     /**
@@ -91,8 +83,24 @@ class ArgumentParserTest extends TestCase
      */
     public function testNoNameException()
     {
-        $this->argumentParser->addOption([
-           'help' => 'Does not have a valid name'
-        ]);
+        $this->argumentParser->addOption(['help' => 'Does not have a valid name']);
+    }
+
+    /**
+     * @expectedException \clearice\argparser\InvalidValueException
+     */
+    public function testInvalidValueException()
+    {
+        $this->argumentParser->addOption(['name' => 'input', 'type' => 'string']);
+        $this->argumentParser->parse(["add", "--input"]);
+    }
+
+    /**
+     * @expectedException \clearice\argparser\InvalidValueException
+     */
+    public function testInvalidValueException2()
+    {
+        $this->argumentParser->addOption(['name' => 'input', 'short_name' => 'i', 'type' => 'string']);
+        $this->argumentParser->parse(["add", "-i"]);
     }
 }

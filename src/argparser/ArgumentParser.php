@@ -3,6 +3,11 @@
 namespace clearice\argparser;
 
 
+/**
+ * Class ArgumentParser
+ *
+ * @package clearice\argparser
+ */
 class ArgumentParser
 {
     private $description;
@@ -21,6 +26,7 @@ class ArgumentParser
 
     /**
      * Add a value to the available possible options for later parsing.
+     *
      * @param $key
      * @param $value
      * @throws OptionExistsException
@@ -57,7 +63,13 @@ class ArgumentParser
         $this->addToOptionArray('short_name', $option);
     }
 
-    private function getNextValueOrFail($arguments, &$argPointer)
+    /**
+     * @param $arguments
+     * @param $argPointer
+     * @return mixed
+     * @throws InvalidValueException
+     */
+    private function getNextValueOrFail($arguments, &$argPointer, $name)
     {
         if (isset($arguments[$argPointer + 1]) && $arguments[$argPointer + 1][0] != '-') {
             $argPointer++;
@@ -87,7 +99,7 @@ class ArgumentParser
             if($matches['equal'] === '=') {
                 $value = $matches['value'];
             } else {
-                $value = $this->getNextValueOrFail($arguments, $argPointer);
+                $value = $this->getNextValueOrFail($arguments, $argPointer, $name);
             }
         }
 
@@ -113,7 +125,7 @@ class ArgumentParser
             if(substr($argument, 2) != "") {
                 $value = substr($argument, 2);
             } else {
-                $value = $this->getNextValueOrFail($arguments, $argPointer);
+                $value = $this->getNextValueOrFail($arguments, $argPointer, $option['name']);
             }
         }
 
