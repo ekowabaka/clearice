@@ -11,17 +11,26 @@ namespace clearice\argparser;
 class ArgumentParser
 {
     private $description;
+
     private $footer;
+
+    private $name;
+
+    /**
+     * @var array
+     */
+    private $optionsCache = [];
+
     private $options = [];
 
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
+    /**
+     * @var HelpMessageGenerator
+     */
+    private $helpGenerator;
 
-    public function setFooter($footer)
+    public function __construct($helpWriter = null)
     {
-        $this->footer = $footer;
+        $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
     }
 
     /**
@@ -31,10 +40,10 @@ class ArgumentParser
      * @param $value
      * @throws OptionExistsException
      */
-    private function addToOptionArray($key, $value)
+    private function addToOptionCache($key, $value)
     {
-        if(isset($value[$key]) && !isset($this->options[$value[$key]])) {
-            $this->options[$value[$key]] = $value;
+        if(isset($value[$key]) && !isset($this->optionsCache[$value[$key]])) {
+            $this->optionsCache[$value[$key]] = $value;
         } else if(isset($value[$key])) {
             throw new OptionExistsException("An argument option with $key {$value[$key]} already exists.");
         }
@@ -59,8 +68,9 @@ class ArgumentParser
         if(!isset($option['name'])) {
             throw new InvalidArgumentDescriptionException("Argument must have a name");
         }
-        $this->addToOptionArray('name', $option);
-        $this->addToOptionArray('short_name', $option);
+        $this->options[] = $option;
+        $this->addToOptionCache('name', $option);
+        $this->addToOptionCache('short_name', $option);
     }
 
     /**
@@ -92,7 +102,7 @@ class ArgumentParser
         $string = substr($arguments[$argPointer], 2);
         preg_match("/(?<name>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $string, $matches);
         $name = $matches['name'];
-        $option = $this->options[$name];
+        $option = $this->optionsCache[$name];
         $value = true;
 
         if(isset($option['type'])) {
@@ -103,7 +113,7 @@ class ArgumentParser
             }
         }
 
-        return [$name => $value];
+        return [$name, $this->castType($value, $option['type'] ?? null)];
     }
 
     /**
@@ -118,7 +128,7 @@ class ArgumentParser
     {
         $argument = $arguments[$argPointer];
         $key = substr($argument, 1, 1);
-        $option = $this->options[$key];
+        $option = $this->optionsCache[$key];
         $value = true;
 
         if(isset($option['type'])) {
@@ -129,7 +139,16 @@ class ArgumentParser
             }
         }
 
-        return [$option['name'] => $value];
+        return [$option['name'], $this->castType($value, $option['type'] ?? null)];
+    }
+
+    private function castType($value, $type)
+    {
+        switch($type) {
+            case 'integer': return (int) $value;
+            case 'float': return (float) $value;
+            default: return $value;
+        }
     }
 
     /**
@@ -149,19 +168,36 @@ class ArgumentParser
         for($argPointer = 1; $argPointer < $numArguments; $argPointer++) {
             $arg = $arguments[$argPointer];
             if(substr($arg, 0, 2) == "--") {
-                $output = array_merge($output, $this->parseLongArgument($arguments, $argPointer));
+                $argument = $this->parseLongArgument($arguments, $argPointer);
+                $output[$argument[0]] = $argument[1];
             } else if ($arg[0] == '-') {
-                $output = array_merge($output, $this->parseShortArgument($arguments, $argPointer));
+                $argument = $this->parseShortArgument($arguments, $argPointer);
+                $output[$argument[0]] = $argument[1];
             } else {
                 $output['__args'] = isset($output['__args']) ? array_merge($output['__args'], [$arg]) : [$arg];
             }
         }
 
+        if(isset($output['help']) && $output['help']) {
+            $this->helpGenerator->generate($arguments[0], $this->optionsCache, $this->description, $this->footer);
+        }
+
         return $output;
     }
 
-    public function getHelp()
+    /**
+     * @param $name
+     * @param null $description
+     * @param null $footer
+     * @throws InvalidArgumentDescriptionException
+     * @throws OptionExistsException
+     */
+    public function enableHelp($name, $description=null, $footer=null)
     {
+        $this->name = $name;
+        $this->description = $description;
+        $this->footer = $footer;
 
+        $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "get help on how to use this app $name"]);
     }
 }

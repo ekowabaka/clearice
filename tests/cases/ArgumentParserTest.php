@@ -10,8 +10,9 @@ namespace cases;
 
 
 use clearice\argparser\ArgumentParser;
-use clearice\argparser\OptionExistsException;
+use clearice\argparser\HelpMessageGenerator;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Prophet;
 
 class ArgumentParserTest extends TestCase
 {
