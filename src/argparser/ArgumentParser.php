@@ -57,6 +57,16 @@ class ArgumentParser
         $this->addToOptionArray('short_name', $option);
     }
 
+    private function getNextValueOrFail($arguments, &$argPointer)
+    {
+        if (isset($arguments[$argPointer + 1]) && $arguments[$argPointer + 1][0] != '-') {
+            $argPointer++;
+            return $arguments[$argPointer + 1];
+        } else {
+            throw new InvalidValueException("A value must be passed along with argument $name.");
+        }
+    }
+
     /**
      * Parse a long argument that is prefixed with a double dash "--"
      *
@@ -71,18 +81,14 @@ class ArgumentParser
         preg_match("/(?<name>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $string, $matches);
         $name = $matches['name'];
         $option = $this->options[$name];
+        $value = true;
 
         if(isset($option['type'])) {
             if($matches['equal'] === '=') {
                 $value = $matches['value'];
-            } else if (isset($arguments[$argPointer + 1]) && $arguments[$argPointer + 1][0] != '-') {
-                $value = $arguments[$argPointer + 1];
-                $argPointer++;
             } else {
-                throw new InvalidValueException("A value must be passed along with argument $name.");
+                $value = $this->getNextValueOrFail($arguments, $argPointer);
             }
-        } else {
-            $value = true;
         }
 
         return [$name => $value];
@@ -101,18 +107,14 @@ class ArgumentParser
         $argument = $arguments[$argPointer];
         $key = substr($argument, 1, 1);
         $option = $this->options[$key];
+        $value = true;
 
         if(isset($option['type'])) {
             if(substr($argument, 2) != "") {
                 $value = substr($argument, 2);
-            } else if(isset($arguments[$argPointer + 1]) && $arguments[$argPointer + 1][0] != '-') {
-                $value = $arguments[$argPointer + 1];
-                $argPointer++;
             } else {
-                throw new InvalidValueException("A value must be passed along with argument ${option['name']}");
+                $this->getNextValueOrFail($arguments, $argPointer)
             }
-        } else {
-            $value = true;
         }
 
         return [$option['name'] => $value];
