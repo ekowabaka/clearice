@@ -23,9 +23,14 @@ class ArgumentParser
      */
     private $optionsCache = [];
 
+    /**
+     * All the possible options for arguments.
+     * @var array
+     */
     private $options = [];
 
     /**
+     * An instance of the help generator.
      * @var HelpMessageGenerator
      */
     private $helpGenerator;
