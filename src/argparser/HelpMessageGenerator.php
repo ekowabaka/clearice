@@ -83,7 +83,7 @@ class HelpMessageGenerator
      * is placed in the second column.
      *
      * @param string $argumentPart
-     * @param string $help
+     * @param array $help
      * @param integer $minSize
      * @return string
      */

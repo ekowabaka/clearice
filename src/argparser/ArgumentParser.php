@@ -16,6 +16,8 @@ class ArgumentParser
 
     private $name;
 
+    private $commands = [];
+
     /**
      * @var array
      */
@@ -42,10 +44,17 @@ class ArgumentParser
      */
     private function addToOptionCache($key, $value)
     {
-        if(isset($value[$key]) && !isset($this->optionsCache[$value[$key]])) {
-            $this->optionsCache[$value[$key]] = $value;
-        } else if(isset($value[$key])) {
-            throw new OptionExistsException("An argument option with $key {$value[$key]} already exists.");
+        if(!isset($value[$key])) {
+            return;
+        }
+        $cacheKey = isset($value['command']) ? "${value['command']}:${value[$key]}" : $value[$key];
+        if (!isset($this->optionsCache[$cacheKey])) {
+            $this->optionsCache[$cacheKey] = $value;
+        } else {
+            throw new OptionExistsException(
+                "An argument option with $key {$value[$key]} already exists"
+                . (isset($value['command']) ? " for command ${value['command']}." : '.')
+            );
         }
     }
 
@@ -62,11 +71,15 @@ class ArgumentParser
      * @param $option
      * @throws OptionExistsException
      * @throws InvalidArgumentDescriptionException
+     * @throws UnknownCommandException
      */
     public function addOption($option)
     {
-        if(!isset($option['name'])) {
+        if (!isset($option['name'])) {
             throw new InvalidArgumentDescriptionException("Argument must have a name");
+        }
+        if(isset($option['command']) && !isset($this->commands[$option['command']])) {
+            throw new UnknownCommandException("The command {$option['command']} is unknown");
         }
         $this->options[] = $option;
         $this->addToOptionCache('name', $option);
@@ -105,8 +118,8 @@ class ArgumentParser
         $option = $this->optionsCache[$name];
         $value = true;
 
-        if(isset($option['type'])) {
-            if($matches['equal'] === '=') {
+        if (isset($option['type'])) {
+            if ($matches['equal'] === '=') {
                 $value = $matches['value'];
             } else {
                 $value = $this->getNextValueOrFail($arguments, $argPointer, $name);
@@ -131,8 +144,8 @@ class ArgumentParser
         $option = $this->optionsCache[$key];
         $value = true;
 
-        if(isset($option['type'])) {
-            if(substr($argument, 2) != "") {
+        if (isset($option['type'])) {
+            if (substr($argument, 2) != "") {
                 $value = substr($argument, 2);
             } else {
                 $value = $this->getNextValueOrFail($arguments, $argPointer, $option['name']);
@@ -144,25 +157,28 @@ class ArgumentParser
 
     private function castType($value, $type)
     {
-        switch($type) {
-            case 'integer': return (int) $value;
-            case 'float': return (float) $value;
-            default: return $value;
+        switch ($type) {
+            case 'integer':
+                return (int)$value;
+            case 'float':
+                return (float)$value;
+            default:
+                return $value;
         }
     }
 
     /**
      * @param $arguments
-     * @return array
+     * @param $argPointer
+     * @param $output
      * @throws InvalidValueException
      */
-    private function parseArgumentArray($arguments)
+    private function parseArgumentArray($arguments, &$argPointer, &$output)
     {
         $numArguments = count($arguments);
-        $output = [];
-        for($argPointer = 1; $argPointer < $numArguments; $argPointer++) {
+        for (; $argPointer < $numArguments; $argPointer++) {
             $arg = $arguments[$argPointer];
-            if(substr($arg, 0, 2) == "--") {
+            if (substr($arg, 0, 2) == "--") {
                 $argument = $this->parseLongArgument($arguments, $argPointer);
                 $output[$argument[0]] = $argument[1];
             } else if ($arg[0] == '-') {
@@ -172,13 +188,20 @@ class ArgumentParser
                 $output['__args'] = isset($output['__args']) ? array_merge($output['__args'], [$arg]) : [$arg];
             }
         }
-        return $output;
     }
 
     private function maybeShowHelp($name, $output)
     {
-        if(isset($output['help']) && $output['help']) {
+        if (isset($output['help']) && $output['help']) {
             $this->helpGenerator->generate($name, $this->optionsCache, $this->description, $this->footer);
+        }
+    }
+
+    public function parseCommand($arguments, &$argPointer, &$output)
+    {
+        if(isset($this->commands[$arguments[$argPointer]])) {
+            $output["__command"] = $arguments[$argPointer];
+            $argPointer++;
         }
     }
 
@@ -193,9 +216,12 @@ class ArgumentParser
     {
         global $argv;
         $arguments = $arguments ?? $argv;
-        $output = $this->parseArgumentArray($arguments);
-        $this->maybeShowHelp($arguments[0], $output);
-        return $output;
+        $argPointer = 1;
+        $parsed = [];
+        $this->parseCommand($arguments, $argPointer, $parsed);
+        $this->parseArgumentArray($arguments, $argPointer, $parsed);
+        $this->maybeShowHelp($arguments[0], $parsed);
+        return $parsed;
     }
 
     /**
@@ -204,13 +230,30 @@ class ArgumentParser
      * @param null $footer
      * @throws InvalidArgumentDescriptionException
      * @throws OptionExistsException
+     * @throws UnknownCommandException
      */
-    public function enableHelp($name, $description=null, $footer=null)
+    public function enableHelp($name, $description = null, $footer = null)
     {
         $this->name = $name;
         $this->description = $description;
         $this->footer = $footer;
 
         $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "get help on how to use this app $name"]);
+    }
+
+    /**
+     * @param $command
+     * @throws CommandExistsException
+     * @throws InvalidArgumentDescriptionException
+     */
+    public function addCommand($command)
+    {
+        if(!isset($command['name'])) {
+            throw new InvalidArgumentDescriptionException("Command description must contain a name");
+        }
+        if(isset($this->commands[$command['name']])) {
+            throw new CommandExistsException("Command ${command['name']} already exists.");
+        }
+        $this->commands[$command['name']] = $command;
     }
 }
