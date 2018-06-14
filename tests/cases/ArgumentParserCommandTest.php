@@ -61,5 +61,9 @@ class ArgumentParserCommandTest extends TestCase
     public function testCommandInvocation()
     {
         $this->assertEquals(['__command' => 'init'], $this->argumentParser->parse(["app", "init"]));
+        $this->assertEquals(
+            ['__command' => 'init', 'directory' => '/some/path'],
+            $this->argumentParser->parse(["app", "init", "--directory", "/some/path"])
+        );
     }
 }

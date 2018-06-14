@@ -52,13 +52,12 @@ class ArgumentParser
         if(!isset($value[$key])) {
             return;
         }
-        $cacheKey = isset($value['command']) ? "${value['command']}:${value[$key]}" : $value[$key];
+        $cacheKey = "${value['command']}${value[$key]}";
         if (!isset($this->optionsCache[$cacheKey])) {
             $this->optionsCache[$cacheKey] = $value;
         } else {
             throw new OptionExistsException(
-                "An argument option with $key {$value[$key]} already exists"
-                . (isset($value['command']) ? " for command ${value['command']}." : '.')
+                "An argument option with $key {$value['command']} {$value[$key]} already exists."
             );
         }
     }
@@ -83,8 +82,10 @@ class ArgumentParser
         if (!isset($option['name'])) {
             throw new InvalidArgumentDescriptionException("Argument must have a name");
         }
-        if(isset($option['command']) && !isset($this->commands[$option['command']])) {
+        if (isset($option['command']) && !isset($this->commands[$option['command']])) {
             throw new UnknownCommandException("The command {$option['command']} is unknown");
+        } else if (!isset($option['command'])) {
+            $option['command'] = '';
         }
         $this->options[] = $option;
         $this->addToOptionCache('name', $option);
@@ -115,11 +116,11 @@ class ArgumentParser
      * @return array
      * @throws InvalidValueException
      */
-    private function parseLongArgument($arguments, &$argPointer)
+    private function parseLongArgument($command, $arguments, &$argPointer)
     {
         $string = substr($arguments[$argPointer], 2);
         preg_match("/(?<name>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $string, $matches);
-        $name = $matches['name'];
+        $name = $command . $matches['name'];
         $option = $this->optionsCache[$name];
         $value = true;
 
@@ -131,7 +132,7 @@ class ArgumentParser
             }
         }
 
-        return [$name, $this->castType($value, $option['type'] ?? null)];
+        return [$option['name'], $this->castType($value, $option['type'] ?? null)];
     }
 
     /**
@@ -142,10 +143,10 @@ class ArgumentParser
      * @return array
      * @throws InvalidValueException
      */
-    public function parseShortArgument($arguments, &$argPointer)
+    public function parseShortArgument($command, $arguments, &$argPointer)
     {
         $argument = $arguments[$argPointer];
-        $key = substr($argument, 1, 1);
+        $key = $command . substr($argument, 1, 1);
         $option = $this->optionsCache[$key];
         $value = true;
 
@@ -181,13 +182,14 @@ class ArgumentParser
     private function parseArgumentArray($arguments, &$argPointer, &$output)
     {
         $numArguments = count($arguments);
+        $command = $output['__command'] ?? '';
         for (; $argPointer < $numArguments; $argPointer++) {
             $arg = $arguments[$argPointer];
             if (substr($arg, 0, 2) == "--") {
-                $argument = $this->parseLongArgument($arguments, $argPointer);
+                $argument = $this->parseLongArgument($command, $arguments, $argPointer);
                 $output[$argument[0]] = $argument[1];
             } else if ($arg[0] == '-') {
-                $argument = $this->parseShortArgument($arguments, $argPointer);
+                $argument = $this->parseShortArgument($command, $arguments, $argPointer);
                 $output[$argument[0]] = $argument[1];
             } else {
                 $output['__args'] = isset($output['__args']) ? array_merge($output['__args'], [$arg]) : [$arg];
@@ -198,13 +200,16 @@ class ArgumentParser
     private function maybeShowHelp($name, $output)
     {
         if (isset($output['help']) && $output['help']) {
-            $this->helpGenerator->generate($name, $this->optionsCache, $this->description, $this->footer);
+            $this->helpGenerator->generate(
+                $name, $output['command'] ?? null,
+                $this->optionsCache, $this->description, $this->footer
+            );
         }
     }
 
     public function parseCommand($arguments, &$argPointer, &$output)
     {
-        if(isset($this->commands[$arguments[$argPointer]])) {
+        if (isset($this->commands[$arguments[$argPointer]])) {
             $output["__command"] = $arguments[$argPointer];
             $argPointer++;
         }
@@ -253,10 +258,10 @@ class ArgumentParser
      */
     public function addCommand($command)
     {
-        if(!isset($command['name'])) {
+        if (!isset($command['name'])) {
             throw new InvalidArgumentDescriptionException("Command description must contain a name");
         }
-        if(isset($this->commands[$command['name']])) {
+        if (isset($this->commands[$command['name']])) {
             throw new CommandExistsException("Command ${command['name']} already exists.");
         }
         $this->commands[$command['name']] = $command;

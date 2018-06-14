@@ -61,7 +61,7 @@ class HelpMessageGeneratorTest extends TestCase
             )
         ];
         
-        $message = $this->helpMessageGenerator->generate('/path/to/test.php', $options, $desciption, $footer);
+        $message = $this->helpMessageGenerator->generate('/path/to/test.php', null, $options, $desciption, $footer);
         $this->assertEquals(file_get_contents('tests/data/help-message.txt'), $message);
     }
 }

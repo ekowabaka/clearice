@@ -61,7 +61,7 @@ class ArgumentParserTest extends TestCase
 
     /**
      * @expectedException \clearice\argparser\OptionExistsException
-     * @expectedExceptionMessage An argument option with short_name i already exists.
+     * @expectedExceptionMessage An argument option with short_name  i already exists.
      */
     public function testShortOptionExistsException()
     {
@@ -71,7 +71,7 @@ class ArgumentParserTest extends TestCase
 
     /**
      * @expectedException \clearice\argparser\OptionExistsException
-     * @expectedExceptionMessage An argument option with name input already exists.
+     * @expectedExceptionMessage An argument option with name  input already exists.
      */
     public function testLongOptionExistsException()
     {

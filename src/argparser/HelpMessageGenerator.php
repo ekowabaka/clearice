@@ -7,13 +7,17 @@ class HelpMessageGenerator
 {
     public function generate($name, $command, $options, $description, $footer)
     {
-        return sprintf(
-            "%s\n\n%s\n\nOptions:\n%s\n%s\n",
-            wordwrap($description),
-            $this->getUsageMessage($name),
-            $this->getOptionHelpMessages($options),
-            wordwrap($footer)
-        );
+        if($command) {
+
+        } else {
+            return sprintf(
+                "%s\n\n%s\n\nOptions:\n%s\n%s\n",
+                wordwrap($description),
+                $this->getUsageMessage($name),
+                $this->getOptionHelpMessages($options),
+                wordwrap($footer)
+            );
+        }
     }
 
     private function getUsageMessage($name)
