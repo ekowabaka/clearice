@@ -35,5 +35,7 @@ filter:
         - tests/*   
 build:
   nodes:
-    my-tests:
-      - php-scrutinizer-run
+    analysis:
+      tests:
+        override:
+          - php-scrutinizer-run
