@@ -49,7 +49,7 @@ class ArgumentParser
      */
     private function addToOptionCache($key, $value)
     {
-        if(!isset($value[$key])) {
+        if (!isset($value[$key])) {
             return;
         }
         $cacheKey = "${value['command']}${value[$key]}";
@@ -59,6 +59,21 @@ class ArgumentParser
             throw new OptionExistsException(
                 "An argument option with $key {$value['command']} {$value[$key]} already exists."
             );
+        }
+    }
+
+    /**
+     * @param $option
+     * @throws InvalidArgumentDescriptionException
+     * @throws UnknownCommandException
+     */
+    private function validateOption($option)
+    {
+        if (!isset($option['name'])) {
+            throw new InvalidArgumentDescriptionException("Argument must have a name");
+        }
+        if (isset($option['command']) && !isset($this->commands[$option['command']])) {
+            throw new UnknownCommandException("The command {$option['command']} is unknown");
         }
     }
 
@@ -79,12 +94,8 @@ class ArgumentParser
      */
     public function addOption($option)
     {
-        if (!isset($option['name'])) {
-            throw new InvalidArgumentDescriptionException("Argument must have a name");
-        }
-        if (isset($option['command']) && !isset($this->commands[$option['command']])) {
-            throw new UnknownCommandException("The command {$option['command']} is unknown");
-        } else if (!isset($option['command'])) {
+        $this->validateOption($option);
+        if (!isset($option['command'])) {
             $option['command'] = '';
         }
         $this->options[] = $option;
@@ -132,7 +143,7 @@ class ArgumentParser
             }
         }
 
-        return [$option['name'], $this->castType($value, $option['type'] ?? null)];
+        return [$option['name'], $value];
     }
 
     /**
@@ -159,19 +170,7 @@ class ArgumentParser
             }
         }
 
-        return [$option['name'], $this->castType($value, $option['type'] ?? null)];
-    }
-
-    private function castType($value, $type)
-    {
-        switch ($type) {
-            case 'integer':
-                return (int)$value;
-            case 'float':
-                return (float)$value;
-            default:
-                return $value;
-        }
+        return [$option['name'], $value];
     }
 
     /**

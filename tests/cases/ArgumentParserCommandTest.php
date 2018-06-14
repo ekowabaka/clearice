@@ -6,6 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 class ArgumentParserCommandTest extends TestCase
 {
+    /**
+     * @var ArgumentParser
+     */
     private $argumentParser;
 
     public function setUp()
@@ -65,5 +68,29 @@ class ArgumentParserCommandTest extends TestCase
             ['__command' => 'init', 'directory' => '/some/path'],
             $this->argumentParser->parse(["app", "init", "--directory", "/some/path"])
         );
+    }
+
+    /**
+     * @expectedException \clearice\argparser\UnknownCommandException
+     */
+    public function testUnknownCommandException()
+    {
+        $this->argumentParser->addOption(['command' => 'download', 'name' => 'url']);
+    }
+
+    /**
+     * @expectedException \clearice\argparser\InvalidArgumentDescriptionException
+     */
+    public function testInvalidArgumentDescriptionException()
+    {
+        $this->argumentParser->addCommand(['help' => 'I forgot the name or mis-spelled it']);
+    }
+
+    /**
+     * @expectedException \clearice\argparser\CommandExistsException
+     */
+    public function testCommandExistsException()
+    {
+        $this->argumentParser->addCommand(['name' => 'init']);
     }
 }
