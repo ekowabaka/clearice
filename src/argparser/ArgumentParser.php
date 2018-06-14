@@ -138,6 +138,7 @@ class ArgumentParser
     /**
      * Parse a short argument that is prefixed with a single dash '-'
      *
+     * @param $command
      * @param $arguments
      * @param $argPointer
      * @return array

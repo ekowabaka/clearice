@@ -8,7 +8,15 @@ class HelpMessageGenerator
     public function generate($name, $command, $options, $description, $footer)
     {
         if($command) {
-
+            return sprintf(
+                "%s\n\n%s\n\nOptions for %s command:\n%s\nOptions:\n%s\n%s\n",
+                wordwrap($description),
+                $this->getUsageMessage($name, " $command"),
+                $command,
+                $this->getOptionHelpMessages($options, $command),
+                $this->getOptionHelpMessages($options),
+                wordwrap($footer)
+            );
         } else {
             return sprintf(
                 "%s\n\n%s\n\nOptions:\n%s\n%s\n",
@@ -20,15 +28,18 @@ class HelpMessageGenerator
         }
     }
 
-    private function getUsageMessage($name)
+    private function getUsageMessage($name, $command = '')
     {
-        return sprintf("Usage:\n  %s [OPTIONS] ...", basename($name));
+        return sprintf("Usage:\n  %s%s [OPTIONS] ...", basename($name), $command);
     }
 
-    private function getOptionHelpMessages($options)
+    private function getOptionHelpMessages($options, $command = '')
     {
         $message = "";
         foreach ($options as $option) {
+            if($option['command'] !== $command) {
+                continue;
+            }
             $message .= $this->formatOptionHelp($option) . "\n";
         }
         return $message;
