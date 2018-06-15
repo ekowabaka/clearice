@@ -122,4 +122,32 @@ class ArgumentParserTest extends TestCase
 
         $this->assertEquals(["input" => ["/path/1", "/path/2"]], $this->argumentParser->parse(["app", "--input", "/path/1", "--input", "/path/2"]));
     }
+
+    public function testDefaults()
+    {
+        $this->argumentParser->addOption([
+            'short_name' => 'i',
+            'name' => 'input',
+            'type' => 'string',
+            'default' => 'in',
+            'help' => "specifies where the input files for the wiki are found."
+        ]);
+
+        $this->argumentParser->addOption([
+            'short_name' => 'o',
+            'name' => 'output',
+            'type' => 'string',
+            'default' => 'out',
+            "help" => "specifies where the wiki should be written to"
+        ]);
+
+        $this->argumentParser->addOption([
+            'short_name' => 'v',
+            'name' => 'verbose',
+            "help" => "displays detailed information about everything that happens"
+        ]);
+
+        $this->assertEquals(["input" => "in", "output" => "out"], $this->argumentParser->parse(["app"]));
+        $this->assertEquals(["input" => "in2", "output" => "out"], $this->argumentParser->parse(["app", "-iin2"]));
+    }
 }

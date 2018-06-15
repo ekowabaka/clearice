@@ -87,6 +87,7 @@ class ArgumentParser
      *        boolean flag.
      *  repeats: A boolean value that states whether the option can be repeated or not. Repeatable options are returned
      *        as arrays.
+     * default: A default value for the option.
      *  help: A help message for the option
      *
      * @param $option
@@ -217,9 +218,18 @@ class ArgumentParser
 
     public function parseCommand($arguments, &$argPointer, &$output)
     {
-        if (isset($this->commands[$arguments[$argPointer]])) {
+        if (count($arguments) > 1 && isset($this->commands[$arguments[$argPointer]])) {
             $output["__command"] = $arguments[$argPointer];
             $argPointer++;
+        }
+    }
+
+    public function fillInDefaults(&$parsed)
+    {
+        foreach($this->options as $option) {
+            if(!isset($parsed[$option['name']]) && isset($option['default'])) {
+                $parsed[$option['name']] = $option['default'];
+            }
         }
     }
 
@@ -238,6 +248,7 @@ class ArgumentParser
         $parsed = [];
         $this->parseCommand($arguments, $argPointer, $parsed);
         $this->parseArgumentArray($arguments, $argPointer, $parsed);
+        $this->fillInDefaults($parsed);
         $this->maybeShowHelp($arguments[0], $parsed);
         return $parsed;
     }
