@@ -12,7 +12,8 @@
   },
   "autoload": {
     "psr-4": {
-      "clearice\\": "src/"
+      "clearice\\": "src/",
+      "clearice\\tests\\": "tests/"
     }
   },
   "authors": [

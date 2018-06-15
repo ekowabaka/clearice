@@ -85,6 +85,8 @@ class ArgumentParser
      *  short_name: A shorter single character option prefixed with a single dash -
      *  type: Required for all options that take values. An option specified without a type is considered to be a
      *        boolean flag.
+     *  repeats: A boolean value that states whether the option can be repeated or not. Repeatable options are returned
+     *        as arrays.
      *  help: A help message for the option
      *
      * @param $option
@@ -95,9 +97,8 @@ class ArgumentParser
     public function addOption($option)
     {
         $this->validateOption($option);
-        if (!isset($option['command'])) {
-            $option['command'] = '';
-        }
+        $option['command'] = $option['command'] ?? '';
+        $option['repeats'] = $option['repeats'] ?? false;
         $this->options[] = $option;
         $this->addToOptionCache('name', $option);
         $this->addToOptionCache('short_name', $option);
@@ -127,7 +128,7 @@ class ArgumentParser
      * @return array
      * @throws InvalidValueException
      */
-    private function parseLongArgument($command, $arguments, &$argPointer)
+    private function parseLongArgument($command, $arguments, &$argPointer, &$output)
     {
         $string = substr($arguments[$argPointer], 2);
         preg_match("/(?<name>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $string, $matches);
@@ -143,7 +144,7 @@ class ArgumentParser
             }
         }
 
-        return [$option['name'], $value];
+        $this->assignValue($option, $output, $option['name'], $value);
     }
 
     /**
@@ -155,7 +156,7 @@ class ArgumentParser
      * @return array
      * @throws InvalidValueException
      */
-    public function parseShortArgument($command, $arguments, &$argPointer)
+    public function parseShortArgument($command, $arguments, &$argPointer, &$output)
     {
         $argument = $arguments[$argPointer];
         $key = $command . substr($argument, 1, 1);
@@ -170,7 +171,16 @@ class ArgumentParser
             }
         }
 
-        return [$option['name'], $value];
+        $this->assignValue($option, $output, $option['name'], $value);
+    }
+
+    private function assignValue($option, &$output, $key, $value)
+    {
+        if($option['repeats']) {
+            $output[$key] = isset($output[$key]) ? array_merge($output[$key], [$value]) : [$value];
+        } else {
+            $output[$key] = $value;
+        }
     }
 
     /**
@@ -186,11 +196,9 @@ class ArgumentParser
         for (; $argPointer < $numArguments; $argPointer++) {
             $arg = $arguments[$argPointer];
             if (substr($arg, 0, 2) == "--") {
-                $argument = $this->parseLongArgument($command, $arguments, $argPointer);
-                $output[$argument[0]] = $argument[1];
+                $this->parseLongArgument($command, $arguments, $argPointer, $output);
             } else if ($arg[0] == '-') {
-                $argument = $this->parseShortArgument($command, $arguments, $argPointer);
-                $output[$argument[0]] = $argument[1];
+                $this->parseShortArgument($command, $arguments, $argPointer, $output);
             } else {
                 $output['__args'] = isset($output['__args']) ? array_merge($output['__args'], [$arg]) : [$arg];
             }
@@ -235,6 +243,8 @@ class ArgumentParser
     }
 
     /**
+     * Enables help messages so they show automatically.
+     *
      * @param $name
      * @param null $description
      * @param null $footer

@@ -1,5 +1,5 @@
 <?php
-namespace cases;
+namespace ntentan\tests\cases;
 
 use clearice\argparser\ArgumentParser;
 use PHPUnit\Framework\TestCase;
