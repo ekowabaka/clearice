@@ -204,12 +204,12 @@ class ArgumentParser
         }
     }
 
-    private function maybeShowHelp($output, $forced = false)
+    private function maybeShowHelp($output = [], $forced = false)
     {
         if ((isset($output['help']) && $output['help']) || $forced) {
             return $this->helpGenerator->generate(
                 $this->name, $output['command'] ?? null,
-                $this->optionsCache, $this->description, $this->footer
+                $this->options, $this->description, $this->footer
             );
         }
         return '';
@@ -270,12 +270,12 @@ class ArgumentParser
         $this->description = $description;
         $this->footer = $footer;
 
-        $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "get help on how to use this app $name"]);
+        $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "display this help message"]);
     }
 
     public function getHelpMessage()
     {
-        return $this->maybeShowHelp();
+        return $this->maybeShowHelp(null, true);
     }
 
     /**
