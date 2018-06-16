@@ -126,7 +126,6 @@ class ArgumentParser
      *
      * @param $arguments
      * @param $argPointer
-     * @return array
      * @throws InvalidValueException
      */
     private function parseLongArgument($command, $arguments, &$argPointer, &$output)
@@ -154,7 +153,6 @@ class ArgumentParser
      * @param $command
      * @param $arguments
      * @param $argPointer
-     * @return array
      * @throws InvalidValueException
      */
     public function parseShortArgument($command, $arguments, &$argPointer, &$output)
