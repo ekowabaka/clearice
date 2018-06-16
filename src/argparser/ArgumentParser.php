@@ -43,11 +43,11 @@ class ArgumentParser
     /**
      * Add a value to the available possible options for later parsing.
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param array $value
      * @throws OptionExistsException
      */
-    private function addToOptionCache($key, $value)
+    private function addToOptionCache(string $key, array $value) : void
     {
         if (!isset($value[$key])) {
             return;
@@ -63,11 +63,11 @@ class ArgumentParser
     }
 
     /**
-     * @param $option
+     * @param array $option
      * @throws InvalidArgumentDescriptionException
      * @throws UnknownCommandException
      */
-    private function validateOption($option)
+    private function validateOption($option) : void
     {
         if (!isset($option['name'])) {
             throw new InvalidArgumentDescriptionException("Argument must have a name");
@@ -90,12 +90,12 @@ class ArgumentParser
      * default: A default value for the option.
      *  help: A help message for the option
      *
-     * @param $option
+     * @param array $option
      * @throws OptionExistsException
      * @throws InvalidArgumentDescriptionException
      * @throws UnknownCommandException
      */
-    public function addOption($option)
+    public function addOption(array $option): void
     {
         $this->validateOption($option);
         $option['command'] = $option['command'] ?? '';
@@ -204,14 +204,15 @@ class ArgumentParser
         }
     }
 
-    private function maybeShowHelp($name, $output)
+    private function maybeShowHelp($output, $forced = false)
     {
-        if (isset($output['help']) && $output['help']) {
-            $this->helpGenerator->generate(
-                $name, $output['command'] ?? null,
+        if ((isset($output['help']) && $output['help']) || $forced) {
+            return $this->helpGenerator->generate(
+                $this->name, $output['command'] ?? null,
                 $this->optionsCache, $this->description, $this->footer
             );
         }
+        return '';
     }
 
     public function parseCommand($arguments, &$argPointer, &$output)
@@ -244,30 +245,37 @@ class ArgumentParser
         $arguments = $arguments ?? $argv;
         $argPointer = 1;
         $parsed = [];
+        $this->name = $this->name ?? $arguments[0];
         $this->parseCommand($arguments, $argPointer, $parsed);
         $this->parseArgumentArray($arguments, $argPointer, $parsed);
         $this->fillInDefaults($parsed);
-        $this->maybeShowHelp($arguments[0], $parsed);
+        $this->maybeShowHelp($parsed);
         return $parsed;
     }
 
     /**
      * Enables help messages so they show automatically.
      *
-     * @param $name
-     * @param null $description
-     * @param null $footer
+     * @param string $name
+     * @param string $description
+     * @param string $footer
+     *
      * @throws InvalidArgumentDescriptionException
      * @throws OptionExistsException
      * @throws UnknownCommandException
      */
-    public function enableHelp($name, $description = null, $footer = null)
+    public function enableHelp(string $description = null, string $footer = null, string $name = null) : void
     {
         $this->name = $name;
         $this->description = $description;
         $this->footer = $footer;
 
         $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "get help on how to use this app $name"]);
+    }
+
+    public function getHelpMessage()
+    {
+        return $this->maybeShowHelp();
     }
 
     /**
