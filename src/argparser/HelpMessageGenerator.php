@@ -8,41 +8,65 @@ class HelpMessageGenerator
     public function generate($name, $command, $options, $description, $footer)
     {
         if($command) {
-            return sprintf(
-                "%s\n\n%s\n\nOptions for %s command:\n%s\nOptions:\n%s\n%s\n",
-                wordwrap($description),
-                $this->getUsageMessage($name, " $command"),
-                $command,
-                $this->getOptionHelpMessages($options, $command),
-                $this->getOptionHelpMessages($options),
-                wordwrap($footer)
-            );
+            return wordwrap($description) . "\n\n"
+                . $this->getUsageMessage($name, $options, $command)
+                . $this->getOptionHelpMessages($options['options'], $command)
+                . $this->getOptionHelpMessages($options['options'])
+                . wordwrap($footer) . "\n";
         } else {
-            return sprintf(
-                "%s\n\n%s\n\nOptions:\n%s\n%s\n",
-                wordwrap($description),
-                $this->getUsageMessage($name),
-                $this->getOptionHelpMessages($options),
-                wordwrap($footer)
-            );
+            return wordwrap($description) . "\n\n"
+                . $this->getUsageMessage($name, $options, $command)
+                . $this->getCommandsMessage($options['commands'])
+                . $this->getOptionHelpMessages($options['options'])
+                . wordwrap($footer) . "\n";
         }
     }
 
-    private function getUsageMessage($name, $command = '')
+    private function getCommandsMessage($commands)
     {
-        return sprintf("Usage:\n  %s%s [OPTIONS] ...", basename($name), $command);
+        if(count($commands)) {
+            $commandsHelp = array('Commands:');
+            foreach ($commands as $command)
+            {
+                $commandsHelp[] = implode("\n", $this->formatCommandHelp($command));
+            }
+            $commandsHelp[] = '';
+            return implode("\n", $commandsHelp) . "\n";
+        }
+        return '';
+    }
+
+    private function formatCommandHelp($command)
+    {
+        $commandHelp = array();
+        $help = explode("\n", wordwrap($command['help'], 59));
+        $commandHelp[] = $this->wrapHelp(sprintf("% -20s", $command['name']), $help, 20);
+        foreach($help as $helpLine)
+        {
+            $commandHelp[] = str_repeat(' ', 20) . $helpLine;
+        }
+        return $commandHelp;
+    }
+
+    private function getUsageMessage($name, $options, $command = '')
+    {
+        return sprintf(
+            "Usage:\n  %s %s%s[OPTIONS] ...\n\n", basename($name),
+            count($options['commands']) > 0 && $command == '' ? "[COMMAND] " : "",
+            $command != "" ? "$command ": ""
+        );
     }
 
     private function getOptionHelpMessages($options, $command = '')
     {
-        $message = "";
+        $message = $command == '' ? "Options:\n" : "Options for $command command:\n";
         foreach ($options as $option) {
             if($option['command'] !== $command) {
                 continue;
             }
             $message .= $this->formatOptionHelp($option) . "\n";
         }
-        return $message;
+        return "$message\n";
     }
 
     /**

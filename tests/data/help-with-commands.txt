@@ -1,0 +1,21 @@
+Simple Wiki version 1.0
+A sample or should I say dummy wiki app to help explain ClearIce. This app
+practically does nothing.
+
+Usage:
+  app [COMMAND] [OPTIONS] ...
+
+Commands:
+init                initialize a directory with the source files of the wiki
+generate            generate the data for a given directory and store it
+                    somewhere cool
+export              export wiki to a different format
+
+Options:
+  -v, --verbose              display more information
+  -h, --help                 Shows this help message
+
+Hope you had a nice time learning about ClearIce. We're pretty sure your
+cli apps would no longer be boring to work with.
+
+Report bugs to bugs@clearice.tld

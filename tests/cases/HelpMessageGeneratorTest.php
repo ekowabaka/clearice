@@ -68,7 +68,7 @@ class HelpMessageGeneratorTest extends TestCase
             )
         ];
 
-        $message = $this->helpMessageGenerator->generate('/path/to/test.php', null, $options, $this->desciption, $this->footer);
+        $message = $this->helpMessageGenerator->generate('/path/to/test.php', null, ['options' => $options, 'commands' => []], $this->desciption, $this->footer);
         $this->assertEquals(file_get_contents('tests/data/help-message.txt'), $message);
     }
 
@@ -129,7 +129,9 @@ class HelpMessageGeneratorTest extends TestCase
                 "help" => "Shows this help message"
             ]
         ];
-        $message = $this->helpMessageGenerator->generate("app", "init", $options, $this->desciption, $this->footer);
+        $message = $this->helpMessageGenerator->generate("app", "", ['options' => $options, 'commands' => $commands], $this->desciption, $this->footer);
+        $this->assertEquals(file_get_contents('tests/data/help-with-commands.txt'), $message);
+        $message = $this->helpMessageGenerator->generate("app", "init", ['options' => $options, 'commands' => $commands], $this->desciption, $this->footer);
         $this->assertEquals(file_get_contents('tests/data/help-init-message.txt'), $message);
     }
 }
