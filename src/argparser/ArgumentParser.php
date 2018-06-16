@@ -35,6 +35,8 @@ class ArgumentParser
      */
     private $helpGenerator;
 
+    private $helpEnabled = false;
+
     public function __construct($helpWriter = null)
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
@@ -206,10 +208,11 @@ class ArgumentParser
 
     private function maybeShowHelp($output = [], $forced = false)
     {
-        if ((isset($output['help']) && $output['help']) || $forced) {
+        if ((isset($output['help']) && $output['help'] && $this->helpEnabled) || $forced) {
             return $this->helpGenerator->generate(
                 $this->name, $output['command'] ?? null,
-                $this->options, $this->description, $this->footer
+                ['options' => $this->options, 'commands' => $this->commands],
+                $this->description, $this->footer
             );
         }
         return '';
@@ -269,7 +272,7 @@ class ArgumentParser
         $this->name = $name;
         $this->description = $description;
         $this->footer = $footer;
-
+        $this->helpEnabled = true;
         $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "display this help message"]);
     }
 

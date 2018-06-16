@@ -126,7 +126,7 @@ class HelpMessageGeneratorTest extends TestCase
                 'command' => '',
                 'short_name' => 'h',
                 'name' => 'help',
-                "help" => "Shows this help message"
+                "help" => "display this help message"
             ]
         ];
         $message = $this->helpMessageGenerator->generate("app", "", ['options' => $options, 'commands' => $commands], $this->desciption, $this->footer);

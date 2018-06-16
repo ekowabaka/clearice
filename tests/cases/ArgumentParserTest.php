@@ -150,4 +150,60 @@ class ArgumentParserTest extends TestCase
         $this->assertEquals(["input" => "in", "output" => "out"], $this->argumentParser->parse(["app"]));
         $this->assertEquals(["input" => "in2", "output" => "out"], $this->argumentParser->parse(["app", "-iin2"]));
     }
+
+    public function testGetHelp()
+    {
+        $this->argumentParser->addCommand(
+            [
+                'name' => 'init',
+                'help' => 'initialize a directory with the source files of the wiki'
+            ]);
+        $this->argumentParser->addCommand([
+                'name' => 'generate',
+                'help' => 'generate the data for a given directory and store it somewhere cool',
+            ]);
+        $this->argumentParser->addCommand([
+                'name' => 'export',
+                'help' => 'export wiki to a different format',
+            ]);
+
+        $this->argumentParser->addOption([
+                'command' => 'init',
+                'short_name' => 'd',
+                'name' => 'directory',
+                'type' => 'string',
+                'help' => "specify the directory to be initialized"
+            ]);
+        $this->argumentParser->addOption([
+                'command' => 'init',
+                'short_name' => 't',
+                'name' => 'title',
+                'type' => 'string',
+                'help' => "title of the new wiki to be initialized"
+            ]);
+        $this->argumentParser->addOption([
+                'command' => 'generate',
+                'short_name' => 't',
+                'name' => 'target',
+                'type' => 'string',
+                "help" => "specify where the generated wiki should be"
+            ]);
+        $this->argumentParser->addOption([
+                'command' => 'export',
+                'short_name' => 'f',
+                'name' => 'format',
+                "help" => "specify the format of the exported wiki"
+            ]);
+        $this->argumentParser->addOption([
+                'short_name' => 'v',
+                'name' => 'verbose',
+                "help" => "display more information"
+            ]);
+
+        $desciption = "Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.";
+        $footer = "Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld";
+        $this->argumentParser->enableHelp($desciption, $footer, "app");
+
+        $this->assertEquals(file_get_contents('tests/data/help-with-commands.txt'), $this->argumentParser->getHelpMessage());
+    }
 }
