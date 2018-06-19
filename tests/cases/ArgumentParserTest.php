@@ -6,7 +6,6 @@ namespace ntentan\tests\cases;
 use clearice\argparser\ArgumentParser;
 use clearice\argparser\HelpMessageGenerator;
 use clearice\utils\ProgramControl;
-use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentParserTest extends TestCase
@@ -15,8 +14,6 @@ class ArgumentParserTest extends TestCase
      * @var ArgumentParser
      */
     private $argumentParser;
-
-    use PHPMock;
 
     public function setup()
     {
