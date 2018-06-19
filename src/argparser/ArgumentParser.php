@@ -1,6 +1,7 @@
 <?php
 
 namespace clearice\argparser;
+use clearice\utils\ProgramControl;
 
 
 /**
@@ -35,11 +36,14 @@ class ArgumentParser
      */
     private $helpGenerator;
 
+    private $programControl;
+
     private $helpEnabled = false;
 
-    public function __construct($helpWriter = null)
+    public function __construct($helpWriter = null, $programControl = null)
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
+        $this->programControl = $programControl ?? new ProgramControl();
     }
 
     /**
@@ -89,7 +93,7 @@ class ArgumentParser
      *        boolean flag.
      *  repeats: A boolean value that states whether the option can be repeated or not. Repeatable options are returned
      *        as arrays.
-     * default: A default value for the option.
+     *  default: A default value for the option.
      *  help: A help message for the option
      *
      * @param array $option
@@ -206,16 +210,16 @@ class ArgumentParser
         }
     }
 
-    private function maybeShowHelp($output = [], $forced = false)
+    /**
+     * @param $output
+     * @throws HelpMessageRequestedException
+     */
+    private function maybeShowHelp($output)
     {
-        if ((isset($output['help']) && $output['help'] && $this->helpEnabled) || $forced) {
-            return $this->helpGenerator->generate(
-                $this->name, $output['command'] ?? null,
-                ['options' => $this->options, 'commands' => $this->commands],
-                $this->description, $this->footer
-            );
+        if ((isset($output['help']) && $output['help'] && $this->helpEnabled)) {
+            print $this->getHelpMessage($output['__command'] ?? null);
+            throw new HelpMessageRequestedException();
         }
-        return '';
     }
 
     public function parseCommand($arguments, &$argPointer, &$output)
@@ -226,12 +230,26 @@ class ArgumentParser
         }
     }
 
+    /**
+     * @param $parsed
+     * @throws InvalidArgumentException
+     */
     public function fillInDefaults(&$parsed)
     {
+        $required = [];
         foreach($this->options as $option) {
             if(!isset($parsed[$option['name']]) && isset($option['default'])) {
                 $parsed[$option['name']] = $option['default'];
             }
+            if(isset($option['required']) && $option['required'] && !isset($parsed[$option['name']])) {
+                $required[] = $option['name'];
+            }
+        }
+
+        if(!empty(($required))) {
+            throw new InvalidArgumentException(
+                sprintf("The following options are required: %s. Pass the --help option for more information about possible options.", implode(", $required"))
+            );
         }
     }
 
@@ -244,16 +262,23 @@ class ArgumentParser
      */
     public function parse($arguments = null)
     {
-        global $argv;
-        $arguments = $arguments ?? $argv;
-        $argPointer = 1;
-        $parsed = [];
-        $this->name = $this->name ?? $arguments[0];
-        $this->parseCommand($arguments, $argPointer, $parsed);
-        $this->parseArgumentArray($arguments, $argPointer, $parsed);
-        $this->fillInDefaults($parsed);
-        $this->maybeShowHelp($parsed);
-        return $parsed;
+        try{
+            global $argv;
+            $arguments = $arguments ?? $argv;
+            $argPointer = 1;
+            $parsed = [];
+            $this->name = $this->name ?? $arguments[0];
+            $this->parseCommand($arguments, $argPointer, $parsed);
+            $this->parseArgumentArray($arguments, $argPointer, $parsed);
+            $this->fillInDefaults($parsed);
+            $this->maybeShowHelp($parsed);
+            return $parsed;
+        } catch (HelpMessageRequestedException $exception) {
+            $this->programControl->quit();
+        } catch (InvalidArgumentException $exception) {
+            print $exception->getMessage();
+            $this->programControl->quit();
+        }
     }
 
     /**
@@ -276,9 +301,13 @@ class ArgumentParser
         $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "display this help message"]);
     }
 
-    public function getHelpMessage()
+    public function getHelpMessage($command = '')
     {
-        return $this->maybeShowHelp(null, true);
+        return $this->helpGenerator->generate(
+            $this->name, $command ?? null,
+            ['options' => $this->options, 'commands' => $this->commands],
+            $this->description, $this->footer
+        );
     }
 
     /**

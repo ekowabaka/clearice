@@ -4,6 +4,9 @@ namespace ntentan\tests\cases;
 
 
 use clearice\argparser\ArgumentParser;
+use clearice\argparser\HelpMessageGenerator;
+use clearice\utils\ProgramControl;
+use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentParserTest extends TestCase
@@ -12,6 +15,8 @@ class ArgumentParserTest extends TestCase
      * @var ArgumentParser
      */
     private $argumentParser;
+
+    use PHPMock;
 
     public function setup()
     {
@@ -205,5 +210,38 @@ class ArgumentParserTest extends TestCase
         $this->argumentParser->enableHelp($desciption, $footer, "app");
 
         $this->assertEquals(file_get_contents('tests/data/help-with-commands.txt'), $this->argumentParser->getHelpMessage());
+    }
+
+    public function testAutoHelpCall()
+    {
+        $helpGeneratorMock = $this->createMock(HelpMessageGenerator::class);
+        $helpGeneratorMock->expects($this->once())->method('generate');
+        $programControlMock = $this->createMock(ProgramControl::class);
+        $programControlMock->expects($this->once())->method('quit');
+
+        $this->argumentParser = new ArgumentParser($helpGeneratorMock, $programControlMock);
+
+        $this->argumentParser->addOption([
+            'short_name' => 'i',
+            'name' => 'input',
+            'type' => 'string',
+            'help' => "specifies where the input files for the wiki are found."
+        ]);
+
+        $this->argumentParser->addOption([
+            'short_name' => 'o',
+            'name' => 'output',
+            'type' => 'string',
+            "help" => "specifies where the wiki should be written to"
+        ]);
+
+        $this->argumentParser->addOption([
+            'short_name' => 'v',
+            'name' => 'verbose',
+            "help" => "displays detailed information about everything that happens"
+        ]);
+
+        $this->argumentParser->enableHelp('test', 'This is a test application', 'Report bugs to');
+        $this->assertEquals(null, $this->argumentParser->parse(['app', '--help']));
     }
 }
