@@ -299,6 +299,9 @@ class ArgumentParser
         $this->footer = $footer;
         $this->helpEnabled = true;
         $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "display this help message"]);
+        foreach($this->commands as $command) {
+            $this->addOption(['name' => 'help', 'help' => 'display this help message', 'command' => $command['name']]);
+        }
     }
 
     public function getHelpMessage($command = '')
