@@ -272,7 +272,7 @@ class ArgumentParser
         } catch (HelpMessageRequestedException $exception) {
             $this->programControl->quit();
         } catch (InvalidArgumentException $exception) {
-            print $exception->getMessage();
+            print $exception->getMessage() . PHP_EOL;
             $this->programControl->quit();
         }
     }
