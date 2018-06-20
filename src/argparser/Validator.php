@@ -9,18 +9,21 @@ class Validator
      * @param $options
      * @throws InvalidArgumentException
      */
-    public function validateArguments($options)
+    public function validateArguments($options, $parsed)
     {
         $required = [];
         foreach($options as $option) {
-            if(isset($option['required']) && $option['required'] && !isset($parsed[$option['name']])) {
+            if(isset($option['required']) && $option['required'] && !isset($parsed[$option['name']]) && $option['command'] == ($parsed['__command'] ?? '')) {
                 $required[] = $option['name'];
             }
         }
 
         if(!empty(($required))) {
             throw new InvalidArgumentException(
-                sprintf("The following options are required: %s. Pass the --help option for more information about possible options.", implode(", $required"))
+                sprintf(
+                    "The following options are required%s: %s. Pass the --help option for more information about possible options.",
+                    isset($parsed['__command']) ? " for the {$parsed['__command']} command" : "", implode(",", $required)
+                )
             );
         }
     }

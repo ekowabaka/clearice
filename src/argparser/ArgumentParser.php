@@ -242,7 +242,7 @@ class ArgumentParser
     private function fillInDefaults(&$parsed)
     {
         foreach($this->options as $option) {
-            if(!isset($parsed[$option['name']]) && isset($option['default'])) {
+            if(!isset($parsed[$option['name']]) && isset($option['default']) && $option['command'] == ($parsed['__command'] ?? "")) {
                 $parsed[$option['name']] = $option['default'];
             }
         }
@@ -265,9 +265,9 @@ class ArgumentParser
             $this->name = $this->name ?? $arguments[0];
             $this->parseCommand($arguments, $argPointer, $parsed);
             $this->parseArgumentArray($arguments, $argPointer, $parsed);
-            $this->validator->validateArguments($this->options);
-            $this->fillInDefaults($parsed);
             $this->maybeShowHelp($parsed);
+            $this->validator->validateArguments($this->options, $parsed);
+            $this->fillInDefaults($parsed);
             return $parsed;
         } catch (HelpMessageRequestedException $exception) {
             $this->programControl->quit();
