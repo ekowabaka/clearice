@@ -69,6 +69,20 @@ class ArgumentParser
     }
 
     /**
+     * @param string $key
+     * @param string $name
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    private function retrieveOptionFromCache(string $key, string $name)
+    {
+        if(!isset($this->optionsCache[$key])) {
+            throw new InvalidArgumentException("Unknown option '$name'. Please run with `--help` for more information on valid options.");
+        }
+        return $this->optionsCache[$key];
+    }
+
+    /**
      * @param array $option
      * @throws InvalidArgumentDescriptionException
      * @throws UnknownCommandException
@@ -133,20 +147,21 @@ class ArgumentParser
      * @param $arguments
      * @param $argPointer
      * @throws InvalidValueException
+     * @throws InvalidArgumentException
      */
     private function parseLongArgument($command, $arguments, &$argPointer, &$output)
     {
         $string = substr($arguments[$argPointer], 2);
         preg_match("/(?<name>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $string, $matches);
-        $name = $command . $matches['name'];
-        $option = $this->optionsCache[$name];
+        $key = $command . $matches['name'];
+        $option = $this->retrieveOptionFromCache($key, $matches['name']);
         $value = true;
 
         if (isset($option['type'])) {
             if ($matches['equal'] === '=') {
                 $value = $matches['value'];
             } else {
-                $value = $this->getNextValueOrFail($arguments, $argPointer, $name);
+                $value = $this->getNextValueOrFail($arguments, $argPointer, $matches['name']);
             }
         }
 
@@ -160,12 +175,13 @@ class ArgumentParser
      * @param $arguments
      * @param $argPointer
      * @throws InvalidValueException
+     * @throws InvalidArgumentException
      */
     private function parseShortArgument($command, $arguments, &$argPointer, &$output)
     {
         $argument = $arguments[$argPointer];
         $key = $command . substr($argument, 1, 1);
-        $option = $this->optionsCache[$key];
+        $option = $this->retrieveOptionFromCache($key, substr($argument, 1, 1));
         $value = true;
 
         if (isset($option['type'])) {
@@ -193,6 +209,7 @@ class ArgumentParser
      * @param $argPointer
      * @param $output
      * @throws InvalidValueException
+     * @throws InvalidArgumentException
      */
     private function parseArgumentArray($arguments, &$argPointer, &$output)
     {
@@ -236,7 +253,6 @@ class ArgumentParser
      */
     private function fillInDefaults(&$parsed)
     {
-        $required = [];
         foreach($this->options as $option) {
             if(!isset($parsed[$option['name']]) && isset($option['default'])) {
                 $parsed[$option['name']] = $option['default'];
@@ -244,6 +260,9 @@ class ArgumentParser
         }
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function validateRequired()
     {
         $required = [];
