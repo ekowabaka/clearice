@@ -161,7 +161,7 @@ class ArgumentParser
      * @param $argPointer
      * @throws InvalidValueException
      */
-    public function parseShortArgument($command, $arguments, &$argPointer, &$output)
+    private function parseShortArgument($command, $arguments, &$argPointer, &$output)
     {
         $argument = $arguments[$argPointer];
         $key = $command . substr($argument, 1, 1);
@@ -222,7 +222,7 @@ class ArgumentParser
         }
     }
 
-    public function parseCommand($arguments, &$argPointer, &$output)
+    private function parseCommand($arguments, &$argPointer, &$output)
     {
         if (count($arguments) > 1 && isset($this->commands[$arguments[$argPointer]])) {
             $output["__command"] = $arguments[$argPointer];
@@ -234,13 +234,20 @@ class ArgumentParser
      * @param $parsed
      * @throws InvalidArgumentException
      */
-    public function fillInDefaults(&$parsed)
+    private function fillInDefaults(&$parsed)
     {
         $required = [];
         foreach($this->options as $option) {
             if(!isset($parsed[$option['name']]) && isset($option['default'])) {
                 $parsed[$option['name']] = $option['default'];
             }
+        }
+    }
+
+    private function validateRequired()
+    {
+        $required = [];
+        foreach($this->options as $option) {
             if(isset($option['required']) && $option['required'] && !isset($parsed[$option['name']])) {
                 $required[] = $option['name'];
             }
@@ -251,6 +258,7 @@ class ArgumentParser
                 sprintf("The following options are required: %s. Pass the --help option for more information about possible options.", implode(", $required"))
             );
         }
+
     }
 
     /**
@@ -270,6 +278,7 @@ class ArgumentParser
             $this->name = $this->name ?? $arguments[0];
             $this->parseCommand($arguments, $argPointer, $parsed);
             $this->parseArgumentArray($arguments, $argPointer, $parsed);
+            $this->validateRequired();
             $this->fillInDefaults($parsed);
             $this->maybeShowHelp($parsed);
             return $parsed;
