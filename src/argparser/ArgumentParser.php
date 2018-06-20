@@ -36,6 +36,8 @@ class ArgumentParser
      */
     private $helpGenerator;
 
+    private $validator;
+
     private $programControl;
 
     private $helpEnabled = false;
@@ -44,6 +46,7 @@ class ArgumentParser
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
         $this->programControl = $programControl ?? new ProgramControl();
+        $this->validator = new Validator();
     }
 
     /**
@@ -83,21 +86,6 @@ class ArgumentParser
     }
 
     /**
-     * @param array $option
-     * @throws InvalidArgumentDescriptionException
-     * @throws UnknownCommandException
-     */
-    private function validateOption($option) : void
-    {
-        if (!isset($option['name'])) {
-            throw new InvalidArgumentDescriptionException("Argument must have a name");
-        }
-        if (isset($option['command']) && !isset($this->commands[$option['command']])) {
-            throw new UnknownCommandException("The command {$option['command']} is unknown");
-        }
-    }
-
-    /**
      * Add an option to be parsed.
      * Arguments are presented as a structured array with the following possible keys.
      *
@@ -117,7 +105,7 @@ class ArgumentParser
      */
     public function addOption(array $option): void
     {
-        $this->validateOption($option);
+        $this->validator->validateOption($option, $this->commands);
         $option['command'] = $option['command'] ?? '';
         $option['repeats'] = $option['repeats'] ?? false;
         $this->options[] = $option;
@@ -261,26 +249,6 @@ class ArgumentParser
     }
 
     /**
-     * @throws InvalidArgumentException
-     */
-    private function validateRequired()
-    {
-        $required = [];
-        foreach($this->options as $option) {
-            if(isset($option['required']) && $option['required'] && !isset($parsed[$option['name']])) {
-                $required[] = $option['name'];
-            }
-        }
-
-        if(!empty(($required))) {
-            throw new InvalidArgumentException(
-                sprintf("The following options are required: %s. Pass the --help option for more information about possible options.", implode(", $required"))
-            );
-        }
-
-    }
-
-    /**
      * Parses command line arguments and return a structured array of options and their associated values.
      *
      * @param array $arguments An optional array of arguments that would be parsed instead of those passed to the CLI.
@@ -297,7 +265,7 @@ class ArgumentParser
             $this->name = $this->name ?? $arguments[0];
             $this->parseCommand($arguments, $argPointer, $parsed);
             $this->parseArgumentArray($arguments, $argPointer, $parsed);
-            $this->validateRequired();
+            $this->validator->validateArguments($this->options);
             $this->fillInDefaults($parsed);
             $this->maybeShowHelp($parsed);
             return $parsed;
@@ -348,12 +316,7 @@ class ArgumentParser
      */
     public function addCommand($command)
     {
-        if (!isset($command['name'])) {
-            throw new InvalidArgumentDescriptionException("Command description must contain a name");
-        }
-        if (isset($this->commands[$command['name']])) {
-            throw new CommandExistsException("Command ${command['name']} already exists.");
-        }
+        $this->validator->validateCommand($command, $this->commands);
         $this->commands[$command['name']] = $command;
     }
 }
