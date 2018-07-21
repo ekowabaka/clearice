@@ -279,10 +279,12 @@ class ArgumentParser
 
     /**
      * Enables help messages so they show automatically.
+     * This method also allows you to optionally pass the name of the application, a description header for the help 
+     * message and a footer.
      *
-     * @param string $name
-     * @param string $description
-     * @param string $footer
+     * @param string $name The name of the application binary
+     * @param string $description A description to be displayed on top of the help message
+     * @param string $footer A footer message to be displayed after the help message
      *
      * @throws InvalidArgumentDescriptionException
      * @throws OptionExistsException
