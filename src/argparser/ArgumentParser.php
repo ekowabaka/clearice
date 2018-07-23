@@ -11,15 +11,35 @@ use clearice\utils\ProgramControl;
  */
 class ArgumentParser
 {
+    /**
+     * Description to put on top of the help message.
+     * @var string
+     */
     private $description;
 
+    /**
+     * A little message for the foot of the help message.
+     * @var string
+     */
     private $footer;
 
+    /**
+     * The name of the application.
+     * @var string
+     */
     private $name;
 
+    /**
+     * Commands that the application can execute.
+     * @var array
+     */
     private $commands = [];
 
     /**
+     * A cache of all the options added.
+     * The array keys represents a concatenation of the command and either the short or long name of the option. Elements
+     * in this array will be the same as those in the options property. However, options that have both a short and long
+     * name would appear twice.
      * @var array
      */
     private $optionsCache = [];
@@ -36,10 +56,22 @@ class ArgumentParser
      */
     private $helpGenerator;
 
+    /**
+     * An instance of the validator.
+     * @var Validator
+     */
     private $validator;
 
+    /**
+     * An instance of the ProgramControl class which is responsible for terminating the application.
+     * @var ProgramControl
+     */
     private $programControl;
 
+    /**
+     * Flag raised when help has been enabled.
+     * @var bool
+     */
     private $helpEnabled = false;
 
     public function __construct($helpWriter = null, $programControl = null)
@@ -50,23 +82,24 @@ class ArgumentParser
     }
 
     /**
-     * Add a value to the available possible options for later parsing.
+     * Add an option to the option cache for easy access through associative arrays.
+     * The option cache associates arguments with their options.
      *
-     * @param string $key
-     * @param array $value
+     * @param string $identifier
+     * @param mixed $option
      * @throws OptionExistsException
      */
-    private function addToOptionCache(string $key, array $value) : void
+    private function addToOptionCache(string $identifier, $option) : void
     {
-        if (!isset($value[$key])) {
+        if (!isset($option[$identifier])) {
             return;
         }
-        $cacheKey = "${value['command']}${value[$key]}";
+        $cacheKey = "${option['command']}${option[$identifier]}";
         if (!isset($this->optionsCache[$cacheKey])) {
-            $this->optionsCache[$cacheKey] = $value;
+            $this->optionsCache[$cacheKey] = $option;
         } else {
             throw new OptionExistsException(
-                "An argument option with $key {$value['command']} {$value[$key]} already exists."
+                "An argument option with $identifier {$option['command']} {$option[$identifier]} already exists."
             );
         }
     }
