@@ -7,14 +7,7 @@ ClearIce PHP Command Line Argument Parser
 [![Latest Stable Version](https://poser.pugx.org/ekowabaka/clearice/version.svg)](https://packagist.org/packages/ekowabaka/clearice)
 [![Total Downloads](https://poser.pugx.org/ekowabaka/clearice/downloads)](https://packagist.org/packages/ekowabaka/clearice)
 
-ClearIce is a library intended to help you supercharge your PHP CLI app development.
-ClearIce helps PHP CLI applications to parse command line arguments which are 
-presented in a style similar to what you would find in most GNU applications. 
-It also allows you to perform simple I/O operations such as outputing text to standard
-output (with the capability of controlling output verbosity levels) and reading input
-from the standard input (with the capability of interactively validating input).
-Another cool feature of ClearIce is that it can automatically generate help
-texts for your apps.
+ClearIce helps PHP CLI applications with the  parsing of command line arguments. Arguements supplied for parsing must be presented in a style similar to what you would find in most GNU applications. Apart from parsing command line input, ClearIce allows you to also perform simple I/O operations such as: outputing text to standard output or standard error (with the added capability of filtering output based on verbosity levels), as well as reading from the standard input (also with the added capability of interactively validating input). Finally, ClearIce can automatically generate help messages for your apps.
 
 Using ClearIce
 --------------
@@ -22,68 +15,54 @@ If you manage your projects dependencies with composer then you can easily requi
 [ekowabaka/clearice](http://packagist.org/packages/ekowabaka/clearice) to have
 clearice included in your application. 
 
-To use clearice to parse command line arguments you can simply put ...
+To use clearice to parse command line arguments you can put ...
 
 ````php
 <?php
 require "vendor/autoload.php";
 
-$io = new \clearice\ConsoleIO();
-$parser = new \clearice\ArgumentParser($io);
+$parser = new \clearice\argparser\ArgumentParser();
+$parser->addOption([
+    'name' => 'input',
+    'short_name' => 'i',
+    'type' => 'string',
+    'required' => true
+]);
+
+$parser->addOption([
+    'name' => 'output',
+    'short_name' => 'o',
+    'type' => 'string',
+    'default' => '/default/output/path'
+]);
+
 $options = $parser->parse($argv);
 print_r($options);
 ````
 
-in a file (which you can for example save as wiki.php). Then executing ...
+... in a file (which you can for example save as wiki.php). Then executing ...
 
     php wiki.php generate --input=/home/james --output=/var/www/cool-wiki
 
-would produce ...
+... would produce ...
 
     Array
     (
-        [input] => /home/james
-        [output] => /var/www/cool-wiki
-        [stand_alones] => Array
-            (
-                [0] => generate
-            )
-
-        [unknowns] => Array
-            (
-                [0] => input
-                [1] => output
-            )
-
+        [input] => /input/path
+        [output] => /output/path
     )
+
+... and so will the following:
+
+    php test.php --input /input/path --output /output/path
+    php test.php -i/input/path -o/output/path
 
 Form more information on how to use clearice you can read through the 
 documentation. Happy programming ...
 
-Features
---------
-A summary of what ClearIce can currently do.
-- Command line argument parsing.
-- Command line argument validation.
-- Support for grouping valid arguments under specific commands.
-- Automatic generation of help messages
-- Automatic instantiation of Command classes for CLI applications (Framework?)
-- Interactive console I/O with input validation.
-- Any other stuff I forgot to mention.
-
-Road Map
---------
-What I hope to see in ClearIce some time in the future:
-
-- Colour output on the terminal.
-- Correction and suggestion of mis-spelled commands.
-- Shell TAB completion of commands and options.
-- Use readline for reading console inputs.
-- A whole lot of awesomeness!
-
 License
 -------
-Copyright (c) 2012-2017 James Ekow Abaka Ainooson
+Copyright (c) 2012-2018 James Ekow Abaka Ainooson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

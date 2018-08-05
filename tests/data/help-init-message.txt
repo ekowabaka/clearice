@@ -3,7 +3,7 @@ A sample or should I say dummy wiki app to help explain ClearIce. This app
 practically does nothing.
 
 Usage:
-  test init [options]..
+  app init [OPTIONS] ...
 
 Options for init command:
   -d, --directory=VALUE      specify the directory to be initialized
@@ -11,7 +11,7 @@ Options for init command:
 
 Options:
   -v, --verbose              display more information
-  -h, --help                 Shows this help message
+  -h, --help                 display this help message
 
 Hope you had a nice time learning about ClearIce. We're pretty sure your
 cli apps would no longer be boring to work with.

@@ -1,22 +1,26 @@
 {
-    "name" : "ekowabaka/clearice",
-    "type" : "library",
-    "description": "A tool to help in the building of CLI apps. Provides command line parsing and simple console I/O interfaces.",
-    "license" : "MIT",
-    "require-dev": {
-        "mikey179/vfsStream" : "@stable",
-        "phpunit/phpunit" : "@stable"
-    },
-    "autoload" : {
-        "psr-4" : {
-            "clearice\\" : "src/"
-        }
-    },
-    "authors": [
-        {
-            "name" : "James Ekow Abaka Ainooson",
-            "email" : "jainooson@gmail.com",
-            "homepage": "http://ekowabaka.me"
-        }
-    ]
+  "name": "ekowabaka/clearice",
+  "type": "library",
+  "description": "A tool to help in the building of CLI apps. Provides command line parsing and simple console I/O interfaces.",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.1"
+  },
+  "require-dev": {
+    "mikey179/vfsStream": "@stable",
+    "phpunit/phpunit": "@stable"
+  },
+  "autoload": {
+    "psr-4": {
+      "clearice\\": "src/",
+      "clearice\\tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "James Ekow Abaka Ainooson",
+      "email": "jainooson@gmail.com",
+      "homepage": "http://ekowabaka.me"
+    }
+  ]
 }

@@ -3,7 +3,7 @@
 /*
  * ClearIce CLI Argument Parser
  * Copyright (c) 2012-2015 James Ekow Abaka Ainooson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -11,31 +11,31 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
- * 
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  * @author James Ainooson <jainooson@gmail.com>
  * @copyright Copyright 2012-2014 James Ekow Abaka Ainooson
  * @license MIT
  */
 
-namespace clearice;
+namespace clearice\io;
 
 /**
- * The ClearIce class forms the entry for the entire library. 
- * All operations of the library are done through this class. Being static, 
+ * The ClearIce class forms the entry for the entire library.
+ * All operations of the library are done through this class. Being static,
  * the class contains sigleton objects with which it performs all its operations.
  */
-class ConsoleIO
+class Io
 {
 
     /**
@@ -83,15 +83,15 @@ class ConsoleIO
      * standard output stream, the standard input stream and the error stream.
      * Being an associative array, this property presents the three streams
      * through its output, input and error keys.
-     * 
+     *
      * @var array
      */
     private $streams = array();
 
     /**
      * The URLs of the various streams used for I/O. This variable stores these
-     * URLs under the input, output and error streams respectively. 
-     * 
+     * URLs under the input, output and error streams respectively.
+     *
      * @see ClearIce::$streams
      * @var array
      */
@@ -100,13 +100,13 @@ class ConsoleIO
         'output' => 'php://stdout',
         'error' => 'php://stderr'
     );
-    
+
     private function cleanParamsAndPrintPrompt($question, $params)
     {
         $prompt = $question;
-        
+
         $params = ['answers' => $params['answers'] ?? [], 'default' => $params['default'] ?? '', 'required' => $params['required'] ?? false];
-        
+
         if (count($params['answers']) > 0) {
             $prompt .= " (" . implode("/", $params['answers']) . ")";
         }
@@ -114,7 +114,7 @@ class ConsoleIO
         $this->output($prompt . " [{$params['default']}]: ");
         return $params;
     }
-    
+
     private function validateResponse($response, $question, $params)
     {
         if ($response == "" && $params['required'] === true) {
@@ -134,33 +134,33 @@ class ConsoleIO
             $this->error("Please provide a valid answer.\n");
             return $this->getResponse($question, $params);
         }
-        
+
     }
 
     /**
      * A function for getting answers to questions from users interractively.
-     * This function takes the question and an optional array of parameters. 
+     * This function takes the question and an optional array of parameters.
      * The question is a regular string and the array provides extra information
      * about the question being asked.
-     * 
+     *
      * The array takes the following parameters
-     * 
-     * **answers**  
+     *
+     * **answers**
      * An array of posible answers to the question. Once this array is available
      * the user would be expected to provide an answer which is specifically in
      * the list. Any other answer would be rejected. The library would print
      * out all the possible answers so the user is aware of which answers
      * are valid.
-     * 
-     * **default**  
+     *
+     * **default**
      * A default answer which should be used in case the user does not supply an
      * answer. The library would make the user aware of this default by placing
      * it in square brackets after the question.
-     * 
-     * **required**  
+     *
+     * **required**
      * If this flag is set, the user would be required to provide an answer. A
      * blank answer would be rejected.
-     * 
+     *
      * @param string $question The question you want to ask
      * @param array  $params   An array of options that this function takes.
      * @return string The response provided by the user to the prompt.
@@ -175,30 +175,30 @@ class ConsoleIO
     /**
      * Set the URL of any of the streams used by ClearIce.
      * ClearIce maintains three different streams for its I/O operations. The
-     * `output` stream is used for output, the `error` stream is used for errors 
+     * `output` stream is used for output, the `error` stream is used for errors
      * and the `input` stream is used for input. The `output` and `error` streams
-     * are represented by the standard output and standard error streams 
-     * respectively. The `input` stream on the other hand is represented by the 
-     * standard input stream by default. 
-     * 
+     * are represented by the standard output and standard error streams
+     * respectively. The `input` stream on the other hand is represented by the
+     * standard input stream by default.
+     *
      * Streams could be any valid PHP stream URL.
      * Example to write all output to a file you could set.
-     * 
+     *
      * ````php
      * <?php
      * ClearIce::setStreamUrl('output', '/path/to/file');
      * ClearIce::setStreamUrl('error', '/path/to/file');
      * ````
-     * 
-     * Once a new URL is set, any old streams are closed and the new one is 
+     *
+     * Once a new URL is set, any old streams are closed and the new one is
      * opened in its place immediately the stream is accessed.
-     * 
-     * @param string $type The type of stream to set a URL for. The value of this 
+     *
+     * @param string $type The type of stream to set a URL for. The value of this
      *                     could either be 'error', 'input' or 'output'.
-     * 
+     *
      * @param string $url  The URL of the stream. Based on the type of stream
      *                     being requested, the right kind of permissions must
-     *                     be set. For instance 
+     *                     be set. For instance
      */
     public function setStreamUrl($type, $url)
     {
@@ -207,10 +207,10 @@ class ConsoleIO
     }
 
     /**
-     * Write a string to the output stream. 
-     * If an output stream is not defined this method writes to the standard 
+     * Write a string to the output stream.
+     * If an output stream is not defined this method writes to the standard
      * output (the console) by default.
-     * 
+     *
      * @param string $string
      */
     public function output($string, $outputLevel = self::OUTPUT_LEVEL_1, $stream = 'output')
@@ -221,10 +221,10 @@ class ConsoleIO
     }
 
     /**
-     * Write a string to the error stream. 
-     * If an error stream is not defined this method writes to the standard 
+     * Write a string to the error stream.
+     * If an error stream is not defined this method writes to the standard
      * error (the console) by default.
-     * 
+     *
      * @param string $string
      */
     public function error($string, $outputLevel = self::OUTPUT_LEVEL_1)
@@ -234,8 +234,8 @@ class ConsoleIO
 
     /**
      * Set the output level of the ClearIce output streams (including the error)
-     * stream. 
-     * 
+     * stream.
+     *
      * @param int $outputLevel
      */
     public function setOutputLevel($outputLevel)
@@ -257,9 +257,9 @@ class ConsoleIO
      * The output level pushed becomes the new output level with which ClearIce
      * would work. The previous level pushed would be automatically restored
      * when the ClearIce::popOutputLevel() method is called. Using the output
-     * level stack gives you a convenient way to change the output level 
+     * level stack gives you a convenient way to change the output level
      * temporarily without having to keep a record of the previous output level.
-     * 
+     *
      * @param int $outputLevel
      */
     public function pushOutputLevel($outputLevel)
@@ -272,9 +272,9 @@ class ConsoleIO
      * Pop the last output level which was pushed unto the output level stack.
      * This restores the previous output level which was active before the last
      * call to the ClearIce::pushOutputLevel() method. Using the output
-     * level stack gives you a convenient way to change the output level 
+     * level stack gives you a convenient way to change the output level
      * temporarily without having to keep a record of the previous output level.
-     * 
+     *
      */
     public function popOutputLevel()
     {
@@ -295,10 +295,10 @@ class ConsoleIO
     }
 
     /**
-     * Reads a line of string from the input stream. 
-     * If an input stream is not defined this method reads an input from the 
+     * Reads a line of string from the input stream.
+     * If an input stream is not defined this method reads an input from the
      * standard input (usually a keyboard) by default.
-     * 
+     *
      * @todo look into using readline for this in cases where it's available
      * @return string
      */
@@ -308,11 +308,11 @@ class ConsoleIO
     }
 
     /**
-     * Returns a stream resource for a given stream type. 
-     * If the stream has not been opened this method opens the stream before 
-     * returning the asociated resource. This ensures that there is only one 
+     * Returns a stream resource for a given stream type.
+     * If the stream has not been opened this method opens the stream before
+     * returning the asociated resource. This ensures that there is only one
      * resource handle to any stream at any given time.
-     * 
+     *
      * @param string $type
      * @return resource
      */

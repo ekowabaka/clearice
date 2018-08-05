@@ -3,8 +3,7 @@ A sample or should I say dummy wiki app to help explain ClearIce. This app
 practically does nothing.
 
 Usage:
-  test.php [input] [options]..
-  test.php [output] [options]..
+  test.php [OPTIONS] ...
 
 Options:
   -i, --input=VALUE          specifies where the input files for the wiki are
@@ -19,7 +18,6 @@ Options:
                              see if the wrapping of help lines actually works.
   -s                         a short option only
   --lone-long-option         a long option only
-  -h, --help                 Shows this help message
 
 Hope you had a nice time learning about ClearIce. We're pretty sure your
 cli apps would no longer be boring to work with.
