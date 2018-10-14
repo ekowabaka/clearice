@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\tests\cases;
+namespace clearice\tests\cases;
 
 use clearice\argparser\ArgumentParser;
 use PHPUnit\Framework\TestCase;
@@ -68,6 +68,11 @@ class ArgumentParserCommandTest extends TestCase
             ['__command' => 'init', 'directory' => '/some/path'],
             $this->argumentParser->parse(["app", "init", "--directory", "/some/path"])
         );
+    }
+
+    public function testCommandlessFlagInvocation()
+    {
+        $this->assertEquals(['__command' => 'generate', 'verbose' => true], $this->argumentParser->parse(['app', 'generate', '--verbose']));
     }
 
     /**

@@ -105,17 +105,21 @@ class ArgumentParser
     }
 
     /**
-     * @param string $key
+     * @param string $command
      * @param string $name
      * @return mixed
      * @throws InvalidArgumentException
      */
-    private function retrieveOptionFromCache(string $key, string $name)
+    private function retrieveOptionFromCache(string $command, string $name)
     {
-        if(!isset($this->optionsCache[$key])) {
+        $key = $command . $name;
+        if(isset($this->optionsCache[$key])) {
+            return $this->optionsCache[$key];
+        } else if(isset($this->optionsCache[$name]) && $this->optionsCache[$name]['command'] == "") {
+            return $this->optionsCache[$name];
+        } else{
             throw new InvalidArgumentException("Unknown option '$name'. Please run with `--help` for more information on valid options.");
         }
-        return $this->optionsCache[$key];
     }
 
     /**
@@ -174,8 +178,7 @@ class ArgumentParser
     {
         $string = substr($arguments[$argPointer], 2);
         preg_match("/(?<name>[a-zA-Z_0-9-]+)(?<equal>=?)(?<value>.*)/", $string, $matches);
-        $key = $command . $matches['name'];
-        $option = $this->retrieveOptionFromCache($key, $matches['name']);
+        $option = $this->retrieveOptionFromCache($command, $matches['name']);
         $value = true;
 
         if (isset($option['type'])) {
@@ -201,8 +204,7 @@ class ArgumentParser
     private function parseShortArgument($command, $arguments, &$argPointer, &$output)
     {
         $argument = $arguments[$argPointer];
-        $key = $command . substr($argument, 1, 1);
-        $option = $this->retrieveOptionFromCache($key, substr($argument, 1, 1));
+        $option = $this->retrieveOptionFromCache($command, substr($argument, 1, 1));
         $value = true;
 
         if (isset($option['type'])) {

@@ -1,7 +1,5 @@
 <?php
-
-namespace ntentan\tests\cases;
-
+namespace clearice\tests\cases;
 
 use clearice\argparser\ArgumentParser;
 use clearice\argparser\HelpMessageGenerator;
