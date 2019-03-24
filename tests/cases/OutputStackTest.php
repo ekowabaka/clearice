@@ -12,7 +12,7 @@ class OutputStackTest extends TestCase
     private $io;
 
 
-    public function setup()
+    public function setUp() : void
     {
         $this->io = new Io();
 

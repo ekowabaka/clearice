@@ -11,7 +11,7 @@ class IoTest extends TestCase
     private $stderr;
     private $stdout;
     private $io;
-    public function setup()
+    public function setUp() : void
     {
 
         vfsStream::setup('std');

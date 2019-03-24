@@ -13,7 +13,7 @@ class HelpMessageGeneratorTest extends TestCase
     private $desciption = "Simple Wiki version 1.0\nA sample or should I say dummy wiki app to help explain ClearIce. This app practically does nothing.";
     private $footer = "Hope you had a nice time learning about ClearIce. We're pretty sure your cli apps would no longer be boring to work with.\n\nReport bugs to bugs@clearice.tld";
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->helpMessageGenerator = new HelpMessageGenerator();
     }

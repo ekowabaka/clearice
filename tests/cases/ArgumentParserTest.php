@@ -13,7 +13,7 @@ class ArgumentParserTest extends TestCase
      */
     private $argumentParser;
 
-    public function setup()
+    public function setUp() : void
     {
         $this->argumentParser = new ArgumentParser();
     }
@@ -40,15 +40,15 @@ class ArgumentParserTest extends TestCase
             "help" => "displays detailed information about everything that happens"
         ]);
 
-        $this->assertEquals(['input' => 'good'], $this->argumentParser->parse(["app", "--input", "good"]));
-        $this->assertEquals(['verbose' => true], $this->argumentParser->parse(["app", "--verbose"]));
-        $this->assertEquals(['output' => 'good'], $this->argumentParser->parse(["app", "--output=good"]));
+        $this->assertEquals(['input' => 'good', '__executed' => 'app'], $this->argumentParser->parse(["app", "--input", "good"]));
+        $this->assertEquals(['verbose' => true, '__executed' => 'app'], $this->argumentParser->parse(["app", "--verbose"]));
+        $this->assertEquals(['output' => 'good', '__executed' => 'app'], $this->argumentParser->parse(["app", "--output=good"]));
 
-        $this->assertEquals(['input' => 'good'], $this->argumentParser->parse(["app", "-i", "good"]));
-        $this->assertEquals(['verbose' => true], $this->argumentParser->parse(["app", "-v"]));
-        $this->assertEquals(['output' => 'good'], $this->argumentParser->parse(["app", "-ogood"]));
+        $this->assertEquals(['input' => 'good', '__executed' => 'app'], $this->argumentParser->parse(["app", "-i", "good"]));
+        $this->assertEquals(['verbose' => true, '__executed' => 'app'], $this->argumentParser->parse(["app", "-v"]));
+        $this->assertEquals(['output' => 'good', '__executed' => 'app'], $this->argumentParser->parse(["app", "-ogood"]));
 
-        $this->assertEquals(['__args' => ['other', 'arguments']], $this->argumentParser->parse(["app", "other", "arguments"]));
+        $this->assertEquals(['__args' => ['other', 'arguments'], '__executed' => 'app'], $this->argumentParser->parse(["app", "other", "arguments"]));
     }
 
     /**
@@ -120,7 +120,7 @@ class ArgumentParserTest extends TestCase
             "help" => "displays detailed information about everything that happens"
         ]);
 
-        $this->assertEquals(["input" => ["/path/1", "/path/2"]], $this->argumentParser->parse(["app", "--input", "/path/1", "--input", "/path/2"]));
+        $this->assertEquals(["input" => ["/path/1", "/path/2"], '__executed' => 'app'], $this->argumentParser->parse(["app", "--input", "/path/1", "--input", "/path/2"]));
     }
 
     public function testDefaults()
@@ -147,8 +147,8 @@ class ArgumentParserTest extends TestCase
             "help" => "displays detailed information about everything that happens"
         ]);
 
-        $this->assertEquals(["input" => "in", "output" => "out"], $this->argumentParser->parse(["app"]));
-        $this->assertEquals(["input" => "in2", "output" => "out"], $this->argumentParser->parse(["app", "-iin2"]));
+        $this->assertEquals(["input" => "in", "output" => "out", '__executed' => 'app'], $this->argumentParser->parse(["app"]));
+        $this->assertEquals(["input" => "in2", "output" => "out", '__executed' => 'app'], $this->argumentParser->parse(["app", "-iin2"]));
     }
 
     public function testGetHelp()
