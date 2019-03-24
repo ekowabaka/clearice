@@ -303,6 +303,7 @@ class ArgumentParser
             $this->maybeShowHelp($parsed);
             $this->validator->validateArguments($this->options, $parsed);
             $this->fillInDefaults($parsed);
+            $parsed['__executed'] = $this->name;
             return $parsed;
         } catch (HelpMessageRequestedException $exception) {
             $this->programControl->quit();
