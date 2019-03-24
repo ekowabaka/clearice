@@ -303,6 +303,7 @@ class ArgumentParser
             $this->maybeShowHelp($parsed);
             $this->validator->validateArguments($this->options, $parsed);
             $this->fillInDefaults($parsed);
+            $parsed['__executed'] = $this->name;
             return $parsed;
         } catch (HelpMessageRequestedException $exception) {
             $this->programControl->quit();
@@ -355,16 +356,5 @@ class ArgumentParser
     {
         $this->validator->validateCommand($command, $this->commands);
         $this->commands[$command['name']] = $command;
-    }
-    
-    /**
-     * Check if a given command is valid.
-     * 
-     * @param string $command
-     * @return boolean
-     */
-    public function isCommandValid($command)
-    {
-        return isset($this->commands[$command]);
     }
 }
