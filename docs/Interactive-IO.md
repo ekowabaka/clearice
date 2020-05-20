@@ -1,8 +1,6 @@
 Interactive I/O with ClearIce
 =============================
-Most console apps require some kind of interactivity, especially in cases where
-command line arguments are not passed. ClearIce contains a collection of
-methods which makes it possible to perform interactive I/O. ClearIce allows
+Most console apps require some kind of interactivity, especially in cases where command line arguments are not passed. ClearIce contains a collection of methods which makes it possible to perform interactive I/O. ClearIce allows
 apps to write output to the standard output with the capability of limiting verbosity. 
 ClearIce also allows reading input from users interactively with the capablity
 of validating the input.

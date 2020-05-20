@@ -1,10 +1,10 @@
 [[_TOC_]]
+
 Parsing Command Line Arguments
 ==============================
-ClearIce started out as a command line argument parser, and it pretty much does quite well doing that. It allows you to define which options and commands 
-are passed to your application. Option styles accepted through ClearIce are quite similar to what you would expect from most GNU style applications. This section gives a general overview of the library, and provides further information on how to use the library by setting it up with command options that receive parser results as an array. This approach provides an easy entry into clearice for pre-existing applications &mdash; without much change to internal code base. 
+ClearIce is a command line argument parser. It allows you to define which options and commands are passed to your application, and parses them for you, complete with error reporting. Option styles accepted through ClearIce are quite similar to what you would expect from most GNU style applications. Arguments passed to your application could be options that your users can set through flags, command names that your users may pass to select a specic mode of  your application, or stand-alone arguments that serve other purposes in your application. This section provides a complete walkthrough of all the features of ClearIce's argument parser.
 
-Option Styles
+Defining Options for your Application
 -------------
 When written out on the command line, long options are preceeded with a double dash `--`, and short options are preceeded with a single dash `-`. This means we can use `-s` for a short option, and `--long-option` for a longer option. Options can have values assigned to them. A long option may take a value through an assignment like this `--long-option=value`, or this `--long-option value`, provided the specific option is configured to take values. A short option configured to take values, on the other hand, may take a value through an assignment like this `-svalue`, or this `-s value`.  Long options and a short options may be synonymous to each other &mdash; `-l` and `--long` can be made to resolve to the same option.
 
@@ -18,12 +18,8 @@ Sometimes your CLI application may have different modes of operation, or may jus
 
 Automated Help
 --------------
-Another feature this tool has is the ability to generate a help listing for your 
-application. This means its possible for your users can type `myapp --help` or 
-`myapp -h` and get a help listing. For cli apps which use commands, the help
-system can also provide help messages for each command defined in the application.
-Although you'll have to provide some of the content for all the help magic to happen,
-the tool helps format and display your content in a very consistent form.
+Another feature ClearIce provides is the automatic generation of a help listing for your application. This means its possible for your users can type `myapp --help` or 
+`myapp -h` and get a help listing. For cli apps which use command groups, the help system can also provide help messages for each command defined in the application. Although you'll have to provide some of the content for all the help magic to happen, the tool helps format and display your content in a very consistent form.
 
 Adding Options
 --------------
@@ -314,55 +310,6 @@ ClearIce::addOptions(
     )
 );
 ````
-
-### Automatically Executing Commands (ClearIce CLI Framework?)
-ClearIce provides an interface which makes it possible to associate Classes with
-commands. With such an association, classes could be instantiated and a specific method executed
-to implement the actions of the command. This action is performed for you automatically
-by ClearIce. 
-
-Let us assume we have written a cool version control system (called coolver)
-and we want to let it have an initialize command. We could write a class called
-`InitCommand` and have it implement the `\clearice\Command` interface.
-
-````php
-<?php
-class InitCommand implements \clearice\Command
-{
-    public function run($options)
-    {
-        \\ Work some initialization magic here
-    }
-}
-````
-
-Our app's entry could be in a file called `coolver` which might look something
-close to this.
-
-````php
-#!/usr/bin/env php
-<?php
-
-require 'vendor/autoload.php';
-
-use \clearice\ClearIce;
-
-ClearIce::addCommands(
-    array(
-        'command' => 'init',
-        'help' => 'initialize a new coolver repository',
-        'class' => 'InitCommand'
-    );
-);
-
-ClearIce::parse();
-````
-
-Now when we execute our `coolver` app with the `init` command (`coolver init`), 
-an instance of the `InitCommand` class would be created and the `run` method 
-would be executed. The `run` method would receive the options parsed by ClearIce 
-as the `$options` argument.
-
 
 Stand Alone Arguments
 ---------------------
