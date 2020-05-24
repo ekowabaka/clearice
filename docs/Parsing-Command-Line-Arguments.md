@@ -2,7 +2,19 @@
 
 Parsing Command Line Arguments
 ==============================
-ClearIce is a command line argument parser. It allows you to define which options and commands are passed to your application, and parses them for you, complete with error reporting. Option styles accepted through ClearIce are quite similar to what you would expect from most GNU style applications. Arguments passed to your application could be options that your users can set through flags, command names that your users may pass to select a specic mode of  your application, or stand-alone arguments that serve other purposes in your application. This section provides a complete walkthrough of all the features of ClearIce's argument parser.
+ClearIce is a command line argument parser. You can define which options and commands are passed to your application, and ClearIce parses them for you, complete with error reporting. Option styles accepted through ClearIce are quite similar to what you would expect from most GNU style applications. Arguments passed to your application could be options that your users can set through flags, command names that your users may pass to select a specific mode of  your application, or stand-alone arguments that serve other purposes in your application. This section provides a complete walk-through of all the features of ClearIce's argument parser.
+
+The ArgumentParser class
+-------------------------
+You can access the argument parser component through the ArgumentParser class.
+
+````php
+<?php
+
+$argumentParser = new \clearice\argparser\ArgumentParser();
+
+````
+
 
 Defining Options for your Application
 -------------
