@@ -5,7 +5,7 @@ use clearice\utils\ProgramControl;
 
 
 /**
- * Class ArgumentParser
+ * For parsing arguments in ClearIce
  *
  * @package clearice\argparser
  */
@@ -74,10 +74,15 @@ class ArgumentParser
      */
     private $helpEnabled = false;
 
-    public function __construct($helpWriter = null, $programControl = null)
+    /**
+     * ArgumentParser constructor.
+     * @param null $helpWriter
+     * @param null $programControl
+     */
+    public function __construct($validator = null, $helpWriter = null)
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
-        $this->programControl = $programControl ?? new ProgramControl();
+        //$this->programControl = $programControl ?? new ProgramControl();
         $this->validator = new Validator();
     }
 

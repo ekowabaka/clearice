@@ -6,7 +6,7 @@ ClearIce is a command line argument parser. You can define which options and com
 
 The ArgumentParser class
 -------------------------
-You can access the argument parser component through the ArgumentParser class.
+You can access the argument parser through the `clearice\argparser\ArgumentParser` class.
 
 ````php
 <?php
@@ -14,6 +14,50 @@ You can access the argument parser component through the ArgumentParser class.
 $argumentParser = new \clearice\argparser\ArgumentParser();
 
 ````
+
+
+
+Adding options to the ArgumentParser
+------------------------------------
+The `addOption` method of the `ArgumentParser` class allows you to add an option for parsing. Information about options are passed as a single structured array to the method. Fields in the structured array define the properties of the option.
+
+````php
+use clearice\argparser\ArgumentParser;
+
+$argumentParser = new ArgumentParser();
+$argumentParser->addOption([
+    'short_name' => 'o',
+    'name' => 'output',
+    'type' => 'string',
+    'help' => 'specifies output directory of wiki'
+]);
+
+````
+
+The structured array has the following keys:
+
+* `name` : this specifies the name of the option. It is also used is also the flag that should be passed so this option can be activated. As such, the name cannot contain spaces or wild card characters. The parser only recognizes the characters 0-9, a-z and A-Z. It also recognizes the hyphen character `-` and the period character `.`.
+* `short_name` : you can use this to add a short form of an existing option, or it could be an option standing on its own. It acts as a short option only when the `name` key is set.
+* `type` : is either true or false to specify whether the option takes a 
+  value or not. This option is very critical for short options which take values.
+  Once a short option is specified as having a value, all other characters which
+  follow the option character are parsed as the option's value even if they may
+  represent valid options.
+
+* `help` : is a line of text that is rendered as part of the help text in the
+  automatically generated help text.
+
+* `multi` : is a boolean to specify whether this option can take multiple values.
+   When `multi` is true every option which is passed multiple times on the
+   command line would be returned by ClearIce in an array. If multi is false
+   however, the value of the last option passed would be returned.
+
+When written out on the command line, long options are preceeded with a double dash `--`, and short options are preceeded with a single dash `-`. This means we can use `-s` for a short option, and `--long-option` for a longer option. Options can have values assigned to them. A long option may take a value through an assignment like this `--long-option=value`, or this `--long-option value`, provided the specific option is configured to take values. A short option configured to take values, on the other hand, may take a value through an assignment like this `-svalue`, or this `-s value`.  Long options and a short options may be synonymous to each other &mdash; `-l` and `--long` can be made to resolve to the same option.
+
+ClearIce presents a convenience feature, where a group of short options can be specified preceeded by a single dash. For example if `a`, `b` and `c` are all valid options that do not take values, passing `-abc` would be equivalent to passing `-a -b -c`.
+
+Arguments that are not preceeded by either a single dash or a double dash would be returned as stand alone arguments provided they do not follow options which accept values. In cases where stand alone arguments are not absorbed as values, ClearIce would return such arguments and the application would be required to deal with them.
+
 
 
 Defining Options for your Application
