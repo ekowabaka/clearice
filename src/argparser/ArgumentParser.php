@@ -76,14 +76,14 @@ class ArgumentParser
 
     /**
      * ArgumentParser constructor.
-     * @param null $helpWriter
-     * @param null $programControl
+     *
+     * @param ValidatorInterface $validator
+     * @param HelpGeneratorInterface $helpWriter
      */
-    public function __construct($validator = null, $helpWriter = null)
+    public function __construct(ValidatorInterface $validator = null, HelpGeneratorInterface $helpWriter = null)
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
-        //$this->programControl = $programControl ?? new ProgramControl();
-        $this->validator = new Validator();
+        $this->validator = $validator ?? new Validator();
     }
 
     /**
@@ -311,10 +311,10 @@ class ArgumentParser
             $parsed['__executed'] = $this->name;
             return $parsed;
         } catch (HelpMessageRequestedException $exception) {
-            $this->programControl->quit();
+            exit(0);
         } catch (InvalidArgumentException $exception) {
             print $exception->getMessage() . PHP_EOL;
-            $this->programControl->quit();
+            exit(128);
         }
     }
 
