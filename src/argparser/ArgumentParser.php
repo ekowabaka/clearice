@@ -1,7 +1,6 @@
 <?php
 
 namespace clearice\argparser;
-use clearice\utils\ProgramControl;
 
 
 /**
@@ -63,10 +62,10 @@ class ArgumentParser
     private $validator;
 
     /**
-     * An instance of the ProgramControl class which is responsible for terminating the application.
-     * @var ProgramControl
+     * A reference to a function to be called for exitting the entire application.
+     * @var callable
      */
-    private $programControl;
+    private $exitFunction;
 
     /**
      * Flag raised when help has been enabled.
@@ -84,6 +83,7 @@ class ArgumentParser
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
         $this->validator = $validator ?? new Validator();
+        $this->exitFunction = function ($code) { exit($code); };
     }
 
     /**
@@ -277,7 +277,6 @@ class ArgumentParser
 
     /**
      * @param $parsed
-     * @throws InvalidArgumentException
      */
     private function fillInDefaults(&$parsed)
     {
@@ -286,6 +285,11 @@ class ArgumentParser
                 $parsed[$option['name']] = $option['default'];
             }
         }
+    }
+
+    public function setExitFunction(callable $exit)
+    {
+        $this->exitFunction = $exit;
     }
 
     /**
@@ -311,10 +315,10 @@ class ArgumentParser
             $parsed['__executed'] = $this->name;
             return $parsed;
         } catch (HelpMessageRequestedException $exception) {
-            exit(0);
+            $this->exitFunction(0);
         } catch (InvalidArgumentException $exception) {
             print $exception->getMessage() . PHP_EOL;
-            exit(128);
+            $this->exitFunction(1024);
         }
     }
 
