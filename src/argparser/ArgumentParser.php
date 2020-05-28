@@ -265,6 +265,10 @@ class ArgumentParser
             print $this->getHelpMessage($output['__command'] ?? null);
             throw new HelpMessageRequestedException();
         }
+
+        if(isset($output['__command']) && $output['__command'] == 'help' && $this->helpEnabled) {
+            print $this->getHelpMessage($output['__args'][0] ?? null);
+        }
     }
 
     private function parseCommand($arguments, &$argPointer, &$output)
@@ -287,7 +291,13 @@ class ArgumentParser
         }
     }
 
-    public function setExitFunction(callable $exit)
+    /**
+     * A function called to exit the application whenever there's a parsing error or after requested help has been
+     * displayed/
+     *
+     * @param callable $exit
+     */
+    public function setExitCallback(callable $exit)
     {
         $this->exitFunction = $exit;
     }
@@ -315,10 +325,10 @@ class ArgumentParser
             $parsed['__executed'] = $this->name;
             return $parsed;
         } catch (HelpMessageRequestedException $exception) {
-            $this->exitFunction(0);
+            ($this->exitFunction)(0);
         } catch (InvalidArgumentException $exception) {
             print $exception->getMessage() . PHP_EOL;
-            $this->exitFunction(1024);
+            ($this->exitFunction)(1024);
         }
     }
 
@@ -337,13 +347,24 @@ class ArgumentParser
      */
     public function enableHelp(string $description = null, string $footer = null, string $name = null) : void
     {
-        $this->name = $name;
+        global $argv;
+        $this->name = $name ?? $argv[0];
         $this->description = $description;
         $this->footer = $footer;
         $this->helpEnabled = true;
-        $this->addOption(['name' => 'help', 'short_name' => 'h', 'help' => "display this help message"]);
-        foreach($this->commands as $command) {
-            $this->addOption(['name' => 'help', 'help' => 'display this help message', 'command' => $command['name']]);
+        $this->addOption([
+            'name' => 'help',
+            'short_name' => 'h', 'help' => "display this help message"
+        ]);
+        if($this->commands) {
+            $this->addCommand(['name' => 'help', 'help' => "display help for any command\nUsage: {$this->name} help [command]"]);
+            foreach($this->commands as $command) {
+                $this->addOption([
+                    'name' => 'help',
+                    'help' => 'display this help message',
+                    'command' => $command['name']
+                ]);
+            }
         }
     }
 
