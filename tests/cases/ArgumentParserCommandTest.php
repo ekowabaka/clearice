@@ -2,6 +2,9 @@
 namespace clearice\tests\cases;
 
 use clearice\argparser\ArgumentParser;
+use clearice\argparser\CommandExistsException;
+use clearice\argparser\InvalidArgumentDescriptionException;
+use clearice\argparser\UnknownCommandException;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentParserCommandTest extends TestCase
@@ -78,27 +81,21 @@ class ArgumentParserCommandTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \clearice\argparser\UnknownCommandException
-     */
     public function testUnknownCommandException()
     {
+        $this->expectException(UnknownCommandException::class);
         $this->argumentParser->addOption(['command' => 'download', 'name' => 'url']);
     }
 
-    /**
-     * @expectedException \clearice\argparser\InvalidArgumentDescriptionException
-     */
     public function testInvalidArgumentDescriptionException()
     {
+        $this->expectException(InvalidArgumentDescriptionException::class);
         $this->argumentParser->addCommand(['help' => 'I forgot the name or mis-spelled it']);
     }
 
-    /**
-     * @expectedException \clearice\argparser\CommandExistsException
-     */
     public function testCommandExistsException()
     {
+        $this->expectException(CommandExistsException::class);
         $this->argumentParser->addCommand(['name' => 'init']);
     }
 }

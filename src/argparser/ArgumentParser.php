@@ -79,7 +79,7 @@ class ArgumentParser
      * @param ValidatorInterface $validator
      * @param HelpGeneratorInterface $helpWriter
      */
-    public function __construct(ValidatorInterface $validator = null, HelpGeneratorInterface $helpWriter = null)
+    public function __construct(HelpGeneratorInterface $helpWriter = null, ValidatorInterface $validator = null)
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
         $this->validator = $validator ?? new Validator();
