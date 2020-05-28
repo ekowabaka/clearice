@@ -5,7 +5,13 @@ namespace clearice\argparser;
 
 class Validator implements ValidatorInterface
 {
-    const VALID_OPTION_KEYS = ['name', 'short_name', 'type', 'help', 'repeats', 'default', 'value', 'required'];
+    /**
+     * Supported keys expected in the option array. This is used for validation./
+     */
+    const VALID_OPTION_KEYS = [
+        'name', 'short_name', 'type', 'help', 'repeats',
+        'default', 'value', 'required', 'command'
+    ];
 
     /**
      * @param $options
@@ -39,7 +45,7 @@ class Validator implements ValidatorInterface
      */
     public function validateOption($option, $commands)
     {
-        if (!isset($option['name']) || !isset($option['short_name'])) {
+        if (!(isset($option['name']) || isset($option['short_name']))) {
             throw new InvalidArgumentDescriptionException("An option must have either a name, a short_name or both.");
         }
         $name = $option['name'] ?? $option['short_name'];
