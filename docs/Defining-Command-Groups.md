@@ -9,10 +9,6 @@ Just as with options, commands that are to be parsed by ClearIce need to be expl
 Supposing we wanted to extend our wiki script so it can act both as a wiki generator and a web server. We can use commands to tell the application which mode to run in. One way to implement this in our wiki would be to add `generate` and `serve` as two new commands. We can add the following code to our existing example:
 
 ````php
-<?php
-
-require "vendor/autoload.php";
-
 use clearice\argparser\ArgumentParser;
 
 $argumentParser = new ArgumentParser();
@@ -27,7 +23,6 @@ $argumentParser->addCommand([
     ]);
 
 $argumentParser->parse();
-
 ````
 
 Once this is done, executing ...
@@ -42,57 +37,43 @@ would produce the following in the output.
         [__executed] => commands.php
     )
 
-Once commands are defined, options can be assigned. So far, our example has been based on generating wikis. As such most of the options we have previously defined can be assigned to the generate command. We can do this by modifying our `addOption` calls by specifying the command for each option.
+Once commands are defined, options can be assigned to these commands. For now, our example has been based on generating wikis, so most of the options we have previously defined can be assigned to the generate command. We can do this by modifying our `addOption` calls and specifying the command for each option.
 
 ````php
-// Add options
-ClearIce::addOptions(
-    array(
-        'short' => 'i',
-        'long' => 'input',
-        'has_value' => true,
-        'help' => "specifies where the input files for the wiki are found.",
-        'command' => 'generate'
-    ),
-    array(
-        'short' => 'o',
-        'long' => 'output',
-        'has_value' => true,
-        "help" => "specifies where the wiki should be written to",
-        'command' => 'generate'
-    ),
-    array(
-        'short' => 'v',
-        'long' => 'verbose',
-        "help" => "displays detailed information about everything that happens"
-    ),
-    array(
-        'short' => 'x',
-        'long' => 'create-default-index',
-        "help" => "creates a default index page which lists all the wiki pages in a sorted order",
-        'command' => 'generate'
-    )
-);
+$argumentParser->addOption([
+    'command' => 'generate',
+    'short_name' => 'o',
+    'name' => 'output',
+    'type' => 'string',
+    'help' => 'specifies output directory of wiki',
+    'value' => 'DIRECTORY',
+    'required' => true
+]);
+$argumentParser->addOption([
+    'command' => 'generate',
+    'short_name' => 'i',
+    'name' => 'input',
+    'type' => 'string',
+    'help' => 'specifies input sources for the wiki',
+    'default' => '.',
+]);
+$argumentParser->addOption
 ````
 
-Note that we have added the `generate` command to the `input`, `output` and 
-`create-default-index` option specifications. This means that these options
-would only be available when the generate command is executed. We can now go 
-ahead to add a port option to the `serve` command.
+Note that we have added the `generate` command to the `input` and `output` option definitions. This means that these options would only be available when the generate command is executed. We can now go ahead to add a `port` option to the `serve` command.
 
 ````php
-ClearIce::addOptions(
-    array(
-        'short' => 'p',
-        'long' => 'port',
-        'has_value' => true,
-        'help' => "specifies the port on which to run the server",
-        'command' => 'serve'
-    )
-);
+$argumentParser->addOption([
+    'command' => 'serve',
+    'short_name' => 'p',
+    'name' => 'port',
+    'type' => 'number',
+    'value' => 'PORT',
+    'help' => "specifies the port on which to run the server",
+]);
 ````
 
-
+Any options added to the parser without a `command` value set can be passed accross all commands.
 
 
 

@@ -51,7 +51,7 @@ The structured array for defining the option can have the keys described in the 
 |`repeats`      | This value is set to a boolean that specifies whether the option can be passed multiple times. When `repeats` is true and an option is passed multiple times, it's parsed output will be an array. |
 |`default`      | The default value of the option when none is supplied. |
 |`value`        | When displaying help for options, this value is used as an example value for options that take values. In case this is not supplied, a default value of `VALUE` is used instead|
-|`required`     | Ensures that this option is always passed as part of the arguments. In the cases where an option has a default value, this key's value becomes unecessary.|
+|`required`     | Ensures that this option is always passed as part of the arguments. An error message is displayed, and the application is terminet when a required option is ommited. Whenever the required option is attached to a command group, the enforcement of the option takes place only when the command is activated. In the cases where an option has a default value, this key's value becomes unecessary.|
 
 Whenever an array with invalid values is passed to the `addOption` method, an exception, `clearice\argparser\InvalidArgumentDescriptionException` is thrown.
 
@@ -104,6 +104,14 @@ The following shell commands will also return the same output.
     php wiki.php -isource -odestination
     php wiki.php --input=source --output=destination
 
+#### Validation
+Due to the validation of the required `output` option, if you should pass any set of arguments that fails to specify it, your script will be terminated, and the following output will be displayed.
+
+    Values for the following options are required: output.
+    Pass the --help option for more information about possible options.
+
+
+#### More on Parser output
 You may have noticed the `__executed` key that was returned as part of the output. This key contains the name of the php script that invoked the parser. Other keys that may be returned include the `__args` key, which will contain an array of free standing arguments &mdash; useful for collecting filenames, especially since the terminal will expand any wildcards &mdask; and the `__command` which will contains any commands that were identified (more on that later). ClearIce doesn't consider stand alone options to be errors; you are expected to deal with them as you please.
 
 As an example of the `__args` key, executing this ...
@@ -129,6 +137,8 @@ Will yeild an output containing ...
 
 
 There's a convenience feature in ClearIce that allows you to preceed a group of short options with a single dash. For example if `a`, `b` and `c` are all valid options that do not take values, passing `-abc` would be equivalent to passing `-a -b -c`.
+
+
 
 
 

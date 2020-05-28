@@ -1,18 +1,25 @@
 Interactive I/O with ClearIce
 =============================
-Most console apps require some kind of interactivity, especially in cases where command line arguments are not passed. ClearIce contains a collection of methods which makes it possible to perform interactive I/O. ClearIce allows
-apps to write output to the standard output with the capability of limiting verbosity. 
-ClearIce also allows reading input from users interactively with the capablity
+Most console apps require some kind of interactivity, especially in cases where command line arguments are not passed. ClearIce makes it possible to perform interactive I/O. You can write output to the standard output (or any other output stream) with the capability of limiting verbosity. You are also able to read input from users interactively with the capablity
 of validating the input.
+
+All IO operations in ClearIce are performed through the `clearice\io\Io` class.
+
+````php
+use clearice\io\Io;
+
+$io = new Io();
+````
 
 Producing Output
 ----------------
-Clearice provides the `ClearIce::output()` method which writes text to an output
+Clearice's `Io` class provides an `output()` method which writes text to an output
 stream (standard output by default). For example to print the legendary "Hello World" to 
 screen you could just write:
 
 ````php
-ClearIce::output('Hello World');
+$io = new Io();
+$io->output("Hello World!");
 ````
 
 The `ClearIce::output()` method takes a second parameter which specifies an 
