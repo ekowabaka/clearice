@@ -3,7 +3,7 @@
 namespace clearice\argparser;
 
 
-class HelpMessageGenerator
+class HelpMessageGenerator implements HelpGeneratorInterface
 {
     public function generate($name, $command, $options, $description, $footer)
     {

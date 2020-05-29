@@ -7,14 +7,18 @@ ClearIce PHP Command Line Argument Parser
 [![Latest Stable Version](https://poser.pugx.org/ekowabaka/clearice/version.svg)](https://packagist.org/packages/ekowabaka/clearice)
 [![Total Downloads](https://poser.pugx.org/ekowabaka/clearice/downloads)](https://packagist.org/packages/ekowabaka/clearice)
 
-ClearIce helps PHP CLI applications with the  parsing of command line arguments. Arguements supplied for parsing must be presented in a style similar to what you would find in most GNU applications. Apart from parsing command line input, ClearIce allows you to also perform simple I/O operations such as: outputing text to standard output or standard error (with the added capability of filtering output based on verbosity levels), as well as reading from the standard input (also with the added capability of interactively validating input). Finally, ClearIce can automatically generate help messages for your apps.
+ClearIce helps PHP CLI applications by providing tools for parsing command line arguments, and providing iteractive I/O. Arguements supplied at the command line, or through a shell are validated and supplied to your script in a better organized format, with the added bonus of automatically generated help. Additionally, ClearIce allows you to interactively receive and validate inputs to your scripts from the console.
 
-Using ClearIce
+Installing 
+----------
+ClearIce is best installed through composer.
+    
+    composer require ekowabaka/clearice
+    
+If for some reason you don't want to use composer, you can simply include all the needed clearice scripts where you need them. ClearIce has no dependencies other than php having a version greater than or equal to 7.1. 
+
+Parsing Arguments with ClearICE
 --------------
-If you manage your projects dependencies with composer then you can easily require
-[ekowabaka/clearice](http://packagist.org/packages/ekowabaka/clearice) to have
-clearice included in your application. 
-
 To use clearice to parse command line arguments you can put ...
 
 ````php
@@ -50,6 +54,7 @@ print_r($options);
     (
         [input] => /input/path
         [output] => /output/path
+        [__executed] => wiki.php
     )
 
 ... and so will the following:
@@ -57,12 +62,36 @@ print_r($options);
     php test.php --input /input/path --output /output/path
     php test.php -i/input/path -o/output/path
 
-Form more information on how to use clearice you can read through the 
-documentation. Happy programming ...
+Interactive I/O with ClearICE
+--------------
+
+And for an example of interactive I/O, entering this 
+
+````php
+use clearice\io\Io;
+$io = new Io();
+$name = $io->getResponse('What is your name', ['default' => 'No Name']);
+
+$direction = $io->getResponse("Okay $name, where do you want to go", 
+    [
+        'required' => true,
+        'answers' => array('north', 'south', 'east', 'west')
+    ]
+); 
+````
+
+could lead to an interaction like this:
+
+    What is your name [No Name]: ⏎
+    Okay No Name, where do you want to go (north/south/east/west) []: ⏎
+    A value is required.
+    Okay No Name, where do you want to go (north/south/east/west) []: home⏎
+    Please provide a valid answer.
+    Okay No Name, where do you want to go (north/south/east/west) []: 
 
 License
 -------
-Copyright (c) 2012-2018 James Ekow Abaka Ainooson
+Copyright (c) 2012-2020 James Ekow Abaka Ainooson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

@@ -10,8 +10,6 @@ init                initialize a directory with the source files of the wiki
 generate            generate the data for a given directory and store it
                     somewhere cool
 export              export wiki to a different format
-help                display help for any command
-                    Usage: app help [command]
 
 Options:
   -v, --verbose              display more information

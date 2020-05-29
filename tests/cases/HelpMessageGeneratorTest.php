@@ -128,7 +128,7 @@ class HelpMessageGeneratorTest extends TestCase
             ]
         ];
         $message = $this->helpMessageGenerator->generate("app", "", ['options' => $options, 'commands' => $commands], $this->desciption, $this->footer);
-        $this->assertEquals(file_get_contents('tests/data/help-with-commands.txt'), $message);
+        $this->assertEquals(file_get_contents('tests/data/help-with-commands-2.txt'), $message);
         $message = $this->helpMessageGenerator->generate("app", "init", ['options' => $options, 'commands' => $commands], $this->desciption, $this->footer);
         $this->assertEquals(file_get_contents('tests/data/help-init-message.txt'), $message);
     }

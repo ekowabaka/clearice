@@ -3,6 +3,9 @@ namespace clearice\tests\cases;
 
 use clearice\argparser\ArgumentParser;
 use clearice\argparser\HelpMessageGenerator;
+use clearice\argparser\InvalidArgumentDescriptionException;
+use clearice\argparser\InvalidValueException;
+use clearice\argparser\OptionExistsException;
 use clearice\utils\ProgramControl;
 use PHPUnit\Framework\TestCase;
 
@@ -57,42 +60,36 @@ class ArgumentParserTest extends TestCase
      */
     public function testShortOptionExistsException()
     {
+        $this->expectException(OptionExistsException::class);
+        $this->expectExceptionMessage("An argument option with short_name  i already exists.");
         $this->argumentParser->addOption(['short_name' => 'i', 'name' => 'input']);
         $this->argumentParser->addOption(['short_name' => 'i', 'name' => 'index']);
     }
 
-    /**
-     * @expectedException \clearice\argparser\OptionExistsException
-     * @expectedExceptionMessage An argument option with name  input already exists.
-     */
     public function testLongOptionExistsException()
     {
+        $this->expectException(OptionExistsException::class);
+        $this->expectExceptionMessage("An argument option with name  input already exists.");
         $this->argumentParser->addOption(['short_name' => 'i', 'name' => 'input']);
         $this->argumentParser->addOption(['name' => 'input']);
     }
 
-    /**
-     * @expectedException \clearice\argparser\InvalidArgumentDescriptionException
-     */
     public function testNoNameException()
     {
+        $this->expectException(InvalidArgumentDescriptionException::class);
         $this->argumentParser->addOption(['help' => 'Does not have a valid name']);
     }
 
-    /**
-     * @expectedException \clearice\argparser\InvalidValueException
-     */
     public function testInvalidValueException()
     {
+        $this->expectException(InvalidValueException::class);
         $this->argumentParser->addOption(['name' => 'input', 'type' => 'string']);
         $this->argumentParser->parse(["add", "--input"]);
     }
 
-    /**
-     * @expectedException \clearice\argparser\InvalidValueException
-     */
     public function testInvalidValueException2()
     {
+        $this->expectException(InvalidValueException::class);
         $this->argumentParser->addOption(['name' => 'input', 'short_name' => 'i', 'type' => 'string']);
         $this->argumentParser->parse(["add", "-i"]);
     }
@@ -211,10 +208,13 @@ class ArgumentParserTest extends TestCase
     {
         $helpGeneratorMock = $this->createMock(HelpMessageGenerator::class);
         $helpGeneratorMock->expects($this->once())->method('generate');
-        $programControlMock = $this->createMock(ProgramControl::class);
-        $programControlMock->expects($this->once())->method('quit');
+        //$programControlMock = $this->createMock(ProgramControl::class);
+        //$programControlMock->expects($this->once())->method('quit');
 
-        $this->argumentParser = new ArgumentParser($helpGeneratorMock, $programControlMock);
+        $this->argumentParser = new ArgumentParser($helpGeneratorMock);
+        $this->argumentParser->setExitCallback(function($code) {
+            $this->assertEquals(0, $code);
+        });
 
         $this->argumentParser->addOption([
             'short_name' => 'i',
