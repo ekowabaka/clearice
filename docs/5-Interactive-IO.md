@@ -1,5 +1,9 @@
 Interactive I/O with ClearIce
 =============================
+
+[[_TOC_]]
+
+
 Most console apps require some kind of interactivity, especially in cases where command line arguments are not passed. ClearIce makes it possible to perform interactive I/O. You can write output to the standard output (or any other output stream) with the capability of limiting verbosity. You are also able to read input from users interactively with the capablity
 of validating the input.
 

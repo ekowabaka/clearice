@@ -1,7 +1,9 @@
-[[_TOC_]]
 
 Parsing Command Line Arguments
 ==============================
+
+[[_TOC_]]
+
 ClearIce is a command line argument parser for PHP command line applications. It allows you to define which options and commands are passed to your application, and it parses them for you, complete with error reporting. Option styles accepted through ClearIce are quite similar to what you would expect from most GNU style applications. Arguments passed to your application could be commands that your users may use to select specific modes in your application, options that your users can pass through flags, or stand-alone arguments that serve other purposes in your application. 
 
 The ArgumentParser class
@@ -104,14 +106,14 @@ The following shell commands will also return the same output.
     php wiki.php -isource -odestination
     php wiki.php --input=source --output=destination
 
-#### Validation
+### Validation
 Due to the validation of the required `output` option, if you should pass any set of arguments that fails to specify it, your script will be terminated, and the following output will be displayed.
 
     Values for the following options are required: output.
     Pass the --help option for more information about possible options.
 
 
-#### More on Parser output
+## More on Parser output
 You may have noticed the `__executed` key that was returned as part of the output. This key contains the name of the php script that invoked the parser. Other keys that may be returned include the `__args` key, which will contain an array of free standing arguments &mdash; useful for collecting filenames, especially since the terminal will expand any wildcards &mdask; and the `__command` which will contains any commands that were identified (more on that later). ClearIce doesn't consider stand alone options to be errors; you are expected to deal with them as you please.
 
 As an example of the `__args` key, executing this ...
