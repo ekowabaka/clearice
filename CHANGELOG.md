@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+### Fixed
+- Default values for options without commands are now returned when a command is passed a an argument.
+
 ## v3.1.0 - 2020-05-28
 ### Added
 - An extensive amount of documentation, explaining how ClearIce works.
