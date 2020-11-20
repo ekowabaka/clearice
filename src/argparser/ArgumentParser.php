@@ -285,7 +285,7 @@ class ArgumentParser
     private function fillInDefaults(&$parsed)
     {
         foreach($this->options as $option) {
-            if(!isset($parsed[$option['name']]) && isset($option['default']) && $option['command'] == ($parsed['__command'] ?? "")) {
+            if(!isset($parsed[$option['name']]) && isset($option['default']) && ($option['command'] == ($parsed['__command'] ?? "") || $option['command'] == '')) {
                 $parsed[$option['name']] = $option['default'];
             }
         }

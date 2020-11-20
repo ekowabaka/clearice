@@ -1,5 +1,8 @@
 Defining Command Groups
 =======================
+
+[[_TOC_]]
+
 Sometimes your CLI application may have different modes of operation, or it may just perform different related functions. In such cases, you might decide to keep a single interface with multiple command modes. Think about `git` and all its commands like `git init`  and `git commit`, and you should have an idea of what we're working towards.  
 
 Different modes or commands may require their own set of options. ClearIce deals with this through its command groups feature. When command groups are defined, the argument parser determines the required command from the arguments and parses only options defined for the said command. While in command mode, options could be defined for given commands, or they could be defined to run for all or no commands.
