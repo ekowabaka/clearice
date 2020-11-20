@@ -1,5 +1,6 @@
 Full Example Listing
 ====================
+Here's a full example listing that demonstrates the typical usage of clearice. Feel free to copy and modify for your own use.
 
 ````php
 <?php
