@@ -1,8 +1,11 @@
 # CHANGELOG
 
-## Unreleased
+## v3.1.1 - 2020-11-19
 ### Fixed
 - Default values for options without commands are now returned when a command is passed a an argument.
+
+### Updated
+- Improved documentation and user guide
 
 ## v3.1.0 - 2020-05-28
 ### Added
