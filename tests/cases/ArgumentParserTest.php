@@ -6,7 +6,6 @@ use clearice\argparser\HelpMessageGenerator;
 use clearice\argparser\InvalidArgumentDescriptionException;
 use clearice\argparser\InvalidValueException;
 use clearice\argparser\OptionExistsException;
-use clearice\utils\ProgramControl;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentParserTest extends TestCase
