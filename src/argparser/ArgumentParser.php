@@ -148,11 +148,15 @@ class ArgumentParser
     public function addOption(array $option): void
     {
         $this->validator->validateOption($option, $this->commands);
-        $option['command'] = $option['command'] ?? '';
         $option['repeats'] = $option['repeats'] ?? false;
-        $this->options[] = $option;
-        $this->addToOptionCache('name', $option);
-        $this->addToOptionCache('short_name', $option);
+        // Save a copy of the original command definition, so it can be spread out if it's an array.
+        $commands = $option['command'] ?? '';
+        foreach(is_array($commands) ? $commands : [$commands] as $command) {
+            $option['command'] = $command;
+            $this->options[] = $option;
+            $this->addToOptionCache('name', $option);
+            $this->addToOptionCache('short_name', $option);
+        }
     }
 
     /**
@@ -333,7 +337,7 @@ class ArgumentParser
     }
 
     /**
-     * Enables help messages so they show automatically.
+     * Enables help messages so they are shown automatically when the appropriate argument (`--help` or `help`) is passed.
      * This method also allows you to optionally pass the name of the application, a description header for the help 
      * message and a footer.
      *
@@ -357,7 +361,7 @@ class ArgumentParser
             'short_name' => 'h', 'help' => "display this help message"
         ]);
         if($this->commands) {
-            $this->addCommand(['name' => 'help', 'help' => "display help for any command\nUsage: {$this->name} help [command]"]);
+            $this->addCommand(['name' => 'help', 'help' => "display help for any command. Usage: {$this->name} help [command]"]);
             foreach($this->commands as $command) {
                 $this->addOption([
                     'name' => 'help',

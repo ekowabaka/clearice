@@ -1,4 +1,10 @@
 # CHANGELOG
+## Unreleased
+### Added
+- An option can now be assigned to more than one command. To do this, the `command` attribute of the option must be set to an array of all its supported commands. Setting the `command` attribute to a string causes it to be assigned only the command named in the string.
+
+### Updated
+- Help messages for command definitions are now required 
 
 ## v3.1.1 - 2020-11-19
 ### Fixed

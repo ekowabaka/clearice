@@ -3,6 +3,11 @@
 namespace clearice\argparser;
 
 
+/**
+ * An implementation of the validator interface for validating parsed arguments and their definitions.
+ *
+ * @package clearice\argparser
+ */
 class Validator implements ValidatorInterface
 {
     /**
@@ -14,6 +19,8 @@ class Validator implements ValidatorInterface
     ];
 
     /**
+     * Validates the actual arguments passed to the shell to ensure they meet all the requirements of their definitions.
+     *
      * @param $options
      * @param $parsed
      * @throws InvalidArgumentException
@@ -38,6 +45,8 @@ class Validator implements ValidatorInterface
     }
 
     /**
+     * Validates option definitions and throws exceptions for poorly defined options.
+     *
      * @param $option
      * @param $commands
      * @throws InvalidArgumentDescriptionException
@@ -57,12 +66,18 @@ class Validator implements ValidatorInterface
                 throw new InvalidArgumentDescriptionException("Invalid key [$key] in option description for [{$name}]");
             }
         }
-        if (isset($option['command']) && !isset($commands[$option['command']])) {
-            throw new UnknownCommandException("The command '{$option['command']}' has not been added to this parser.");
+        if (isset($option['command'])) {
+            foreach(is_array($option['command']) ? $option['command'] : [$option['command']] as $command) {
+                if(!isset($commands[$command])) {
+                    throw new UnknownCommandException("The command '{$command}' for option '{$option['name']}' has not been added to this parser.");
+                }
+            }
         }
     }
 
     /**
+     * Validates command definitions and throws exceptions poorly defined commands.
+     *
      * @param $command
      * @param $commands
      * @throws CommandExistsException
@@ -72,6 +87,9 @@ class Validator implements ValidatorInterface
     {
         if (!isset($command['name'])) {
             throw new InvalidArgumentDescriptionException("Command description must contain a name");
+        }
+        if(!isset($command['help'])) {
+            throw new InvalidArgumentDescriptionException("Please add a brief help message to your command description");
         }
         if (isset($commands[$command['name']])) {
             throw new CommandExistsException("Command ${command['name']} already exists.");
