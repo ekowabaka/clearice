@@ -87,15 +87,21 @@ class ArgumentParserCommandTest extends TestCase
         $this->argumentParser->addOption(['command' => 'download', 'name' => 'url']);
     }
 
-    public function testInvalidArgumentDescriptionException()
+    public function testInvalidArgumentDescriptionExceptionNoName()
     {
         $this->expectException(InvalidArgumentDescriptionException::class);
         $this->argumentParser->addCommand(['help' => 'I forgot the name or mis-spelled it']);
     }
 
+    public function testInvalidArgumentDescriptionExceptionNoHelp()
+    {
+        $this->expectException(InvalidArgumentDescriptionException::class);
+        $this->argumentParser->addCommand(['name' => 'nohelp']);
+    }
+
     public function testCommandExistsException()
     {
         $this->expectException(CommandExistsException::class);
-        $this->argumentParser->addCommand(['name' => 'init']);
+        $this->argumentParser->addCommand(['name' => 'init', 'help' => 'Initialize again']);
     }
 }
