@@ -1,9 +1,9 @@
 language: php
-#sudo: false
-#dist: trusty
 php:
  - "7.3"
  - "7.4"
+env:
+  - XDEBUG_MODE=coverage
 
 before_script:
  - composer install
