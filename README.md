@@ -15,7 +15,7 @@ ClearIce is best installed through composer.
     
     composer require ekowabaka/clearice
     
-If for some reason you don't want to use composer, you can simply include all the needed clearice scripts where you need them. ClearIce has no dependencies other than php having a version greater than or equal to 7.1. 
+If for some reason you don't want to use composer, you can simply include all the needed clearice scripts where you need them. ClearIce has no dependencies other than a PHP interpreter with version 7.1 or better.
 
 Parsing Arguments with ClearICE
 --------------

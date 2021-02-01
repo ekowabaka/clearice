@@ -3,7 +3,7 @@ Defining Command Groups
 
 [[_TOC_]]
 
-Sometimes your CLI application may have different modes of operation, or it may just perform different related functions. In such cases, you might decide to keep a single interface with multiple command modes. Think about `git` and all its commands like `git init`  and `git commit`, and you should have an idea of what we're working towards.  
+Sometimes your CLI application may have different modes of operation, or it may just perform different related functions. In such cases, you might decide to keep a single interface with multiple command modes. Think about `git` and all its commands like `git init`  and `git commit` &mdash; and you should have an idea of what we're working towards.  
 
 Different modes or commands may require their own set of options. ClearIce deals with this through its command groups feature. When command groups are defined, the argument parser determines the required command from the arguments and parses only options defined for the said command. While in command mode, options could be defined for given commands, or they could be defined to run for all or no commands.
 
@@ -80,7 +80,7 @@ Any options added to the parser without a `command` value set can be passed acro
 
 Sharing Options
 ---------------
-Sometimes there may be a particular option that may have to work with multiple commands. In such cases, you can pass an array of all commands to the option. For example, with our hypothetical wiki app, if we wanted to add a location option to both the `generate` and `serve` commands, we could do the following:
+Sometimes there may be a particular option that will have to work with multiple commands. In such cases, you can pass an array with the names of all supported commands to the option. For example, with our hypothetical wiki app, if we want to add a location option to both the `generate` and `serve` commands, we can do the following:
 
 ````php
 $argumentParser->addOption([
