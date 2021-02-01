@@ -76,7 +76,23 @@ $argumentParser->addOption([
 ]);
 ````
 
-Any options added to the parser without a `command` value set can be passed accross all commands.
+Any options added to the parser without a `command` value set can be passed across all commands.
+
+Sharing Options
+---------------
+Sometimes there may be a particular option that may have to work with multiple commands. In such cases, you can pass an array of all commands to the option. For example, with our hypothetical wiki app, if we wanted to add a location option to both the `generate` and `serve` commands, we could do the following:
+
+````php
+$argumentParser->addOption([
+    'command' => ['serve', 'generate']
+    'short_name' => 'L',
+    'name' => 'location',
+    'type' => 'string',
+    'value' => 'LOCATION',
+    'help' => "specifies the location path of the wiki",
+]);
+````
+
 
 
 
