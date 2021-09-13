@@ -7,7 +7,7 @@ ClearIce PHP Command Line Argument Parser
 [![Latest Stable Version](https://poser.pugx.org/ekowabaka/clearice/version.svg)](https://packagist.org/packages/ekowabaka/clearice)
 [![Total Downloads](https://poser.pugx.org/ekowabaka/clearice/downloads)](https://packagist.org/packages/ekowabaka/clearice)
 
-ClearIce helps PHP CLI applications by providing tools for parsing command line arguments, and providing iteractive I/O. Arguements supplied at the command line, or through a shell are validated and supplied to your script in a better organized format, with the added bonus of automatically generated help. Additionally, ClearIce allows you to interactively receive and validate inputs to your scripts from the console.
+ClearIce provides tools that allow PHP applications to parse command line arguments, and perform interactive I/O sessions. Arguments supplied at the command line, or through a shell are validated and supplied to your script in an organized format, with the added possibility of automatically generating help messages for your command line applications. 
 
 Installing 
 ----------
