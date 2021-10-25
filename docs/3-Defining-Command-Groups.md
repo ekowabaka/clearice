@@ -1,3 +1,6 @@
+---
+title: Defining Command Groups
+---
 Defining Command Groups
 =======================
 
