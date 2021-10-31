@@ -1,9 +1,9 @@
 ---
-title: Parsing Command Line Arguments
+title: Parsing Arguments
 ---
 
-Parsing Command Line Arguments
-==============================
+Parsing Arguments
+=================
 
 [[_TOC_]]
 

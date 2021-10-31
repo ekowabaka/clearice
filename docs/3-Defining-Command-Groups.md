@@ -4,8 +4,6 @@ title: Defining Command Groups
 Defining Command Groups
 =======================
 
-[[_TOC_]]
-
 Sometimes your CLI application may have different modes of operation, or it may just perform different related functions. In such cases, you might decide to keep a single interface with multiple command modes. Think about `git` and all its commands like `git init`  and `git commit` &mdash; and you should have an idea of what we're working towards.  
 
 Different modes or commands may require their own set of options. ClearIce deals with this through its command groups feature. When command groups are defined, the argument parser determines the required command from the arguments and parses only options defined for the said command. While in command mode, options could be defined for given commands, or they could be defined to run for all or no commands.
@@ -43,7 +41,7 @@ would produce the following in the output.
         [__executed] => commands.php
     )
 
-Once commands are defined, options can be assigned to these commands. For now, our example has been based on generating wikis, so most of the options we have previously defined can be assigned to the generate command. We can do this by modifying our `addOption` calls and specifying the command for each option.
+Once commands are defined, options can be assigned to these commands. Considering our running example, all options we have previously defined can be assigned to the generate command. We can do this by modifying our `addOption` calls and specifying the command for each option.
 
 ````php
 $argumentParser->addOption([
@@ -66,7 +64,7 @@ $argumentParser->addOption([
 $argumentParser->addOption
 ````
 
-Note that we have added the `generate` command to the `input` and `output` option definitions. This means that these options would only be available when the generate command is executed. We can now go ahead to add a `port` option to the `serve` command.
+Notice that we have added the `generate` command to the `input` and `output` option definitions. This means that these options would only be available when the generate command is executed. We can now go ahead to add a `port` option to the `serve` command.
 
 ````php
 $argumentParser->addOption([
@@ -79,10 +77,8 @@ $argumentParser->addOption([
 ]);
 ````
 
-Any options added to the parser without a `command` value set can be passed across all commands.
+Any options added to the parser without a `command` parameter can be parsed across all commands. In a way, these options can be considered as global to all commands, and they can additionally be used when there are no commands specified.
 
-Sharing Options
----------------
 Sometimes there may be a particular option that will have to work with multiple commands. In such cases, you can pass an array with the names of all supported commands to the option. For example, with our hypothetical wiki app, if we want to add a location option to both the `generate` and `serve` commands, we can do the following:
 
 ````php

@@ -1,13 +1,15 @@
+---
+title: Interactive I/O
+---
 Interactive I/O with ClearIce
 =============================
 
 [[_TOC_]]
 
 
-Most console apps require some kind of interactivity, especially in cases where command line arguments are not passed. ClearIce makes it possible to perform interactive I/O. You can write output to the standard output (or any other output stream) with the capability of limiting verbosity. You are also able to read input from users interactively with the capablity
-of validating the input.
+In some cases console apps may require some kind of interactivity, especially in cases where command line arguments are not passed. ClearIce makes it possible to perform interactive I/O. Through ClearIce's I/O interface, you can write output to the standard output (or any other output stream) with the added capability of limiting verbosity, and you can additionally read input from users with the added capability of validating the data.
 
-All IO operations in ClearIce are performed through the `clearice\io\Io` class.
+All I/O operations in ClearIce are performed through the `clearice\io\Io` class.
 
 ````php
 use clearice\io\Io;
@@ -16,8 +18,7 @@ $io = new Io();
 
 Producing Output
 ----------------
-Clearice's `Io` class provides an `output()` method which writes text to an output
-stream (standard output by default). For example to print the legendary "Hello World" to  screen you could just write:
+Clearice's `Io` class provides an `output()` method that writes text to an output stream (standard output by default). For example, to print the obligatory "Hello World" message, you could just write:
 
 ````php
 use clearice\io\Io;
@@ -25,7 +26,7 @@ $io = new Io();
 $io->output("Hello World!");
 ````
 
-The `output()` method takes a second parameter which specifies an output level. Output levels provide a means of limiting the verbosity of what the application writes to output stream. ClearIce has integer output levels, with a global output level set at anytime. Any output that's specified with an output level greater than the global output level is suppressed. Anything lower or equal to the global level is, however, displayed. The global output level can always be set with the `setOutputLevel` method. For example ...
+The `output()` method takes a second parameter which specifies an output level. Output levels provide a means of limiting the verbosity of what the application writes to output stream. ClearIce has integer output levels, with a single global output level set at anytime. Any output that's specified with an output level greater than the global output level is suppressed. Anything lower or equal to the global level is, however, displayed. The global output level can always be set with the `setOutputLevel` method. For example ...
 
 ````php
 use clearice\io\Io;
@@ -40,14 +41,14 @@ $io->setOutputLevel(Io::OUTPUT_LEVEL_2);
 $io->output("Hello World Again", Io::OUTPUT_LEVEL_2);
 ````
 
-The `Io` contains four output level constants: `Io::OUTPUT_LEVEL_0`, `Io::OUTPUT_LEVEL_1`, `Io::OUTPUT_LEVEL_2`, and `Io::OUTPUT_LEVEL_3`, having inter values of 0 through 3 respectively. By convention `Io::OUTPUT_LEVEL_0` should not be assigned to any calls so it could be used as a mute level. Once the global output level is set to 0, no $io->output() calls should write output, provided this convention is followed. The other three levels could be used as low, medium and high respectively. It is possible to define more output levels for your application if you needed.
+The `Io` contains four output level constants: `Io::OUTPUT_LEVEL_0`, `Io::OUTPUT_LEVEL_1`, `Io::OUTPUT_LEVEL_2`, and `Io::OUTPUT_LEVEL_3`, having inter values of 0 through 3 respectively. By convention `Io::OUTPUT_LEVEL_0` should not be assigned to any calls, making it useful as a mute level. This means once the global output level is set to 0, no $io->output() calls should write output&mdash;provided this convention is followed. The other three levels could be used as low, medium and high respectively. It is possible to define more output levels for your application if you needed; they just have to be integer values.
 
 Apart from the output stream, ClearIce also allows writing to the error stream through the `error()` method on the `Io` class. This method behaves exactly as the output method except that it writes to an error stream (standard error by default).
 
 ### Using the output level stack
 To help you manage the output levels effectively, ClearICE provides an output stack. The stack could be accessed through the `pushOutputLevel` and `popOutputLevel` methods on the `Io` class. Anytime the `pushOutputLevel` method is called, the current output level is set to the value that was pushed unto the stack. When the outputLevel is popped, the output level reverts to the output level that existed before the last push occurred. This way you do not have to keep track of the existing output level if the need exists to temporarily switch output levels to enforce some output.
 
-It is also perfectly safe to mix the stack methods with the already existing `setOutputLevel` method. Anytime the stack is built, the current value set through the setOutputLevel is considered.
+It is also perfectly safe to mix the stack methods with the already existing `setOutputLevel` method. Anytime the stack is built, the current output level value setOutputLevel is considered and maintained.
 
 Consuming Input
 ---------------
@@ -73,25 +74,21 @@ Which would then produce the prompt ...
 
     What is your name [No Name]: 
     
-Supposing we want a follow up question which would find out where the user wants
-to go we could use ...
+In case we want to supply follow up question to find out where the user wants to go, we could use ...
 
 ````php
 $name = $io->getResponse('What is your name', ['default' => 'No Name']);
 $direction = $io->getResponse("Okay $name, where do you want to go", ['required' => true]);
 ````
 
-Note that the second call to `getResponse` adds a `required` parameter. Assuming
-we just hit the enter key twice when we execute the above script, we should end
-up with an output which lools like ...
+Note that the second call to `getResponse` adds a `required` parameter. Assuming we just hit the enter key twice after executing the script above, we should end up with an output which looks like ...
 
     What is your name [No Name]: 
     Okay No Name, where do you want to go []: 
     A value is required.
     Okay No Name, where do you want to go []: 
     
-In cases where we want to give the user options to select from, we could go 
-ahead and use ...
+In cases where we want to give the user options to select from, we could supply those options as follows ...
 
 ````php
 $name = $io->getResponse('What is your name', ['default' => 'No Name']);
@@ -103,8 +100,7 @@ $direction = $io->getResponse("Okay $name, where do you want to go",
 );
 ````
 
-Executing this and hitting enter twice while typing an invalid answer the third
-time would give the following output
+Executing this and hitting enter twice while typing an invalid answer the third time would give the following output
 
     What is your name [No Name]: 
     Okay No Name, where do you want to go (north/south/east/west) []: 
@@ -112,6 +108,3 @@ time would give the following output
     Okay No Name, where do you want to go (north/south/east/west) []: home
     Please provide a valid answer.
     Okay No Name, where do you want to go (north/south/east/west) []: 
-
-
-    

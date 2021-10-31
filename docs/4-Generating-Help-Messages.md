@@ -1,14 +1,16 @@
+---
+title: Generating Help Messages
+---
 Generating Help Messages
 ========================
 
 [[_TOC_]]
 
-Another feature ClearIce provides is the generation of a help listing for your application. Through ClearIce, its possible for your users to type `myapp --help` or `myapp -h` and get help about which options exist and what they mean. For cli apps which use command groups, the help system can also provide help messages for each command defined in the application. Although you'll have to provide some of the content for the help magic to happen, the tool helps format and display your content in a very consistent form.
+Another feature ClearIce provides is the automatic generation of a help listing for your application. Through ClearIce, its possible for your users to type `myapp --help` or `myapp -h` (or even `myapp help` when commands are enabled) to get help about which options exist and what they mean. For CLI apps that use command groups, the help system can also provide help messages for each command defined in the application. Although you'll have to provide some of the content for the help magic to happen, the tool helps format and display your help consistently.
 
-
-Auto Generating Help
---------------------
-You can automatically generate a help option by calling the `enableHelp()` method on the `ArgumentParser` instance. If you have supplied the help lines for your options, then you pretty much have all you need. Let's work with the following code.
+Enabling help generation
+------------------------
+You can automatically generate a help option by calling the `enableHelp()` method on the `ArgumentParser` instance. Provided you have supplied the help lines for your options through the `help` parameter, you'll be all set to go. Let's see an example with the following code.
 
 ````php
 <?php
@@ -107,7 +109,7 @@ For our example, this will output.
 
 Adding details to your help message
 -----------------------------------
-The `enableHelp` method takes three optional arguments that allow you to specify a description (header) and a footer for the help message, and it also gives you the ability to override the name of the command. If you change the call to `enableHelp` in our example to the following:
+The `enableHelp` method takes three optional arguments that allow you to specify a description (header) and a footer for the help message. It also gives you the ability to override the name of the command, which is automatically detected by default, to whatever you want. Going back to our example, if you change the call to `enableHelp` to the following:
 
 ````php
 $argumentParser->enableHelp(
@@ -121,7 +123,7 @@ $argumentParser->enableHelp(
 );
 ````
 
-Now your help command (`php wiki.php -h` or `php wiki.php --help`) would generate 
+Your help command (`php wiki.php -h` or `php wiki.php --help`) should now generate ...
 
     Simple Wiki version 1.0
     A sample or should I say dummy wiki app to help explain ClearIce. This app
