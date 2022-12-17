@@ -1,4 +1,7 @@
 # CHANGELOG
+## v3.2.1 - 2022-12-17
+- Removing deprecated php features to suppress warnings.
+
 ## v3.2.0 - 2021-02-01
 ### Added
 - An option can now be assigned to more than one command. To do this, the `command` attribute of the option must be set to an array of all its supported commands. Setting the `command` attribute to a string causes it to behave as it previously did.

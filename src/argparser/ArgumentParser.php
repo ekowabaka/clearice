@@ -99,7 +99,7 @@ class ArgumentParser
         if (!isset($option[$identifier])) {
             return;
         }
-        $cacheKey = "${option['command']}${option[$identifier]}";
+        $cacheKey = "{$option['command']}{$option[$identifier]}";
         if (!isset($this->optionsCache[$cacheKey])) {
             $this->optionsCache[$cacheKey] = $option;
         } else {

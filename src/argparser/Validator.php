@@ -92,7 +92,7 @@ class Validator implements ValidatorInterface
             throw new InvalidArgumentDescriptionException("Please add a brief help message to your command description");
         }
         if (isset($commands[$command['name']])) {
-            throw new CommandExistsException("Command ${command['name']} already exists.");
+            throw new CommandExistsException("Command {$command['name']} already exists.");
         }
     }
 }
