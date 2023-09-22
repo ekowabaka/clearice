@@ -4,3 +4,14 @@ title: "ClearICE Documentation"
 index: Introduction
 plugins:
     - contrib/highlight
+
+menu:
+  - title: Documentation
+    url: .
+  - title: Code
+    url: https://github.com/ekowabaka/clearice
+
+theme: 
+    name: site
+    primary-color: "#1E212B"
+    secondary-color: "#4D8B31"
