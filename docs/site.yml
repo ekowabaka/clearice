@@ -3,7 +3,7 @@ enable-toc: True
 title: "ClearICE Documentation"
 index: Introduction
 plugins:
-    - contrib/highlight
+    - foonoo/highlight
 
 menu:
   - title: Documentation
