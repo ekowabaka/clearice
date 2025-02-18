@@ -79,7 +79,7 @@ class ArgumentParser
      * @param ValidatorInterface $validator
      * @param HelpGeneratorInterface $helpWriter
      */
-    public function __construct(HelpGeneratorInterface $helpWriter = null, ValidatorInterface $validator = null)
+    public function __construct(?HelpGeneratorInterface $helpWriter = null, ?ValidatorInterface $validator = null)
     {
         $this->helpGenerator = $helpWriter ?? new HelpMessageGenerator();
         $this->validator = $validator ?? new Validator();
@@ -349,7 +349,7 @@ class ArgumentParser
      * @throws OptionExistsException
      * @throws UnknownCommandException
      */
-    public function enableHelp(string $description = null, string $footer = null, string $name = null) : void
+    public function enableHelp(?string $description = null, ?string $footer = null, ?string $name = null) : void
     {
         global $argv;
         $this->name = $name ?? $argv[0];
