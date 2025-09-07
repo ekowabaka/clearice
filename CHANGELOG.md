@@ -1,4 +1,7 @@
 # CHANGELOG
+## v3.2.2 - 2025-08-07
+- Fixes broken parsing in newer PHP versions.
+
 ## v3.2.1 - 2022-12-17
 - Removing deprecated php features to suppress warnings.
 
